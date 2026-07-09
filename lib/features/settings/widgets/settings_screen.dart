@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_shapes.dart';
@@ -7,11 +8,12 @@ import '../../../app/widgets/frosted_app_bar.dart';
 import '../../../app/widgets/frosted_icon_button.dart';
 import '../../ai_provider/widgets/ai_provider_setup.dart';
 import '../../builtin_tools/widgets/builtin_tools_setup.dart';
-import '../../voice_input/widgets/voice_input_setup.dart';
 import '../../memory/widgets/memory_setup.dart';
 import '../../notifications/widgets/notifications_setup.dart';
+import '../../notion/services/notion_platform.dart';
 import '../../notion/widgets/notion_setup.dart';
 import '../../system_prompt/widgets/system_prompt_setup.dart';
+import '../../voice_input/widgets/voice_input_setup.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -105,7 +107,15 @@ class SettingsScreen extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: AppLayout.settingsWidth,
             ),
-            child: _SettingsSectionGroup(sections: _sections),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _SettingsSectionGroup(sections: _sections),
+                const SizedBox(height: AppSpacing.space4),
+                const _LegalSectionGroup(),
+              ],
+            ),
           ),
         ),
       ),
@@ -231,5 +241,143 @@ class _SettingsSectionTileState extends State<_SettingsSectionTile> {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => widget.section.screen));
+  }
+}
+
+Future<void> _launchUrlInBrowser(BuildContext context, String url) async {
+  final mode = isDesktopPlatform
+      ? LaunchMode.externalApplication
+      : LaunchMode.inAppBrowserView;
+  final uri = Uri.parse(url);
+  if (!await launchUrl(uri, mode: mode) && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Could not open link.')),
+    );
+  }
+}
+
+class _LegalLink {
+  const _LegalLink({
+    required this.icon,
+    required this.label,
+    required this.url,
+  });
+
+  final IconData icon;
+  final String label;
+  final String url;
+}
+
+class _LegalSectionGroup extends StatelessWidget {
+  const _LegalSectionGroup();
+
+  static const _links = <_LegalLink>[
+    _LegalLink(
+      icon: Icons.description_outlined,
+      label: 'Terms of Service',
+      url:
+          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/terms-of-service.html',
+    ),
+    _LegalLink(
+      icon: Icons.privacy_tip_outlined,
+      label: 'Privacy Policy',
+      url:
+          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/privacy-policy.html',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surfaceContainerLowest,
+      shape: AppShapes.lg(
+        side: BorderSide(color: AppColors.borderSubtle(theme.brightness)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          for (var i = 0; i < _links.length; i++) ...[
+            _LegalTile(link: _links[i]),
+            if (i < _links.length - 1)
+              Divider(
+                height: 1,
+                thickness: 1,
+                color: AppColors.borderSubtle(theme.brightness),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _LegalTile extends StatefulWidget {
+  const _LegalTile({required this.link});
+
+  final _LegalLink link;
+
+  @override
+  State<_LegalTile> createState() => _LegalTileState();
+}
+
+class _LegalTileState extends State<_LegalTile> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final b = theme.brightness;
+    final bg = _hovered ? AppColors.hoverFillFor(b) : Colors.transparent;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: Material(
+        color: bg,
+        child: InkWell(
+          onTap: () => _launchUrlInBrowser(context, widget.link.url),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.space4,
+              vertical: AppSpacing.space3,
+            ),
+            child: Row(
+              children: [
+                Material(
+                  color: AppColors.accent.withValues(alpha: 0.10),
+                  shape: AppShapes.md(),
+                  clipBehavior: Clip.antiAlias,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.space2 - 2),
+                    child: Icon(
+                      widget.link.icon,
+                      size: 18,
+                      color: AppColors.accent,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.space3),
+                Expanded(
+                  child: Text(
+                    widget.link.label,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.space2),
+                Icon(
+                  Icons.open_in_new,
+                  size: AppIconSize.lg,
+                  color: AppColors.textTertiary(b),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
