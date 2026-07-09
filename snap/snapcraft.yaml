@@ -1,0 +1,30 @@
+name: notion_any_ai
+version: 0.1.0
+summary: Notion Any AI chat client
+description: |
+  Open-source Flutter app that connects OpenAI to Notion via the Model Context
+  Protocol (MCP), with voice input, reminders, and conversation memory.
+
+confinement: strict
+base: core22
+grade: stable
+
+slots:
+  dbus-notion_any_ai:
+    interface: dbus
+    bus: session
+    name: it.ricu.notion_any_ai
+
+apps:
+  notion_any_ai:
+    command: notion_any_ai
+    extensions: [gnome] # gnome includes the libraries required by flutter
+    plugs:
+      - network
+    slots:
+      - dbus-notion_any_ai
+parts:
+  notion_any_ai:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart # The main entry-point file of the application
