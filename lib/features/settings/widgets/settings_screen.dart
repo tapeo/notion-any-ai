@@ -8,6 +8,7 @@ import '../../../app/widgets/frosted_app_bar.dart';
 import '../../../app/widgets/frosted_icon_button.dart';
 import '../../ai_provider/widgets/ai_provider_setup.dart';
 import '../../builtin_tools/widgets/builtin_tools_setup.dart';
+import '../../feedback/widgets/feedback_dialog.dart';
 import '../../memory/widgets/memory_setup.dart';
 import '../../notifications/widgets/notifications_setup.dart';
 import '../../notion/services/notion_platform.dart';
@@ -113,6 +114,10 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 _SettingsSectionGroup(sections: _sections),
                 const SizedBox(height: AppSpacing.space4),
+                _FeedbackTile(
+                  onTap: () => showFeedbackDialog(context),
+                ),
+                const SizedBox(height: AppSpacing.space4),
                 const _LegalSectionGroup(),
               ],
             ),
@@ -135,6 +140,83 @@ class SettingsSection {
   final String label;
   final String description;
   final Widget screen;
+}
+
+class _FeedbackTile extends StatefulWidget {
+  const _FeedbackTile({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  State<_FeedbackTile> createState() => _FeedbackTileState();
+}
+
+class _FeedbackTileState extends State<_FeedbackTile> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final b = theme.brightness;
+    final bg = _hovered ? AppColors.hoverFillFor(b) : Colors.transparent;
+
+    return Material(
+      color: theme.colorScheme.surfaceContainerLowest,
+      shape: AppShapes.lg(
+        side: BorderSide(color: AppColors.borderSubtle(theme.brightness)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: Material(
+          color: bg,
+          child: InkWell(
+            onTap: widget.onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space4,
+                vertical: AppSpacing.space3,
+              ),
+              child: Row(
+                children: [
+                  Material(
+                    color: AppColors.accent.withValues(alpha: 0.10),
+                    shape: AppShapes.md(),
+                    clipBehavior: Clip.antiAlias,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.space2 - 2),
+                      child: Icon(
+                        Icons.feedback_outlined,
+                        size: 18,
+                        color: AppColors.accent,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.space3),
+                  Expanded(
+                    child: Text(
+                      'Leave feedback',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.space2),
+                  Icon(
+                    Icons.chevron_right,
+                    size: AppIconSize.lg,
+                    color: AppColors.textTertiary(b),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _SettingsSectionGroup extends StatelessWidget {
