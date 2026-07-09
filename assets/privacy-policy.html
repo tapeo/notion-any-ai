@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy – Notion Any AI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      color: #1d1d1f;
+      background: #f5f5f7;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .last-updated { color: #6e6e73; font-size: 0.9rem; margin-bottom: 2rem; }
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+    h3 { font-size: 1rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.25rem; }
+    p, li { font-size: 0.95rem; color: #1d1d1f; }
+    p { margin-bottom: 0.5rem; }
+    ul { padding-left: 1.25rem; margin-bottom: 0.5rem; }
+    li { margin-bottom: 0.25rem; }
+    strong { font-weight: 600; }
+    hr { border: none; border-top: 1px solid #e5e5ea; margin: 2rem 0; }
+    .footer-note { font-size: 0.85rem; color: #6e6e73; text-align: center; margin-top: 1.5rem; }
+    a { color: #0071e3; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace; font-size: 0.9em; background: #f5f5f7; padding: 0.1em 0.3em; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Privacy Policy &ndash; Notion Any AI</h1>
+    <p class="last-updated"><strong>Last Updated:</strong> July 9, 2026</p>
+
+    <h2>1. Introduction</h2>
+    <p>Notion Any AI is an open-source application that lets you interact with your Notion workspace through any AI provider of your choice. This Privacy Policy explains exactly what data we collect and how we handle it.</p>
+    <p><strong>The short version:</strong> We collect nearly nothing &mdash; just one anonymous usage ping via a <code>/track</code> API. That&rsquo;s it.</p>
+
+    <h2>2. What We Collect</h2>
+    <p>Notion Any AI implements <strong>one single analytics mechanism</strong>: a <code>/track</code> API hosted on <strong>Google Cloud Run</strong>.</p>
+    <h3>2.1 What the <code>/track</code> API collects:</h3>
+    <ul>
+      <li>A basic event type (e.g., <code>app_launch</code>, <code>install</code>)</li>
+      <li>An anonymous device-generated identifier (non-personal, non-accountable)</li>
+    </ul>
+    <h3>2.2 What it does NOT collect:</h3>
+    <ul>
+      <li>No name, email, or any personal identifiable information</li>
+      <li>No IP address logging</li>
+      <li>No Notion workspace data or content</li>
+      <li>No AI prompts, responses, or conversation history</li>
+      <li>No API keys or credentials</li>
+      <li>No file system or local files</li>
+      <li>No browser history, cookies, or local storage inspection</li>
+      <li>No location data</li>
+      <li>No device hardware or OS details beyond what is inherent in the HTTP request</li>
+    </ul>
+    <h3>2.3 Why we collect this</h3>
+    <p>This data is used exclusively for anonymous usage analytics &mdash; understanding how many people are using the app, how often, and from which channels. This helps us:</p>
+    <ul>
+      <li>Measure app store performance</li>
+      <li>Prioritize product improvements</li>
+      <li>Ensure the app is functioning as expected</li>
+    </ul>
+
+    <h2>3. What We Do NOT Collect (At All)</h2>
+    <p>Beyond the single <code>/track</code> ping described above, <strong>we collect nothing else</strong>:</p>
+    <ul>
+      <li>No telemetry</li>
+      <li>No crash reports</li>
+      <li>No analytics beyond the <code>/track</code> API</li>
+      <li>No cookies</li>
+      <li>No tracking pixels or embedded scripts</li>
+      <li>No server-side logging that persists personal data</li>
+    </ul>
+
+    <h2>4. Your Data Stays With You</h2>
+    <h3>4.1 API Keys</h3>
+    <p>Your AI provider API keys (OpenAI, Anthropic, Google, etc.) are stored <strong>locally on your device</strong>. They are never sent to us, never uploaded anywhere, and never shared with anyone unless you choose to share them.</p>
+    <h3>4.2 Notion Content</h3>
+    <p>Your Notion workspace data is accessed locally through the Notion MCP protocol on your machine. We never see, store, or process your Notion content.</p>
+    <h3>4.3 AI Prompts &amp; Responses</h3>
+    <p>When you send a prompt to an AI provider, the communication goes <strong>directly from your device to your chosen AI provider</strong>. We have no access to your prompts or the responses you receive.</p>
+    <h3>4.4 Configuration &amp; Preferences</h3>
+    <p>All app settings, preferences, and configurations are stored <strong>locally on your device</strong>.</p>
+
+    <h2>5. Local LLM Usage (Maximum Privacy)</h2>
+    <p>When using local language models via Ollama, LM Studio, or similar providers:</p>
+    <ul>
+      <li>Everything runs <strong>entirely on your machine</strong></li>
+      <li><strong>No AI data</strong> leaves your computer</li>
+      <li>The only outbound request is the anonymous <code>/track</code> ping</li>
+      <li>No internet connection required for AI processing</li>
+    </ul>
+    <p>This is the most private mode of operation.</p>
+
+    <h2>6. Data Storage &amp; Retention</h2>
+    <p>The <code>/track</code> API receives fully anonymous event pings with no personal data. Since the data is anonymous and non-personal, no specific retention period is defined.</p>
+    <p>There is <strong>no persistent database</strong> of user information anywhere in the system.</p>
+
+    <h2>7. Data Sharing</h2>
+    <p><strong>We do not share, sell, or trade any data.</strong></p>
+    <ul>
+      <li>The <code>/track</code> data is used internally for product analytics only</li>
+      <li>It is <strong>not</strong> shared with third parties</li>
+      <li>It is <strong>not</strong> used for advertising</li>
+      <li>It is <strong>not</strong> sold to data brokers</li>
+    </ul>
+
+    <h2>8. Third-Party Services</h2>
+    <h3>8.1 Notion</h3>
+    <p>When you connect to Notion, communications are handled through the Notion MCP protocol. Your use of Notion is subject to <a href="https://www.notion.so/privacy">Notion's Privacy Policy</a>.</p>
+    <h3>8.2 AI Providers</h3>
+    <p>When you use an AI provider (OpenAI, Anthropic, Google, etc.), your data is subject to that provider's privacy policy. We encourage you to review their policies:</p>
+    <ul>
+      <li><a href="https://openai.com/privacy/">OpenAI Privacy Policy</a></li>
+      <li><a href="https://www.anthropic.com/privacy">Anthropic Privacy Policy</a></li>
+      <li><a href="https://policies.google.com/privacy">Google Privacy Policy</a></li>
+      <li><a href="https://ollama.ai/privacy">Ollama Privacy</a></li>
+    </ul>
+    <p><strong>We have no control over how these third parties handle your data.</strong></p>
+    <h3>8.3 Google Cloud Run</h3>
+    <p>The <code>/track</code> API is hosted on Google Cloud Run. Data processing is subject to <a href="https://policies.google.com/privacy">Google's Privacy Policy</a> and <a href="https://cloud.google.com/terms/data-processing-terms">Cloud Run's data processing terms</a>. Only anonymous, non-personal data is involved.</p>
+
+    <h2>9. Children's Privacy</h2>
+    <p>Notion Any AI is not directed at children under the age of 13. The minimal data collected via the <code>/track</code> API does not include any information that could identify a child, and we do not knowingly collect personal information from children.</p>
+
+    <h2>10. Data Security</h2>
+    <ul>
+      <li>The <code>/track</code> API endpoint accepts anonymous, non-personal data only &mdash; there is nothing sensitive to compromise</li>
+      <li>API keys and configuration remain <strong>local to your device</strong> &mdash; their security is determined by your device's own security measures</li>
+      <li>No authentication tokens, session data, or user accounts are involved</li>
+    </ul>
+
+    <h2>11. Your Rights</h2>
+    <p>Since we collect only anonymous, non-personal data:</p>
+    <ul>
+      <li><strong>Right to Access</strong> &ndash; The <code>/track</code> data is anonymous aggregated counts with no link to any individual</li>
+      <li><strong>Right to Deletion</strong> &ndash; Anonymous data cannot be attributed to or deleted for a specific individual. If you uninstall the app, no further pings will be sent</li>
+      <li><strong>Right to Rectification</strong> &ndash; There is no personal data to correct</li>
+      <li><strong>Right to Data Portability</strong> &ndash; The <code>/track</code> data is anonymous and non-personal</li>
+    </ul>
+
+    <h2>12. International Transfers</h2>
+    <p>The <code>/track</code> API is hosted on Google Cloud Run, which may process data across Google Cloud's global infrastructure. No personal data is involved in this transfer &mdash; only anonymous event pings.</p>
+
+    <h2>13. Opting Out</h2>
+    <p>If you prefer to block the <code>/track</code> ping entirely, you may:</p>
+    <ul>
+      <li>Block the endpoint at the network level (e.g., firewall or ad-blocker rules)</li>
+      <li>Use a modified build of this open-source application with the analytics call removed</li>
+    </ul>
+
+    <h2>14. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. If we do, we will update the &ldquo;Last Updated&rdquo; date at the top. Since the data collected is minimal and anonymous, changes are likely to be rare.</p>
+
+    <h2>15. Contact</h2>
+    <p>If you have any questions about this Privacy Policy, please reach out through our official project channels or open an issue on the GitHub repository.</p>
+
+    <hr />
+    <p class="footer-note">This product uses the Notion MCP protocol. &ldquo;Notion&rdquo; is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners.</p>
+  </div>
+</body>
+</html>
