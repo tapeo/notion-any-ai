@@ -11,6 +11,7 @@ class TranscriptionClient {
     required String apiKey,
     required String model,
     required String audioPath,
+    required String language,
   }) async {
     final request = http.MultipartRequest(
       'POST',
@@ -18,6 +19,7 @@ class TranscriptionClient {
     );
     request.headers['Authorization'] = 'Bearer $apiKey';
     request.fields['model'] = model;
+    request.fields['language'] = language;
     request.fields['response_format'] = 'json';
     request.files.add(
       await http.MultipartFile.fromPath(

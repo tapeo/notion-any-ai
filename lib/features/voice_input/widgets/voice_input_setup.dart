@@ -20,6 +20,7 @@ class _VoiceInputSetupState extends ConsumerState<VoiceInputSetup> {
 
   bool _obscureApiKey = true;
   bool _initialized = false;
+  String _selectedLanguage = 'en';
 
   @override
   void dispose() {
@@ -39,6 +40,7 @@ class _VoiceInputSetupState extends ConsumerState<VoiceInputSetup> {
       } else {
         _modelController.text = 'whisper-1';
       }
+      _selectedLanguage = state.language;
     }
 
     return SettingsBody(
@@ -54,6 +56,8 @@ class _VoiceInputSetupState extends ConsumerState<VoiceInputSetup> {
         apiKeyController: _apiKeyController,
         obscureApiKey: _obscureApiKey,
         onToggleObscure: _toggleObscure,
+        selectedLanguage: _selectedLanguage,
+        onLanguageChanged: _handleLanguageChanged,
         saving: state.saving,
         onSave: _handleSave,
       ),
@@ -68,11 +72,20 @@ class _VoiceInputSetupState extends ConsumerState<VoiceInputSetup> {
 
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref
-        .read(voiceInputProvider.notifier)
-        .save(model: _modelController.text, apiKey: _apiKeyController.text);
+    await ref.read(voiceInputProvider.notifier).save(
+      model: _modelController.text,
+      apiKey: _apiKeyController.text,
+      language: _selectedLanguage,
+    );
     if (!mounted) return;
     await _showSavedDialog(context);
+  }
+
+  void _handleLanguageChanged(String? value) {
+    if (value == null) return;
+    setState(() {
+      _selectedLanguage = value;
+    });
   }
 
   Future<void> _showSavedDialog(BuildContext context) {
@@ -99,6 +112,8 @@ class _EditForm extends StatelessWidget {
     required this.apiKeyController,
     required this.obscureApiKey,
     required this.onToggleObscure,
+    required this.selectedLanguage,
+    required this.onLanguageChanged,
     required this.saving,
     required this.onSave,
   });
@@ -108,6 +123,8 @@ class _EditForm extends StatelessWidget {
   final TextEditingController apiKeyController;
   final bool obscureApiKey;
   final VoidCallback onToggleObscure;
+  final String selectedLanguage;
+  final ValueChanged<String?> onLanguageChanged;
   final bool saving;
   final VoidCallback onSave;
 
@@ -149,6 +166,35 @@ class _EditForm extends StatelessWidget {
             obscureText: obscureApiKey,
             autocorrect: false,
             validator: _validateApiKey,
+          ),
+          const SizedBox(height: AppSpacing.space3),
+          DropdownButtonFormField<String>(
+            value: selectedLanguage,
+            decoration: const InputDecoration(
+              labelText: 'Language',
+              border: OutlineInputBorder(),
+              isDense: true,
+            ),
+            items: const [
+              DropdownMenuItem(value: 'en', child: Text('English')),
+              DropdownMenuItem(value: 'it', child: Text('Italian')),
+              DropdownMenuItem(value: 'fr', child: Text('French')),
+              DropdownMenuItem(value: 'de', child: Text('German')),
+              DropdownMenuItem(value: 'es', child: Text('Spanish')),
+              DropdownMenuItem(value: 'pt', child: Text('Portuguese')),
+              DropdownMenuItem(value: 'ja', child: Text('Japanese')),
+              DropdownMenuItem(value: 'zh', child: Text('Chinese')),
+              DropdownMenuItem(value: 'ko', child: Text('Korean')),
+              DropdownMenuItem(value: 'ru', child: Text('Russian')),
+              DropdownMenuItem(value: 'ar', child: Text('Arabic')),
+              DropdownMenuItem(value: 'hi', child: Text('Hindi')),
+              DropdownMenuItem(value: 'nl', child: Text('Dutch')),
+              DropdownMenuItem(value: 'pl', child: Text('Polish')),
+              DropdownMenuItem(value: 'tr', child: Text('Turkish')),
+              DropdownMenuItem(value: 'th', child: Text('Thai')),
+              DropdownMenuItem(value: 'vi', child: Text('Vietnamese')),
+            ],
+            onChanged: onLanguageChanged,
           ),
           const SizedBox(height: AppSpacing.space4),
           FilledButton.icon(

@@ -284,6 +284,11 @@ class _LegalSectionGroup extends StatelessWidget {
       url:
           'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/privacy-policy.md',
     ),
+    _LegalLink(
+      icon: Icons.code_outlined,
+      label: 'Open source - leave a Star 🌟',
+      url: 'https://github.com/tapeo/notion-any-ai',
+    ),
   ];
 
   @override
