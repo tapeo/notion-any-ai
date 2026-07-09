@@ -9,7 +9,7 @@ class SystemPromptState extends Equatable {
   static const String defaultPrompt =
       'You are Notion Any AI, an assistant with access to the user\'s Notion '
       'workspace via tools. Use tools when the user asks about their Notion '
-      'content. When tools are not needed, answer directly.';
+      'content. When tools are not needed, answer directly. Always return related Notion pages as links.';
 
   SystemPromptState copyWith({String? prompt, bool? saving}) {
     return SystemPromptState(
