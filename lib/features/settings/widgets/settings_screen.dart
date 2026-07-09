@@ -250,9 +250,9 @@ Future<void> _launchUrlInBrowser(BuildContext context, String url) async {
       : LaunchMode.inAppBrowserView;
   final uri = Uri.parse(url);
   if (!await launchUrl(uri, mode: mode) && context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Could not open link.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Could not open link.')));
   }
 }
 
@@ -276,13 +276,13 @@ class _LegalSectionGroup extends StatelessWidget {
       icon: Icons.description_outlined,
       label: 'Terms of Service',
       url:
-          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/terms-of-service.html',
+          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/terms-of-service.md',
     ),
     _LegalLink(
       icon: Icons.privacy_tip_outlined,
       label: 'Privacy Policy',
       url:
-          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/privacy-policy.html',
+          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/privacy-policy.md',
     ),
   ];
 
