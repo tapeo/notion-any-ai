@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/services/shared_prefs_provider.dart';
 import 'app/theme/app_colors.dart';
@@ -15,6 +17,7 @@ import 'features/builtin_tools/providers/builtin_tools_notifier.dart';
 import 'features/chat/widgets/chat_screen.dart';
 import 'features/conversations/providers/conversation_storage_provider.dart';
 import 'features/conversations/providers/conversations_notifier.dart';
+import 'features/install/services/install_service.dart';
 import 'features/memory/providers/memory_notifier.dart';
 import 'features/notifications/providers/notifications_provider.dart';
 import 'features/notifications/services/notifications_service_provider.dart';
@@ -27,7 +30,19 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initSharedPrefs();
   await initAppDir();
+  unawaited(_sendInstallPing());
   runApp(const ProviderScope(child: MainApp()));
+}
+
+Future<void> _sendInstallPing() async {
+  const secureStorage = FlutterSecureStorage();
+
+  final sharedPrefs = await SharedPreferences.getInstance();
+
+  InstallService(
+    secureStorage: secureStorage,
+    sharedPrefs: sharedPrefs,
+  ).sendInstallPing();
 }
 
 class MainApp extends ConsumerStatefulWidget {

@@ -16,6 +16,8 @@ Notion Any AI implements **one single analytics mechanism**: a `/track` API host
 
 - A basic event type (e.g., `app_launch`, `install`)
 - An anonymous device-generated identifier (non-personal, non-accountable)
+- The platform you are running on (iOS, Android, macOS, Windows, Linux)
+- The app version and build number
 
 ### 2.2 What it does NOT collect:
 
@@ -27,7 +29,7 @@ Notion Any AI implements **one single analytics mechanism**: a `/track` API host
 - No file system or local files
 - No browser history, cookies, or local storage inspection
 - No location data
-- No device hardware or OS details beyond what is inherent in the HTTP request
+- No device hardware or OS version details
 
 ### 2.3 Why we collect this
 
