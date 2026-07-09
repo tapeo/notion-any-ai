@@ -49,3 +49,4 @@ app.*.map.json
 
 # Internal dev-log (opencode workflow)
 changes/
+upload_ios.sh
