@@ -1,4 +1,4 @@
-# Notion Any AI
+# Any AI for Notion
 
 Open-source Flutter app that connects an OpenAI-compatible chat model to your Notion workspace via the [Model Context Protocol](https://modelcontextprotocol.io) (MCP). Chat with an assistant that can read and write your Notion pages, set reminders, remember things across conversations, and fetch web content, all on-device with OAuth-based Notion access.
 

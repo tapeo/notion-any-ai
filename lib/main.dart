@@ -113,7 +113,7 @@ class _MainAppState extends ConsumerState<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Notion Any AI',
+      title: 'Any AI for Notion',
       debugShowCheckedModeBanner: false,
       theme: _lightTheme(),
       darkTheme: _darkTheme(),

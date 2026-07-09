@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "it.ricu" "\0"
-            VALUE "FileDescription", "Notion Any AI" "\0"
+            VALUE "FileDescription", "Any AI for Notion" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "Notion Any AI" "\0"
+            VALUE "InternalName", "Any AI for Notion" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 it.ricu. All rights reserved." "\0"
             VALUE "OriginalFilename", "notion_any_ai.exe" "\0"
-            VALUE "ProductName", "Notion Any AI" "\0"
+            VALUE "ProductName", "Any AI for Notion" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

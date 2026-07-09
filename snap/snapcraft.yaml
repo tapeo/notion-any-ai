@@ -1,6 +1,6 @@
 name: notion_any_ai
 version: 0.1.0
-summary: Notion Any AI chat client
+summary: Any AI for Notion chat client
 description: |
   Open-source Flutter app that connects OpenAI to Notion via the Model Context
   Protocol (MCP), with voice input, reminders, and conversation memory.

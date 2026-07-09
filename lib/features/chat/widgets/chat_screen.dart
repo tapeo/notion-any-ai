@@ -58,7 +58,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: FrostedAppBar(
-        title: 'Notion Any AI',
+        title: 'Any AI for Notion',
         leading: FrostedIconButton(
           onPressed: _toggleDrawer,
           icon: Icons.menu,

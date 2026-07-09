@@ -1,173 +1,347 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Terms of Service – Notion Any AI</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      color: #1d1d1f;
-      background: #f5f5f7;
-      line-height: 1.6;
-      padding: 2rem 1rem;
-    }
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 18px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-    h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .last-updated { color: #6e6e73; font-size: 0.9rem; margin-bottom: 2rem; }
-    h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-top: 1.75rem;
-      margin-bottom: 0.5rem;
-    }
-    h3 { font-size: 1rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.25rem; }
-    p, li { font-size: 0.95rem; color: #1d1d1f; }
-    p { margin-bottom: 0.5rem; }
-    ul { padding-left: 1.25rem; margin-bottom: 0.5rem; }
-    li { margin-bottom: 0.25rem; }
-    strong { font-weight: 600; }
-    .disclaimer, .liability {
-      background: #f5f5f7;
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-      margin: 0.75rem 0;
-      font-size: 0.9rem;
-    }
-    .disclaimer p, .liability p { margin-bottom: 0.25rem; font-size: 0.9rem; }
-    .disclaimer strong, .liability strong { display: block; margin-bottom: 0.25rem; }
-    hr { border: none; border-top: 1px solid #e5e5ea; margin: 2rem 0; }
-    .footer-note { font-size: 0.85rem; color: #6e6e73; text-align: center; margin-top: 1.5rem; }
-    a { color: #0071e3; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Terms of Service &ndash; Notion Any AI</h1>
-    <p class="last-updated"><strong>Last Updated:</strong> July 9, 2026</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms of Service – Any AI for Notion</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          sans-serif;
+        color: #1d1d1f;
+        background: #f5f5f7;
+        line-height: 1.6;
+        padding: 2rem 1rem;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 18px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+      .last-updated {
+        color: #6e6e73;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: 1.75rem;
+        margin-bottom: 0.5rem;
+      }
+      h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+      p,
+      li {
+        font-size: 0.95rem;
+        color: #1d1d1f;
+      }
+      p {
+        margin-bottom: 0.5rem;
+      }
+      ul {
+        padding-left: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+      li {
+        margin-bottom: 0.25rem;
+      }
+      strong {
+        font-weight: 600;
+      }
+      .disclaimer,
+      .liability {
+        background: #f5f5f7;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        font-size: 0.9rem;
+      }
+      .disclaimer p,
+      .liability p {
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+      }
+      .disclaimer strong,
+      .liability strong {
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #e5e5ea;
+        margin: 2rem 0;
+      }
+      .footer-note {
+        font-size: 0.85rem;
+        color: #6e6e73;
+        text-align: center;
+        margin-top: 1.5rem;
+      }
+      a {
+        color: #0071e3;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Terms of Service &ndash; Any AI for Notion</h1>
+      <p class="last-updated"><strong>Last Updated:</strong> July 9, 2026</p>
 
-    <h2>1. Acceptance of Terms</h2>
-    <p>By downloading, accessing, or using <strong>Notion Any AI</strong> (the &ldquo;Software&rdquo;), you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you do not agree to these Terms, do not use the Software.</p>
-    <p>The Software is an open-source application that facilitates interaction between users and their Notion workspace through various AI providers. These Terms govern your use of the Software, regardless of which AI provider you choose to connect.</p>
+      <h2>1. Acceptance of Terms</h2>
+      <p>
+        By downloading, accessing, or using
+        <strong>Any AI for Notion</strong> (the &ldquo;Software&rdquo;), you
+        agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If
+        you do not agree to these Terms, do not use the Software.
+      </p>
+      <p>
+        The Software is an open-source application that facilitates interaction
+        between users and their Notion workspace through various AI providers.
+        These Terms govern your use of the Software, regardless of which AI
+        provider you choose to connect.
+      </p>
 
-    <h2>2. License Grant</h2>
-    <h3>2.1 Open Source</h3>
-    <p>The Software is open-source. You may view, fork, and modify the source code in accordance with the applicable open-source license.</p>
-    <h3>2.2 Restrictions</h3>
-    <p>You may not:</p>
-    <ul>
-      <li>Redistribute the Software or its official builds for commercial gain without authorization</li>
-      <li>Use the Software in a manner that violates any applicable laws or regulations</li>
-      <li>Attempt to circumvent any security measures</li>
-    </ul>
-
-    <h2>3. Your AI Provider Accounts</h2>
-    <h3>3.1 Bring Your Own Key (BYOK)</h3>
-    <p>Notion Any AI requires you to use your own API keys for the AI provider of your choice (e.g., OpenAI, Google Gemini, Anthropic Claude, Ollama, etc.).</p>
-    <h3>3.2 Responsibilities</h3>
-    <p>You are solely responsible for:</p>
-    <ul>
-      <li>Managing your own AI provider accounts</li>
-      <li>Paying any fees charged by your AI provider(s)</li>
-      <li>Complying with the terms of service of your chosen AI provider(s)</li>
-    </ul>
-    <h3>3.3 No Vendor Lock-In</h3>
-    <p>We do not lock you into any specific AI provider. You may switch between providers at any time.</p>
-
-    <h2>4. Privacy &amp; Data Usage</h2>
-    <h3>4.1 Minimal Analytics &ndash; <code>/track</code> API</h3>
-    <p>The Software makes a single anonymous request to a <code>/track</code> API hosted on <strong>Cloud Run</strong> for the sole purpose of measuring app store usage (e.g., downloads, active installs). This is the <strong>only</strong> data collection mechanism in the entire application.</p>
-    <h3>4.2 What Is Tracked</h3>
-    <ul>
-      <li>A basic event (e.g., app launch or install ping)</li>
-      <li>An anonymous, non-personal identifier (device-generated, no account linkage)</li>
-    </ul>
-    <h3>4.3 What Is NOT Tracked</h3>
-    <ul>
-      <li>No personal information (name, email, IP address)</li>
-      <li>No Notion workspace content</li>
-      <li>No AI prompts or responses</li>
-      <li>No API keys</li>
-      <li>No file system access</li>
-      <li>No browsing history</li>
-      <li>No location data</li>
-    </ul>
-    <h3>4.4 Purpose</h3>
-    <p>This data is used exclusively to understand how many people are using the app and from which channels. It helps us improve the product and prioritize features. We do <strong>not</strong> sell this data, share it with third parties, or use it for advertising.</p>
-    <h3>4.5 Local LLM Privacy</h3>
-    <p>When using local LLMs (Ollama, LM Studio, etc.), all AI processing occurs <strong>entirely on your machine</strong>, and no AI data leaves your computer beyond the anonymous <code>/track</code> ping described above.</p>
-
-    <h2>5. Third-Party Services</h2>
-    <h3>5.1 Notion Integration</h3>
-    <p>The Software connects via the <strong>Notion MCP protocol</strong> to your Notion workspace. Your use of Notion is governed by Notion&rsquo;s own Terms of Service and Privacy Policy.</p>
-    <h3>5.2 AI Providers</h3>
-    <p>When you use an AI provider through the Software, your interactions are governed by that provider&rsquo;s terms. We recommend reviewing the terms of your chosen AI provider.</p>
-    <h3>5.3 No Affiliation</h3>
-    <p>Notion Any AI is <strong>not affiliated with, endorsed by, or sponsored by</strong> Notion Labs Inc. or any AI provider (OpenAI, Anthropic, Google, etc.).</p>
-
-    <h2>6. Intellectual Property</h2>
-    <h3>6.1 Ownership</h3>
-    <ul>
-      <li>The Software, including all code, design, and branding, is owned by the Notion Any AI project maintainers.</li>
-      <li>You retain all rights to your data, content, and the outputs produced through the Software.</li>
-    </ul>
-    <h3>6.2 Open Source</h3>
-    <p>The source code is available under an open-source license. However, the &ldquo;Notion Any AI&rdquo; name, branding, and official distribution channels remain the intellectual property of the project maintainers.</p>
-
-    <h2>7. Disclaimer of Warranties</h2>
-    <div class="disclaimer">
-      <p><strong>THE SOFTWARE IS PROVIDED &ldquo;AS IS&rdquo;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.</strong></p>
-    </div>
-    <h3>7.1 No Guarantee of AI Provider Availability</h3>
-    <p>We do not control the availability, reliability, or performance of third-party AI providers or Notion. Your experience may be affected by outages or changes to those services.</p>
-    <h3>7.2 AI Output Accuracy</h3>
-    <p>AI-generated content may contain errors, inaccuracies, or hallucinations. You are responsible for verifying critical information before acting on it.</p>
-
-    <h2>8. Limitation of Liability</h2>
-    <div class="liability">
-      <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE PROJECT MAINTAINERS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE SOFTWARE, INCLUDING BUT NOT LIMITED TO:</strong></p>
+      <h2>2. License Grant</h2>
+      <h3>2.1 Open Source</h3>
+      <p>
+        The Software is open-source. You may view, fork, and modify the source
+        code in accordance with the applicable open-source license.
+      </p>
+      <h3>2.2 Restrictions</h3>
+      <p>You may not:</p>
       <ul>
-        <li>Data loss or corruption</li>
-        <li>Errors in AI-generated content acting upon</li>
-        <li>Costs incurred from third-party AI provider usage</li>
-        <li>Business interruption or lost profits</li>
+        <li>
+          Redistribute the Software or its official builds for commercial gain
+          without authorization
+        </li>
+        <li>
+          Use the Software in a manner that violates any applicable laws or
+          regulations
+        </li>
+        <li>Attempt to circumvent any security measures</li>
       </ul>
+
+      <h2>3. Your AI Provider Accounts</h2>
+      <h3>3.1 Bring Your Own Key (BYOK)</h3>
+      <p>
+        Any AI for Notion requires you to use your own API keys for the AI
+        provider of your choice (e.g., OpenAI, Google Gemini, Anthropic Claude,
+        Ollama, etc.).
+      </p>
+      <h3>3.2 Responsibilities</h3>
+      <p>You are solely responsible for:</p>
+      <ul>
+        <li>Managing your own AI provider accounts</li>
+        <li>Paying any fees charged by your AI provider(s)</li>
+        <li>
+          Complying with the terms of service of your chosen AI provider(s)
+        </li>
+      </ul>
+      <h3>3.3 No Vendor Lock-In</h3>
+      <p>
+        We do not lock you into any specific AI provider. You may switch between
+        providers at any time.
+      </p>
+
+      <h2>4. Privacy &amp; Data Usage</h2>
+      <h3>4.1 Minimal Analytics &ndash; <code>/track</code> API</h3>
+      <p>
+        The Software makes a single anonymous request to a
+        <code>/track</code> API hosted on <strong>Cloud Run</strong> for the
+        sole purpose of measuring app store usage (e.g., downloads, active
+        installs). This is the <strong>only</strong> data collection mechanism
+        in the entire application.
+      </p>
+      <h3>4.2 What Is Tracked</h3>
+      <ul>
+        <li>A basic event (e.g., app launch or install ping)</li>
+        <li>
+          An anonymous, non-personal identifier (device-generated, no account
+          linkage)
+        </li>
+      </ul>
+      <h3>4.3 What Is NOT Tracked</h3>
+      <ul>
+        <li>No personal information (name, email, IP address)</li>
+        <li>No Notion workspace content</li>
+        <li>No AI prompts or responses</li>
+        <li>No API keys</li>
+        <li>No file system access</li>
+        <li>No browsing history</li>
+        <li>No location data</li>
+      </ul>
+      <h3>4.4 Purpose</h3>
+      <p>
+        This data is used exclusively to understand how many people are using
+        the app and from which channels. It helps us improve the product and
+        prioritize features. We do <strong>not</strong> sell this data, share it
+        with third parties, or use it for advertising.
+      </p>
+      <h3>4.5 Local LLM Privacy</h3>
+      <p>
+        When using local LLMs (Ollama, LM Studio, etc.), all AI processing
+        occurs <strong>entirely on your machine</strong>, and no AI data leaves
+        your computer beyond the anonymous <code>/track</code> ping described
+        above.
+      </p>
+
+      <h2>5. Third-Party Services</h2>
+      <h3>5.1 Notion Integration</h3>
+      <p>
+        The Software connects via the <strong>Notion MCP protocol</strong> to
+        your Notion workspace. Your use of Notion is governed by Notion&rsquo;s
+        own Terms of Service and Privacy Policy.
+      </p>
+      <h3>5.2 AI Providers</h3>
+      <p>
+        When you use an AI provider through the Software, your interactions are
+        governed by that provider&rsquo;s terms. We recommend reviewing the
+        terms of your chosen AI provider.
+      </p>
+      <h3>5.3 No Affiliation</h3>
+      <p>
+        Any AI for Notion is
+        <strong>not affiliated with, endorsed by, or sponsored by</strong>
+        Notion Labs Inc. or any AI provider (OpenAI, Anthropic, Google, etc.).
+      </p>
+
+      <h2>6. Intellectual Property</h2>
+      <h3>6.1 Ownership</h3>
+      <ul>
+        <li>
+          The Software, including all code, design, and branding, is owned by
+          the Any AI for Notion project maintainers.
+        </li>
+        <li>
+          You retain all rights to your data, content, and the outputs produced
+          through the Software.
+        </li>
+      </ul>
+      <h3>6.2 Open Source</h3>
+      <p>
+        The source code is available under an open-source license. However, the
+        &ldquo;Any AI for Notion&rdquo; name, branding, and official
+        distribution channels remain the intellectual property of the project
+        maintainers.
+      </p>
+
+      <h2>7. Disclaimer of Warranties</h2>
+      <div class="disclaimer">
+        <p>
+          <strong
+            >THE SOFTWARE IS PROVIDED &ldquo;AS IS&rdquo;, WITHOUT WARRANTY OF
+            ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+            WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+            NON-INFRINGEMENT.</strong
+          >
+        </p>
+      </div>
+      <h3>7.1 No Guarantee of AI Provider Availability</h3>
+      <p>
+        We do not control the availability, reliability, or performance of
+        third-party AI providers or Notion. Your experience may be affected by
+        outages or changes to those services.
+      </p>
+      <h3>7.2 AI Output Accuracy</h3>
+      <p>
+        AI-generated content may contain errors, inaccuracies, or
+        hallucinations. You are responsible for verifying critical information
+        before acting on it.
+      </p>
+
+      <h2>8. Limitation of Liability</h2>
+      <div class="liability">
+        <p>
+          <strong
+            >TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE PROJECT MAINTAINERS
+            SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
+            CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE
+            SOFTWARE, INCLUDING BUT NOT LIMITED TO:</strong
+          >
+        </p>
+        <ul>
+          <li>Data loss or corruption</li>
+          <li>Errors in AI-generated content acting upon</li>
+          <li>Costs incurred from third-party AI provider usage</li>
+          <li>Business interruption or lost profits</li>
+        </ul>
+      </div>
+
+      <h2>9. Indemnification</h2>
+      <p>
+        You agree to indemnify and hold harmless the Any AI for Notion project
+        maintainers from any claims, damages, or expenses arising from:
+      </p>
+      <ul>
+        <li>Your use of the Software</li>
+        <li>Your violation of these Terms</li>
+        <li>
+          Your violation of any third-party terms (Notion, AI providers, etc.)
+        </li>
+      </ul>
+
+      <h2>10. Termination</h2>
+      <h3>10.1 By You</h3>
+      <p>You may stop using the Software at any time.</p>
+      <h3>10.2 By Us</h3>
+      <p>
+        We reserve the right to terminate your access if you violate these
+        Terms, including but not limited to distributing unauthorized copies or
+        circumventing security measures.
+      </p>
+
+      <h2>11. Changes to These Terms</h2>
+      <p>
+        We reserve the right to update these Terms at any time. Significant
+        changes will be communicated through our official channels. Continued
+        use of the Software after changes constitutes acceptance of the updated
+        Terms.
+      </p>
+
+      <h2>12. Governing Law</h2>
+      <p>
+        These Terms shall be governed by and construed in accordance with the
+        laws of your jurisdiction of residence, unless otherwise required by
+        applicable law.
+      </p>
+
+      <h2>13. Contact</h2>
+      <p>
+        For questions about these Terms, please reach out through our official
+        project channels or open an issue on the GitHub repository.
+      </p>
+
+      <hr />
+      <p class="footer-note">
+        This product uses the Notion MCP protocol. &ldquo;Notion&rdquo; is a
+        trademark of Notion Labs Inc. All AI provider names are trademarks of
+        their respective owners.
+      </p>
     </div>
-
-    <h2>9. Indemnification</h2>
-    <p>You agree to indemnify and hold harmless the Notion Any AI project maintainers from any claims, damages, or expenses arising from:</p>
-    <ul>
-      <li>Your use of the Software</li>
-      <li>Your violation of these Terms</li>
-      <li>Your violation of any third-party terms (Notion, AI providers, etc.)</li>
-    </ul>
-
-    <h2>10. Termination</h2>
-    <h3>10.1 By You</h3>
-    <p>You may stop using the Software at any time.</p>
-    <h3>10.2 By Us</h3>
-    <p>We reserve the right to terminate your access if you violate these Terms, including but not limited to distributing unauthorized copies or circumventing security measures.</p>
-
-    <h2>11. Changes to These Terms</h2>
-    <p>We reserve the right to update these Terms at any time. Significant changes will be communicated through our official channels. Continued use of the Software after changes constitutes acceptance of the updated Terms.</p>
-
-    <h2>12. Governing Law</h2>
-    <p>These Terms shall be governed by and construed in accordance with the laws of your jurisdiction of residence, unless otherwise required by applicable law.</p>
-
-    <h2>13. Contact</h2>
-    <p>For questions about these Terms, please reach out through our official project channels or open an issue on the GitHub repository.</p>
-
-    <hr />
-    <p class="footer-note">This product uses the Notion MCP protocol. &ldquo;Notion&rdquo; is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners.</p>
-  </div>
-</body>
+  </body>
 </html>

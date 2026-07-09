@@ -10,7 +10,8 @@ import '../models/scheduled_reminder.dart';
 
 const _androidChannelId = 'notion_any_ai_reminders';
 const _androidChannelName = 'Reminders';
-const _androidChannelDescription = 'Scheduled reminders from Notion Any AI.';
+const _androidChannelDescription =
+    'Scheduled reminders from Any AI for Notion.';
 const _windowsAppUserModelId = 'it.ricu.notionOpenAi';
 const _windowsGuid = 'a3f1b2c4-5d6e-4f7a-9b8c-1d2e3f4a5b6c';
 
@@ -36,7 +37,7 @@ class LocalNotificationsService {
       macOS: const DarwinInitializationSettings(),
       linux: const LinuxInitializationSettings(defaultActionName: 'Open'),
       windows: const WindowsInitializationSettings(
-        appName: 'Notion Any AI',
+        appName: 'Any AI for Notion',
         appUserModelId: _windowsAppUserModelId,
         guid: _windowsGuid,
       ),

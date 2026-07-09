@@ -1,10 +1,10 @@
-# Terms of Service – Notion Any AI
+# Terms of Service – Any AI for Notion
 
 **Last Updated:** July 9, 2026
 
 ## 1. Acceptance of Terms
 
-By downloading, accessing, or using **Notion Any AI** (the "Software"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Software.
+By downloading, accessing, or using **Any AI for Notion** (the "Software"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Software.
 
 The Software is an open-source application that facilitates interaction between users and their Notion workspace through various AI providers. These Terms govern your use of the Software, regardless of which AI provider you choose to connect.
 
@@ -26,7 +26,7 @@ You may not:
 
 ### 3.1 Bring Your Own Key (BYOK)
 
-Notion Any AI requires you to use your own API keys for the AI provider of your choice (e.g., OpenAI, Google Gemini, Anthropic Claude, Ollama, etc.).
+Any AI for Notion requires you to use your own API keys for the AI provider of your choice (e.g., OpenAI, Google Gemini, Anthropic Claude, Ollama, etc.).
 
 ### 3.2 Responsibilities
 
@@ -81,18 +81,18 @@ When you use an AI provider through the Software, your interactions are governed
 
 ### 5.3 No Affiliation
 
-Notion Any AI is **not affiliated with, endorsed by, or sponsored by** Notion Labs Inc. or any AI provider (OpenAI, Anthropic, Google, etc.).
+Any AI for Notion is **not affiliated with, endorsed by, or sponsored by** Notion Labs Inc. or any AI provider (OpenAI, Anthropic, Google, etc.).
 
 ## 6. Intellectual Property
 
 ### 6.1 Ownership
 
-- The Software, including all code, design, and branding, is owned by the Notion Any AI project maintainers.
+- The Software, including all code, design, and branding, is owned by the Any AI for Notion project maintainers.
 - You retain all rights to your data, content, and the outputs produced through the Software.
 
 ### 6.2 Open Source
 
-The source code is available under an open-source license. However, the "Notion Any AI" name, branding, and official distribution channels remain the intellectual property of the project maintainers.
+The source code is available under an open-source license. However, the "Any AI for Notion" name, branding, and official distribution channels remain the intellectual property of the project maintainers.
 
 ## 7. Disclaimer of Warranties
 
@@ -109,6 +109,7 @@ AI-generated content may contain errors, inaccuracies, or hallucinations. You ar
 ## 8. Limitation of Liability
 
 > **TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE PROJECT MAINTAINERS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE SOFTWARE, INCLUDING BUT NOT LIMITED TO:**
+>
 > - Data loss or corruption
 > - Errors in AI-generated content acting upon
 > - Costs incurred from third-party AI provider usage
@@ -116,7 +117,7 @@ AI-generated content may contain errors, inaccuracies, or hallucinations. You ar
 
 ## 9. Indemnification
 
-You agree to indemnify and hold harmless the Notion Any AI project maintainers from any claims, damages, or expenses arising from:
+You agree to indemnify and hold harmless the Any AI for Notion project maintainers from any claims, damages, or expenses arising from:
 
 - Your use of the Software
 - Your violation of these Terms
@@ -146,4 +147,4 @@ For questions about these Terms, please reach out through our official project c
 
 ---
 
-*This product uses the Notion MCP protocol. "Notion" is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners.*
+_This product uses the Notion MCP protocol. "Notion" is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners._

@@ -135,7 +135,7 @@ class NotionOAuthService {
         'Accept': 'application/json',
       },
       body: jsonEncode({
-        'client_name': 'Notion Any AI',
+        'client_name': 'Any AI for Notion',
         'client_uri': 'https://notionopenai.local',
         'redirect_uris': [redirectUri],
         'grant_types': ['authorization_code', 'refresh_token'],

@@ -1,16 +1,16 @@
-# Privacy Policy – Notion Any AI
+# Privacy Policy – Any AI for Notion
 
 **Last Updated:** July 9, 2026
 
 ## 1. Introduction
 
-Notion Any AI is an open-source application that lets you interact with your Notion workspace through any AI provider of your choice. This Privacy Policy explains exactly what data we collect and how we handle it.
+Any AI for Notion is an open-source application that lets you interact with your Notion workspace through any AI provider of your choice. This Privacy Policy explains exactly what data we collect and how we handle it.
 
 **The short version:** We collect nearly nothing — just one anonymous usage ping via a `/track` API. That's it.
 
 ## 2. What We Collect
 
-Notion Any AI implements **one single analytics mechanism**: a `/track` API hosted on **Google Cloud Run**.
+Any AI for Notion implements **one single analytics mechanism**: a `/track` API hosted on **Google Cloud Run**.
 
 ### 2.1 What the `/track` API collects:
 
@@ -117,7 +117,7 @@ The `/track` API is hosted on Google Cloud Run. Data processing is subject to [G
 
 ## 9. Children's Privacy
 
-Notion Any AI is not directed at children under the age of 13. The minimal data collected via the `/track` API does not include any information that could identify a child, and we do not knowingly collect personal information from children.
+Any AI for Notion is not directed at children under the age of 13. The minimal data collected via the `/track` API does not include any information that could identify a child, and we do not knowingly collect personal information from children.
 
 ## 10. Data Security
 
@@ -155,4 +155,4 @@ If you have any questions about this Privacy Policy, please reach out through ou
 
 ---
 
-*This product uses the Notion MCP protocol. "Notion" is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners.*
+_This product uses the Notion MCP protocol. "Notion" is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners._
