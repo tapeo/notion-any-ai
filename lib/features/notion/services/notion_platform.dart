@@ -10,5 +10,4 @@ bool get isMobilePlatform {
   return Platform.isAndroid || Platform.isIOS;
 }
 
-double get appBarIconSize =>
-    isMobilePlatform ? AppIconSize.lg : AppIconSize.md;
+double get appBarIconSize => isMobilePlatform ? AppIconSize.lg : AppIconSize.md;

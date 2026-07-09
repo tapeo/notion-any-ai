@@ -40,13 +40,12 @@ class NotificationsSetup extends ConsumerWidget {
               ),
               if (reminders.isNotEmpty)
                 TextButton(
-                  onPressed: state.saving
-                      ? null
-                      : () => notifier.removeAll(),
+                  onPressed: state.saving ? null : () => notifier.removeAll(),
                   style: TextButton.styleFrom(
                     minimumSize: Size.zero,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.space1),
+                      horizontal: AppSpacing.space1,
+                    ),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: const Text(
@@ -66,14 +65,16 @@ class NotificationsSetup extends ConsumerWidget {
               ),
             )
           else
-            ...reminders.map((reminder) => _ReminderRow(
-                  title: reminder.title,
-                  body: reminder.body,
-                  notionPageUrl: reminder.notionPageUrl,
-                  scheduledAt: reminder.scheduledAt,
-                  saving: state.saving,
-                  onCancel: () => notifier.remove(reminder.id),
-                )),
+            ...reminders.map(
+              (reminder) => _ReminderRow(
+                title: reminder.title,
+                body: reminder.body,
+                notionPageUrl: reminder.notionPageUrl,
+                scheduledAt: reminder.scheduledAt,
+                saving: state.saving,
+                onCancel: () => notifier.remove(reminder.id),
+              ),
+            ),
         ],
       ),
     );
@@ -163,8 +164,18 @@ class _ReminderRow extends StatelessWidget {
 
   String _monthName(int month) {
     const names = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return names[month - 1];
   }

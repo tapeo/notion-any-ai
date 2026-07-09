@@ -65,5 +65,5 @@ class VoiceInputNotifier extends Notifier<VoiceInputState> {
 
 final voiceInputProvider =
     NotifierProvider<VoiceInputNotifier, VoiceInputState>(
-  VoiceInputNotifier.new,
-);
+      VoiceInputNotifier.new,
+    );

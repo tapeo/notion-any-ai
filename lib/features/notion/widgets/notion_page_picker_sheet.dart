@@ -23,9 +23,8 @@ Future<NotionPageRef?> showNotionPagePickerSheet(
     isScrollControlled: true,
     useSafeArea: true,
     showDragHandle: true,
-    builder: (context) => _NotionPagePickerSheet(
-      alreadySelected: alreadySelected,
-    ),
+    builder: (context) =>
+        _NotionPagePickerSheet(alreadySelected: alreadySelected),
   );
 }
 
@@ -243,17 +242,9 @@ class _NotionPagePickerSheetState
             ),
           ),
           const SizedBox(height: AppSpacing.space3),
-          _SearchField(
-            controller: _controller,
-            focusNode: _focusNode,
-          ),
+          _SearchField(controller: _controller, focusNode: _focusNode),
           const SizedBox(height: AppSpacing.space3),
-          Flexible(
-            child: SizedBox(
-              height: 320,
-              child: _buildBody(theme),
-            ),
-          ),
+          Flexible(child: SizedBox(height: 320, child: _buildBody(theme))),
         ],
       ),
     );
@@ -267,9 +258,7 @@ class _NotionPagePickerSheetState
           child: Text(
             _error!,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: AppColors.error,
-            ),
+            style: theme.textTheme.bodySmall?.copyWith(color: AppColors.error),
           ),
         ),
       );
@@ -277,9 +266,7 @@ class _NotionPagePickerSheetState
     if (_query.trim().isEmpty) {
       if (_isRecentView) {
         if (_loading) {
-          return const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
-          );
+          return const Center(child: CircularProgressIndicator(strokeWidth: 2));
         }
         if (_results.isEmpty) {
           return Center(
@@ -334,14 +321,11 @@ class _NotionPagePickerSheetState
     return ListView.separated(
       shrinkWrap: true,
       itemCount: _results.length,
-      separatorBuilder: (context, index) => Divider(
-        height: 1,
-        color: AppColors.borderSubtle(theme.brightness),
-      ),
+      separatorBuilder: (context, index) =>
+          Divider(height: 1, color: AppColors.borderSubtle(theme.brightness)),
       itemBuilder: (context, index) {
         final page = _results[index];
-        final alreadyAdded =
-            widget.alreadySelected.contains(page.id);
+        final alreadyAdded = widget.alreadySelected.contains(page.id);
         return _PageRow(
           page: page,
           alreadyAdded: alreadyAdded,
@@ -397,8 +381,9 @@ class _SearchField extends StatelessWidget {
                   disabledBorder: InputBorder.none,
                   errorBorder: InputBorder.none,
                   focusedErrorBorder: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: AppSpacing.space3),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.space3,
+                  ),
                 ),
               ),
             ),
@@ -440,10 +425,7 @@ class _PageRow extends StatelessWidget {
             if (page.icon != null && page.icon!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(right: AppSpacing.space2),
-                child: Text(
-                  page.icon!,
-                  style: const TextStyle(fontSize: 18),
-                ),
+                child: Text(page.icon!, style: const TextStyle(fontSize: 18)),
               )
             else
               Padding(

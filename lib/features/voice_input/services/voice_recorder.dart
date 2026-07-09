@@ -19,10 +19,9 @@ class VoiceRecorder {
 
   Future<bool> requestPermission() async {
     try {
-      return await _recorder.hasPermission(request: true).timeout(
-        _startTimeout,
-        onTimeout: () => false,
-      );
+      return await _recorder
+          .hasPermission(request: true)
+          .timeout(_startTimeout, onTimeout: () => false);
     } catch (_) {
       return false;
     }
@@ -33,10 +32,9 @@ class VoiceRecorder {
 
     bool hasPermission;
     try {
-      hasPermission = await _recorder.hasPermission(request: false).timeout(
-        _startTimeout,
-        onTimeout: () => false,
-      );
+      hasPermission = await _recorder
+          .hasPermission(request: false)
+          .timeout(_startTimeout, onTimeout: () => false);
     } catch (_) {
       return false;
     }

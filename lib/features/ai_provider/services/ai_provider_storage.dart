@@ -4,11 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/ai_provider_config.dart';
 
 class AiProviderStorage {
-  AiProviderStorage({
-    required FlutterSecureStorage secureStorage,
-    required SharedPreferences sharedPrefs,
-  })  : _secureStorage = secureStorage,
-        _sharedPrefs = sharedPrefs;
+  AiProviderStorage({required this._secureStorage, required this._sharedPrefs});
 
   final FlutterSecureStorage _secureStorage;
   final SharedPreferences _sharedPrefs;

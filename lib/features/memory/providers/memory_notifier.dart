@@ -38,14 +38,16 @@ class MemoryNotifier extends Notifier<MemoryState> {
     }
     final current = state.content;
     final doc = parseMemory(current);
-    final updated = upsertSection(doc, MemorySection(
-      title: trimmedTitle,
-      content: content.trim(),
-    ));
+    final updated = upsertSection(
+      doc,
+      MemorySection(title: trimmedTitle, content: content.trim()),
+    );
     final serialized = serializeMemory(updated);
     await save(serialized);
-    final action = doc.sections.any((s) =>
-            s.title.toLowerCase() == trimmedTitle.toLowerCase())
+    final action =
+        doc.sections.any(
+          (s) => s.title.toLowerCase() == trimmedTitle.toLowerCase(),
+        )
         ? 'Updated'
         : 'Added';
     return '$action memory section "$trimmedTitle".';
@@ -58,8 +60,9 @@ class MemoryNotifier extends Notifier<MemoryState> {
     }
     final current = state.content;
     final doc = parseMemory(current);
-    final existed = doc.sections
-        .any((s) => s.title.toLowerCase() == trimmedTitle.toLowerCase());
+    final existed = doc.sections.any(
+      (s) => s.title.toLowerCase() == trimmedTitle.toLowerCase(),
+    );
     if (!existed) {
       return 'No memory section titled "$trimmedTitle".';
     }
@@ -70,7 +73,6 @@ class MemoryNotifier extends Notifier<MemoryState> {
   }
 }
 
-final memoryProvider =
-    NotifierProvider<MemoryNotifier, MemoryState>(
+final memoryProvider = NotifierProvider<MemoryNotifier, MemoryState>(
   MemoryNotifier.new,
 );

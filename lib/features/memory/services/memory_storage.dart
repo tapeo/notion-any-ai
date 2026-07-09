@@ -2,7 +2,7 @@ import 'dart:io';
 
 class MemoryStorage {
   MemoryStorage({required Directory appDir})
-      : _dir = Directory('${appDir.path}/memory');
+    : _dir = Directory('${appDir.path}/memory');
 
   final Directory _dir;
 

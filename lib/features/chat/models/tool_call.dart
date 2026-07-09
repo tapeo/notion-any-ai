@@ -31,13 +31,10 @@ class ToolCall extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'type': 'function',
-        'function': {
-          'name': name,
-          'arguments': jsonEncode(arguments),
-        },
-      };
+    'id': id,
+    'type': 'function',
+    'function': {'name': name, 'arguments': jsonEncode(arguments)},
+  };
 
   @override
   List<Object?> get props => [id, name, arguments];

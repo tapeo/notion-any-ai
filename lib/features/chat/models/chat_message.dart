@@ -82,7 +82,15 @@ class ChatMessage extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, role, content, toolCalls, toolCallId, name, createdAt];
+  List<Object?> get props => [
+    id,
+    role,
+    content,
+    toolCalls,
+    toolCallId,
+    name,
+    createdAt,
+  ];
 }
 
 extension ChatRoleApiName on ChatRole {

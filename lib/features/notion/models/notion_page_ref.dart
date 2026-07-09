@@ -26,12 +26,12 @@ class NotionPageRef extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        if (icon != null) 'icon': icon,
-        if (url != null) 'url': url,
-        'breadcrumb': breadcrumb,
-      };
+    'id': id,
+    'title': title,
+    if (icon != null) 'icon': icon,
+    if (url != null) 'url': url,
+    'breadcrumb': breadcrumb,
+  };
 
   factory NotionPageRef.fromJson(Map<String, dynamic> json) {
     final breadcrumbRaw = json['breadcrumb'];

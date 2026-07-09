@@ -6,10 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/notion_tokens.dart';
 
 class NotionStorage {
-  NotionStorage({
-    required this.secureStorage,
-    required this.sharedPrefs,
-  });
+  NotionStorage({required this.secureStorage, required this.sharedPrefs});
 
   final FlutterSecureStorage secureStorage;
   final SharedPreferences sharedPrefs;
@@ -30,7 +27,10 @@ class NotionStorage {
   }
 
   Future<void> saveTokens(NotionTokens tokens) async {
-    await secureStorage.write(key: _keyTokens, value: jsonEncode(tokens.toJson()));
+    await secureStorage.write(
+      key: _keyTokens,
+      value: jsonEncode(tokens.toJson()),
+    );
   }
 
   Future<void> clearTokens() async {
@@ -41,14 +41,19 @@ class NotionStorage {
     final json = await secureStorage.read(key: _keyPending);
     if (json == null) return null;
     try {
-      return NotionPendingFlow.fromJson(jsonDecode(json) as Map<String, dynamic>);
+      return NotionPendingFlow.fromJson(
+        jsonDecode(json) as Map<String, dynamic>,
+      );
     } catch (_) {
       return null;
     }
   }
 
   Future<void> savePending(NotionPendingFlow pending) async {
-    await secureStorage.write(key: _keyPending, value: jsonEncode(pending.toJson()));
+    await secureStorage.write(
+      key: _keyPending,
+      value: jsonEncode(pending.toJson()),
+    );
   }
 
   Future<void> clearPending() async {

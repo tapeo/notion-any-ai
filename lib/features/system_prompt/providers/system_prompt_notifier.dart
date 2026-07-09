@@ -30,7 +30,10 @@ class SystemPromptNotifier extends Notifier<SystemPromptState> {
   Future<void> reset() async {
     state = state.copyWith(saving: true);
     await _storage.clearPrompt();
-    state = state.copyWith(prompt: SystemPromptState.defaultPrompt, saving: false);
+    state = state.copyWith(
+      prompt: SystemPromptState.defaultPrompt,
+      saving: false,
+    );
   }
 
   Future<void> clear() async {
@@ -42,5 +45,5 @@ class SystemPromptNotifier extends Notifier<SystemPromptState> {
 
 final systemPromptProvider =
     NotifierProvider<SystemPromptNotifier, SystemPromptState>(
-  SystemPromptNotifier.new,
-);
+      SystemPromptNotifier.new,
+    );

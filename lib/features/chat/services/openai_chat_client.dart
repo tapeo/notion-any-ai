@@ -21,10 +21,7 @@ class ToolCallDelta {
 }
 
 class OpenAiChatChunk {
-  const OpenAiChatChunk({
-    this.contentDelta,
-    this.toolCallDeltas = const [],
-  });
+  const OpenAiChatChunk({this.contentDelta, this.toolCallDeltas = const []});
 
   final String? contentDelta;
   final List<ToolCallDelta> toolCallDeltas;
@@ -42,7 +39,7 @@ class OpenAiChatError implements Exception {
 
 class OpenAiChatClient {
   OpenAiChatClient({http.Client? httpClient})
-      : _httpClient = httpClient ?? http.Client();
+    : _httpClient = httpClient ?? http.Client();
 
   final http.Client _httpClient;
 
@@ -184,12 +181,14 @@ class OpenAiChatClient {
         final function = tc['function'] as Map<String, dynamic>?;
         final name = function?['name'] as String?;
         final argumentsDelta = function?['arguments'] as String?;
-        toolCallDeltas.add(ToolCallDelta(
-          index: index,
-          id: id,
-          name: name,
-          argumentsDelta: argumentsDelta,
-        ));
+        toolCallDeltas.add(
+          ToolCallDelta(
+            index: index,
+            id: id,
+            name: name,
+            argumentsDelta: argumentsDelta,
+          ),
+        );
       }
     }
 

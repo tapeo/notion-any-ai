@@ -3,10 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../models/builtin_tool_meta.dart';
 
 class BuiltinToolsState extends Equatable {
-  const BuiltinToolsState({
-    this.enabled = const {},
-    this.saving = false,
-  });
+  const BuiltinToolsState({this.enabled = const {}, this.saving = false});
 
   final Map<String, bool> enabled;
   final bool saving;
@@ -21,10 +18,7 @@ class BuiltinToolsState extends Equatable {
 
   bool isEnabled(String id) => enabled[id] ?? true;
 
-  BuiltinToolsState copyWith({
-    Map<String, bool>? enabled,
-    bool? saving,
-  }) {
+  BuiltinToolsState copyWith({Map<String, bool>? enabled, bool? saving}) {
     return BuiltinToolsState(
       enabled: enabled ?? this.enabled,
       saving: saving ?? this.saving,

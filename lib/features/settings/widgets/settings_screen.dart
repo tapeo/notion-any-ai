@@ -228,8 +228,8 @@ class _SettingsSectionTileState extends State<_SettingsSectionTile> {
   }
 
   void _open(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => widget.section.screen),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => widget.section.screen));
   }
 }

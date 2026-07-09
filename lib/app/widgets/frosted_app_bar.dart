@@ -38,9 +38,7 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: barColor,
-        border: Border(
-          bottom: BorderSide(width: 0.5, color: dividerColor),
-        ),
+        border: Border(bottom: BorderSide(width: 0.5, color: dividerColor)),
       ),
       child: SafeArea(
         bottom: false,
@@ -112,9 +110,7 @@ class FrostedBottomBar extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: barColor,
-        border: Border(
-          top: BorderSide(width: 0.5, color: dividerColor),
-        ),
+        border: Border(top: BorderSide(width: 0.5, color: dividerColor)),
       ),
       child: SafeArea(top: false, child: child),
     );

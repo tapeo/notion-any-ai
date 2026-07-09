@@ -51,9 +51,8 @@ class NotionRecentPagesStorage {
   }
 }
 
-final notionRecentPagesStorageProvider =
-    Provider<NotionRecentPagesStorage>((ref) {
-  return NotionRecentPagesStorage(
-    sharedPrefs: ref.watch(sharedPrefsProvider),
-  );
+final notionRecentPagesStorageProvider = Provider<NotionRecentPagesStorage>((
+  ref,
+) {
+  return NotionRecentPagesStorage(sharedPrefs: ref.watch(sharedPrefsProvider));
 });

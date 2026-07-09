@@ -197,7 +197,9 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
 
   Future<void> bulkToggleTools(List<NotionToolMeta> tools, bool enable) async {
     if (enable && tools.any((t) => requiresBusinessPlan(t.name))) {
-      final filtered = tools.where((t) => !requiresBusinessPlan(t.name)).toList();
+      final filtered = tools
+          .where((t) => !requiresBusinessPlan(t.name))
+          .toList();
       if (filtered.isEmpty) {
         state = state.copyWith(
           businessPlanPrompt: DateTime.now().millisecondsSinceEpoch,
@@ -227,9 +229,11 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
       return [..._notionDefaultTools];
     }
     return state.tools
-        .where((t) =>
-            getToolKind(t.name) == NotionToolKind.read &&
-            !requiresBusinessPlan(t.name))
+        .where(
+          (t) =>
+              getToolKind(t.name) == NotionToolKind.read &&
+              !requiresBusinessPlan(t.name),
+        )
         .map((t) => t.name)
         .toList();
   }
@@ -282,8 +286,9 @@ final notionConnectionProvider =
       NotionConnectionNotifier.new,
     );
 
-final businessPlanPromptSelector =
-    Provider<int?>((ref) => ref.watch(notionConnectionProvider).businessPlanPrompt);
+final businessPlanPromptSelector = Provider<int?>(
+  (ref) => ref.watch(notionConnectionProvider).businessPlanPrompt,
+);
 
 final notionMcpClientProvider = Provider<NotionMcpClient>((ref) {
   final client = NotionMcpClient();

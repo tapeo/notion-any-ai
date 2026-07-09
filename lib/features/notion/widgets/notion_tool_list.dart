@@ -46,9 +46,7 @@ class NotionToolList extends ConsumerWidget {
     if (state.toolsError != null) {
       return Text(
         state.toolsError!,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: AppColors.error,
-        ),
+        style: theme.textTheme.bodySmall?.copyWith(color: AppColors.error),
       );
     }
 
@@ -113,9 +111,11 @@ class NotionToolList extends ConsumerWidget {
       ];
     }
     return state.tools
-        .where((t) =>
-            getToolKind(t.name) == NotionToolKind.read &&
-            !requiresBusinessPlan(t.name))
+        .where(
+          (t) =>
+              getToolKind(t.name) == NotionToolKind.read &&
+              !requiresBusinessPlan(t.name),
+        )
         .map((t) => t.name)
         .toList();
   }
@@ -161,11 +161,14 @@ class _ToolSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final label = kind == NotionToolKind.read ? 'Read' : 'Write';
-    final toggleable = tools.where((t) => !requiresBusinessPlan(t.name)).toList();
+    final toggleable = tools
+        .where((t) => !requiresBusinessPlan(t.name))
+        .toList();
     final enabledCount = toggleable
         .where((t) => enabledSet.contains(t.name))
         .length;
-    final allToggleableOn = toggleable.isNotEmpty &&
+    final allToggleableOn =
+        toggleable.isNotEmpty &&
         toggleable.every((t) => enabledSet.contains(t.name));
 
     return Column(
@@ -185,7 +188,9 @@ class _ToolSection extends StatelessWidget {
                 onPressed: saving ? null : () => onBulkToggle(toggleable, true),
                 style: TextButton.styleFrom(
                   minimumSize: Size.zero,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.space1,
+                  ),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
@@ -195,10 +200,14 @@ class _ToolSection extends StatelessWidget {
               )
             else if (allToggleableOn)
               TextButton(
-                onPressed: saving ? null : () => onBulkToggle(toggleable, false),
+                onPressed: saving
+                    ? null
+                    : () => onBulkToggle(toggleable, false),
                 style: TextButton.styleFrom(
                   minimumSize: Size.zero,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.space1,
+                  ),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
@@ -209,33 +218,35 @@ class _ToolSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.space1),
-        ...tools.map((tool) => ToolRow(
-              name: formatToolName(tool.name),
-              description: tool.description,
-              isOn: enabledSet.contains(tool.name),
-              saving: saving,
-              locked: requiresBusinessPlan(tool.name),
-              onToggle: (checked) => onToggle(tool.name, checked),
-              badge: requiresBusinessPlan(tool.name)
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.space1,
-                        vertical: 2,
+        ...tools.map(
+          (tool) => ToolRow(
+            name: formatToolName(tool.name),
+            description: tool.description,
+            isOn: enabledSet.contains(tool.name),
+            saving: saving,
+            locked: requiresBusinessPlan(tool.name),
+            onToggle: (checked) => onToggle(tool.name, checked),
+            badge: requiresBusinessPlan(tool.name)
+                ? Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.space1,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.borderSubtle(theme.brightness),
+                      borderRadius: BorderRadius.circular(AppSpacing.space1),
+                    ),
+                    child: Text(
+                      'Business plan',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: AppColors.textSecondary(theme.brightness),
+                        fontSize: 10,
                       ),
-                      decoration: BoxDecoration(
-                        color: AppColors.borderSubtle(theme.brightness),
-                        borderRadius: BorderRadius.circular(AppSpacing.space1),
-                      ),
-                      child: Text(
-                        'Business plan',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppColors.textSecondary(theme.brightness),
-                          fontSize: 10,
-                        ),
-                      ),
-                    )
-                  : null,
-            )),
+                    ),
+                  )
+                : null,
+          ),
+        ),
       ],
     );
   }

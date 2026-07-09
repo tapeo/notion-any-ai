@@ -66,7 +66,9 @@ class _AiProviderSetupState extends ConsumerState<AiProviderSetup> {
 
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref.read(aiProviderProvider.notifier).save(
+    await ref
+        .read(aiProviderProvider.notifier)
+        .save(
           endpoint: _endpointController.text,
           model: _modelController.text,
           apiKey: _apiKeyController.text,

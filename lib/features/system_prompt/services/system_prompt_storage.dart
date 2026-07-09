@@ -1,8 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SystemPromptStorage {
-  SystemPromptStorage({required SharedPreferences sharedPrefs})
-    : _sharedPrefs = sharedPrefs;
+  SystemPromptStorage({required this._sharedPrefs});
 
   final SharedPreferences _sharedPrefs;
 

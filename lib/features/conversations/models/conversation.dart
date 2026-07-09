@@ -59,8 +59,14 @@ class ConversationSummary extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, title, createdAt, updatedAt, messageCount, lastPreview];
+  List<Object?> get props => [
+    id,
+    title,
+    createdAt,
+    updatedAt,
+    messageCount,
+    lastPreview,
+  ];
 }
 
 class Conversation extends Equatable {

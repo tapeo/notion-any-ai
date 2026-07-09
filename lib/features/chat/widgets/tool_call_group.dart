@@ -31,7 +31,8 @@ class ToolCallGroup extends StatelessWidget {
     final doneCount = entries.where((e) => e.resultContent != null).length;
     final allDone = doneCount == total;
     final hasError = entries.any(
-      (e) => e.resultContent != null && e.resultContent!.startsWith('Tool error:'),
+      (e) =>
+          e.resultContent != null && e.resultContent!.startsWith('Tool error:'),
     );
 
     final headerIcon = !allDone
@@ -122,7 +123,8 @@ class _ToolRow extends StatelessWidget {
 
   bool get _isDone => entry.resultContent != null;
   bool get _isError =>
-      entry.resultContent != null && entry.resultContent!.startsWith('Tool error:');
+      entry.resultContent != null &&
+      entry.resultContent!.startsWith('Tool error:');
 
   @override
   Widget build(BuildContext context) {
@@ -133,11 +135,11 @@ class _ToolRow extends StatelessWidget {
     final icon = !_isDone
         ? Icons.hourglass_top_outlined
         : (_isError ? Icons.error_outline : Icons.check_circle_outline);
-    final iconColor = _isError ? AppColors.error : (_isDone ? AppColors.success : muted);
+    final iconColor = _isError
+        ? AppColors.error
+        : (_isDone ? AppColors.success : muted);
 
-    final statusLabel = !_isDone
-        ? 'running'
-        : (_isError ? 'error' : 'done');
+    final statusLabel = !_isDone ? 'running' : (_isError ? 'error' : 'done');
 
     return InkWell(
       onTap: () => showToolCallDetails(context, entry),
@@ -159,16 +161,9 @@ class _ToolRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              statusLabel,
-              style: AppFonts.micro().copyWith(color: muted),
-            ),
+            Text(statusLabel, style: AppFonts.micro().copyWith(color: muted)),
             const SizedBox(width: AppSpacing.space2),
-            Icon(
-              Icons.chevron_right,
-              size: AppIconSize.md,
-              color: muted,
-            ),
+            Icon(Icons.chevron_right, size: AppIconSize.md, color: muted),
           ],
         ),
       ),
@@ -183,7 +178,8 @@ void showToolCallDetails(BuildContext context, ToolCallEntry entry) {
   final theme = Theme.of(context);
   final brightness = theme.brightness;
   final muted = AppColors.textSecondary(brightness);
-  final isError = resultContent != null && resultContent.startsWith('Tool error:');
+  final isError =
+      resultContent != null && resultContent.startsWith('Tool error:');
 
   showModalBottomSheet<void>(
     context: context,
@@ -200,15 +196,9 @@ void showToolCallDetails(BuildContext context, ToolCallEntry entry) {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              toolCall.name,
-              style: AppFonts.headingSm(),
-            ),
+            Text(toolCall.name, style: AppFonts.headingSm()),
             const SizedBox(height: AppSpacing.space3),
-            Text(
-              'arguments',
-              style: AppFonts.labelMd().copyWith(color: muted),
-            ),
+            Text('arguments', style: AppFonts.labelMd().copyWith(color: muted)),
             const SizedBox(height: AppSpacing.space1),
             Flexible(
               child: SizedBox(

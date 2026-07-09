@@ -5,8 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/scheduled_reminder.dart';
 
 class ReminderStorage {
-  ReminderStorage({required SharedPreferences sharedPrefs})
-      : _sharedPrefs = sharedPrefs;
+  ReminderStorage({required this._sharedPrefs});
 
   final SharedPreferences _sharedPrefs;
 

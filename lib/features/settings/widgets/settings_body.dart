@@ -34,7 +34,8 @@ class SettingsBody extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top +
+          top:
+              MediaQuery.of(context).padding.top +
               kToolbarHeight +
               AppSpacing.space3,
           left: AppSpacing.space4,

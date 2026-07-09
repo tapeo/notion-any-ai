@@ -5,11 +5,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 class NotionCallbackResult {
-  const NotionCallbackResult({
-    this.code,
-    this.state,
-    this.error,
-  });
+  const NotionCallbackResult({this.code, this.state, this.error});
 
   final String? code;
   final String? state;
@@ -41,9 +37,12 @@ class NotionLoopbackServer {
   Future<NotionCallbackResult> waitForCallback({
     Duration timeout = const Duration(minutes: 5),
   }) async {
-    return _completer.future.timeout(timeout, onTimeout: () {
-      throw TimeoutException('OAuth callback timed out');
-    });
+    return _completer.future.timeout(
+      timeout,
+      onTimeout: () {
+        throw TimeoutException('OAuth callback timed out');
+      },
+    );
   }
 
   Future<void> stop() async {
@@ -64,7 +63,9 @@ class NotionLoopbackServer {
     final error = params['error'];
 
     if (!_completer.isCompleted) {
-      _completer.complete(NotionCallbackResult(code: code, state: state, error: error));
+      _completer.complete(
+        NotionCallbackResult(code: code, state: state, error: error),
+      );
     }
 
     final html = _buildResponseHtml(error != null, error);

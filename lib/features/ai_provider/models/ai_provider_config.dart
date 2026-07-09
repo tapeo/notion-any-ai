@@ -1,10 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class AiProviderConfig extends Equatable {
-  const AiProviderConfig({
-    required this.endpoint,
-    required this.model,
-  });
+  const AiProviderConfig({required this.endpoint, required this.model});
 
   final String endpoint;
   final String model;

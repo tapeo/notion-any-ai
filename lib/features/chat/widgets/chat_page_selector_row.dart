@@ -27,10 +27,9 @@ class ChatPageSelectorRow extends StatelessWidget {
       runSpacing: AppSpacing.space2,
       children: [
         _AttachButton(onPressed: onAttach),
-        ...selectedPages.map((page) => ChatPageChip(
-              page: page,
-              onClear: () => onRemovePage(page),
-            )),
+        ...selectedPages.map(
+          (page) => ChatPageChip(page: page, onClear: () => onRemovePage(page)),
+        ),
       ],
     );
   }
@@ -62,11 +61,7 @@ class _AttachButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.book_outlined,
-                color: iconColor,
-                size: AppIconSize.md,
-              ),
+              Icon(Icons.book_outlined, color: iconColor, size: AppIconSize.md),
               const SizedBox(width: AppSpacing.space2),
               Text(
                 'Notion page',

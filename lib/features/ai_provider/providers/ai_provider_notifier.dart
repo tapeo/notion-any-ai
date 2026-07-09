@@ -49,6 +49,7 @@ class AiProviderNotifier extends Notifier<AiProviderState> {
   }
 }
 
-final aiProviderProvider = NotifierProvider<AiProviderNotifier, AiProviderState>(
-  AiProviderNotifier.new,
-);
+final aiProviderProvider =
+    NotifierProvider<AiProviderNotifier, AiProviderState>(
+      AiProviderNotifier.new,
+    );

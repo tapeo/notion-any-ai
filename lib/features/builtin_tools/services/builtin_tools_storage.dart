@@ -6,8 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/builtin_tool_meta.dart';
 
 class BuiltinToolsStorage {
-  BuiltinToolsStorage({required SharedPreferences sharedPrefs})
-      : _sharedPrefs = sharedPrefs;
+  BuiltinToolsStorage({required this._sharedPrefs});
 
   final SharedPreferences _sharedPrefs;
 
@@ -22,9 +21,7 @@ class BuiltinToolsStorage {
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
       final result = <String, bool>{};
       for (final entry in decoded.entries) {
-        result[entry.key] = entry.value is bool
-            ? entry.value as bool
-            : true;
+        result[entry.key] = entry.value is bool ? entry.value as bool : true;
       }
       for (final tool in BuiltinToolRegistry.all) {
         result.putIfAbsent(tool.id, () => true);

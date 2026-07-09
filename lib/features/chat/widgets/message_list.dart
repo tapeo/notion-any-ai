@@ -105,8 +105,9 @@ class _MessageListState extends ConsumerState<MessageList> {
     final activeChanged = activeId != _lastActiveId;
 
     if (activeChanged) {
-      final unseenCount =
-          messages.where((m) => !_seenIds.contains(m.id)).length;
+      final unseenCount = messages
+          .where((m) => !_seenIds.contains(m.id))
+          .length;
       if (unseenCount > 1) {
         _seenIds
           ..clear()
@@ -152,11 +153,13 @@ class _MessageListState extends ConsumerState<MessageList> {
         itemCount: messages.length,
         itemBuilder: (context, index) {
           final message = messages[index];
-          final playEntrance = message.role == ChatRole.user &&
-              newIds.contains(message.id);
+          final playEntrance =
+              message.role == ChatRole.user && newIds.contains(message.id);
           return Padding(
             padding: EdgeInsets.only(
-              bottom: index == messages.length - 1 ? AppSpacing.space2 : AppSpacing.space1,
+              bottom: index == messages.length - 1
+                  ? AppSpacing.space2
+                  : AppSpacing.space1,
             ),
             child: MessageBubble(
               message: message,

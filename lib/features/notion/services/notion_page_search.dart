@@ -7,8 +7,7 @@ import '../providers/notion_connection_notifier.dart';
 import 'notion_mcp_client.dart';
 
 class NotionPageSearch {
-  NotionPageSearch({required NotionMcpClient mcpClient})
-      : _mcp = mcpClient;
+  NotionPageSearch({required NotionMcpClient mcpClient}) : _mcp = mcpClient;
 
   final NotionMcpClient _mcp;
   final Map<String, List<String>> _breadcrumbCache = {};
@@ -62,7 +61,10 @@ class NotionPageSearch {
     if (pathStart < 0) return const [];
     final pathEnd = text.indexOf('</ancestor-path>', pathStart);
     if (pathEnd < 0) return const [];
-    final segment = text.substring(pathStart + '<ancestor-path>'.length, pathEnd);
+    final segment = text.substring(
+      pathStart + '<ancestor-path>'.length,
+      pathEnd,
+    );
     final names = <String>[];
     final tagRegex = RegExp(
       r'<(?:parent|ancestor-\d+)-(?:page|data-source|database)\b([^>]*)/>',

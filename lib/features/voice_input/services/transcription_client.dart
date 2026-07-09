@@ -20,8 +20,11 @@ class TranscriptionClient {
     request.fields['model'] = model;
     request.fields['response_format'] = 'json';
     request.files.add(
-      await http.MultipartFile.fromPath('file', audioPath,
-          filename: 'recording.m4a'),
+      await http.MultipartFile.fromPath(
+        'file',
+        audioPath,
+        filename: 'recording.m4a',
+      ),
     );
 
     final streamed = await request.send();
@@ -29,12 +32,14 @@ class TranscriptionClient {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-          'Transcription failed (${response.statusCode}): ${response.body}');
+        'Transcription failed (${response.statusCode}): ${response.body}',
+      );
     }
 
     final body = response.body;
-    final textMatch =
-        RegExp(r'"text"\s*:\s*"((?:[^"\\]|\\.)*)"').firstMatch(body);
+    final textMatch = RegExp(
+      r'"text"\s*:\s*"((?:[^"\\]|\\.)*)"',
+    ).firstMatch(body);
     final text = textMatch != null
         ? textMatch.group(1)!.replaceAll('\\n', '\n').replaceAll('\\"', '"')
         : '';

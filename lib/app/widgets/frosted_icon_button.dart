@@ -51,9 +51,10 @@ class _FrostedIconButtonState extends State<FrostedIconButton>
       duration: const Duration(milliseconds: 120),
       vsync: this,
     );
-    _scale = Tween<double>(begin: 1.0, end: 1.20).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 1.20,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
   }
 
   @override
@@ -64,8 +65,7 @@ class _FrostedIconButtonState extends State<FrostedIconButton>
 
   bool get _enabled => widget.onPressed != null;
 
-  double get _diameter =>
-      widget.diameter ?? (isMobilePlatform ? 44.0 : 32.0);
+  double get _diameter => widget.diameter ?? (isMobilePlatform ? 44.0 : 32.0);
 
   double get _resolvedIconSize =>
       widget.iconSize ?? (isMobilePlatform ? AppIconSize.lg : AppIconSize.md);
@@ -99,7 +99,8 @@ class _FrostedIconButtonState extends State<FrostedIconButton>
     final d = _diameter;
     final size = _resolvedIconSize;
 
-    final resolvedIconColor = widget.iconColor ??
+    final resolvedIconColor =
+        widget.iconColor ??
         (_enabled
             ? AppColors.textSecondary(brightness)
             : AppColors.textDisabled(brightness));

@@ -73,5 +73,5 @@ class NotificationsNotifier extends Notifier<NotificationsState> {
 
 final notificationsProvider =
     NotifierProvider<NotificationsNotifier, NotificationsState>(
-  NotificationsNotifier.new,
-);
+      NotificationsNotifier.new,
+    );

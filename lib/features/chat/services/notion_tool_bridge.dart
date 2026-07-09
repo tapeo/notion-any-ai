@@ -6,11 +6,9 @@ import '../models/tool_call.dart';
 class NotionToolBridge {
   NotionToolBridge({
     required NotionMcpClient mcpClient,
-    required String accessToken,
-    required List<NotionToolMeta> availableTools,
-  })  : _mcp = mcpClient,
-        _accessToken = accessToken,
-        _availableTools = availableTools;
+    required this._accessToken,
+    required this._availableTools,
+  }) : _mcp = mcpClient;
 
   final NotionMcpClient _mcp;
   final String _accessToken;
@@ -27,7 +25,10 @@ class NotionToolBridge {
         .toList();
   }
 
-  List<String> _missingRequiredParams(NotionToolMeta tool, Map<String, dynamic> args) {
+  List<String> _missingRequiredParams(
+    NotionToolMeta tool,
+    Map<String, dynamic> args,
+  ) {
     final schema = tool.parameters;
     final required = schema['required'];
     if (required is! List) return const [];

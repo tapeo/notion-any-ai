@@ -34,13 +34,11 @@ class BuiltinToolsNotifier extends Notifier<BuiltinToolsState> {
   }
 
   List<BuiltinToolMeta> enabledTools() {
-    return BuiltinToolRegistry.all
-        .where((t) => state.isEnabled(t.id))
-        .toList();
+    return BuiltinToolRegistry.all.where((t) => state.isEnabled(t.id)).toList();
   }
 }
 
 final builtinToolsProvider =
     NotifierProvider<BuiltinToolsNotifier, BuiltinToolsState>(
-  BuiltinToolsNotifier.new,
-);
+      BuiltinToolsNotifier.new,
+    );

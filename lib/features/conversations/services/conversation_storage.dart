@@ -5,7 +5,7 @@ import '../models/conversation.dart';
 
 class ConversationStorage {
   ConversationStorage({required Directory appDir})
-      : _dir = Directory('${appDir.path}/conversations');
+    : _dir = Directory('${appDir.path}/conversations');
 
   final Directory _dir;
 
@@ -32,8 +32,7 @@ class ConversationStorage {
       if (raw.isEmpty) return const [];
       final decoded = jsonDecode(raw) as List<dynamic>;
       return decoded
-          .map((e) =>
-              ConversationSummary.fromJson(e as Map<String, dynamic>))
+          .map((e) => ConversationSummary.fromJson(e as Map<String, dynamic>))
           .toList()
         ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     } catch (_) {

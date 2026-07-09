@@ -22,7 +22,8 @@ class AppColors {
   static const Color inkLight = ink;
   static const Color inkDark = white;
 
-  static Color textPrimary(Brightness b) => b == Brightness.dark ? inkDark : inkLight;
+  static Color textPrimary(Brightness b) =>
+      b == Brightness.dark ? inkDark : inkLight;
   static Color textSecondary(Brightness b) =>
       b == Brightness.dark ? const Color(0xCCFFFFFF) : const Color(0xA637352F);
   static Color textTertiary(Brightness b) =>
