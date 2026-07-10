@@ -1,7 +1,7 @@
 name: notion_any_ai
 description: "Open-source Flutter chat client that connects OpenAI to Notion via MCP, with voice input, reminders, and conversation memory."
 publish_to: "none"
-version: 0.4.0
+version: 0.5.0
 license: GPL-3.0
 
 environment:
