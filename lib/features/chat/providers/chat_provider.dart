@@ -557,11 +557,10 @@ class ChatNotifier extends Notifier<ChatState> {
       return const [
         'notion_search',
         'notion_fetch',
-        'notion_query',
-        'notion_get',
-        'notion_list',
-        'notion_retrieve',
-        'notion_read',
+        'notion_get_comments',
+        'notion_get_teams',
+        'notion_get_users',
+        'notion_get_async_task',
       ];
     }
     return notion.tools

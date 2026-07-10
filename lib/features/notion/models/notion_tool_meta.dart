@@ -34,7 +34,7 @@ String formatToolName(String name) {
 
 NotionToolKind getToolKind(String name) {
   final base = name.replaceFirst(RegExp(r'^notion_'), '');
-  if (RegExp(r'^(fetch|search|query|get|list|retrieve|read)').hasMatch(base)) {
+  if (RegExp(r'^(fetch|search|query|get)').hasMatch(base)) {
     return NotionToolKind.read;
   }
   return NotionToolKind.write;

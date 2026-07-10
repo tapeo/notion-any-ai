@@ -14,11 +14,10 @@ import '../states/notion_connection_state.dart';
 const _notionDefaultTools = <String>[
   'notion_search',
   'notion_fetch',
-  'notion_query',
-  'notion_get',
-  'notion_list',
-  'notion_retrieve',
-  'notion_read',
+  'notion_get_comments',
+  'notion_get_teams',
+  'notion_get_users',
+  'notion_get_async_task',
 ];
 
 class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
