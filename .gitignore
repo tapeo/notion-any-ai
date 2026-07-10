@@ -51,3 +51,4 @@ app.*.map.json
 changes/
 upload_ios.sh
 upload_snap.sh
+.env
