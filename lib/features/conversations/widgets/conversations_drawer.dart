@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../chat/providers/chat_provider.dart';
 import '../models/conversation.dart';
 import '../providers/conversation_storage_provider.dart';
 import '../providers/conversations_notifier.dart';
@@ -149,7 +150,11 @@ class _ConversationsDrawerState extends ConsumerState<ConversationsDrawer>
           summary: summary,
           isActive: summary.id == activeId,
           onTap: () {
-            ref.read(conversationsProvider.notifier).open(summary.id);
+            if (summary.id == activeId) {
+              ref.read(chatProvider.notifier).reloadActiveConversation();
+            } else {
+              ref.read(conversationsProvider.notifier).open(summary.id);
+            }
             _close();
           },
           onRename: () => _showRenameDialog(summary),

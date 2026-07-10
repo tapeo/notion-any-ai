@@ -212,6 +212,11 @@ class ChatNotifier extends Notifier<ChatState> {
     ref.read(conversationsProvider.notifier).open(id);
   }
 
+  Future<void> reloadActiveConversation() async {
+    final id = ref.read(conversationsProvider.select((s) => s.activeId));
+    await _loadActiveConversation(id);
+  }
+
   Future<void> deleteConversation(String id) async {
     await ref.read(conversationsProvider.notifier).delete(id);
   }
