@@ -1,5 +1,5 @@
-name: notion-any-ai
-version: 0.5.0
+name: any-ai-for-notion
+version: 0.7.0
 title: Any AI for Notion
 summary: Any AI for Notion chat client
 description: |
@@ -15,26 +15,18 @@ confinement: strict
 base: core22
 grade: stable
 
-slots:
-  dbus-notion-any-ai:
-    interface: dbus
-    bus: session
-    name: it.ricu.notion_any_ai
-
 apps:
-  notion-any-ai:
+  any-ai-for-notion:
     command: notion_any_ai
     extensions: [gnome]
     plugs:
       - network
       - audio-record
-      - notification
+      - audio-playback
       - desktop
       - desktop-legacy
-    slots:
-      - dbus-notion-any-ai
 parts:
-  notion_any_ai:
+  any-ai-for-notion:
     source: .
     plugin: flutter
     flutter-target: lib/main.dart
