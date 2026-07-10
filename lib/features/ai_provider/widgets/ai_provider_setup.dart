@@ -41,7 +41,7 @@ class _AiProviderSetupState extends ConsumerState<AiProviderSetup> {
     }
 
     return SettingsBody(
-      title: 'AI Provider',
+      title: 'AI provider',
       icon: Icons.smart_toy_outlined,
       description:
           'Configure a custom OpenAI-compatible provider with endpoint, API key, and model. Used by the chat assistant to generate replies.',
@@ -52,6 +52,7 @@ class _AiProviderSetupState extends ConsumerState<AiProviderSetup> {
         modelController: _modelController,
         obscureApiKey: _obscureApiKey,
         onToggleObscure: _toggleObscure,
+        hasApiKey: state.hasApiKey,
         saving: state.saving,
         onSave: _handleSave,
       ),
@@ -66,12 +67,13 @@ class _AiProviderSetupState extends ConsumerState<AiProviderSetup> {
 
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
+    final apiKey = _apiKeyController.text.trim();
     await ref
         .read(aiProviderProvider.notifier)
         .save(
           endpoint: _endpointController.text,
           model: _modelController.text,
-          apiKey: _apiKeyController.text,
+          apiKey: apiKey.isEmpty ? null : apiKey,
         );
     if (!mounted) return;
     await _showSavedDialog(context);
@@ -102,6 +104,7 @@ class _EditForm extends StatelessWidget {
     required this.modelController,
     required this.obscureApiKey,
     required this.onToggleObscure,
+    required this.hasApiKey,
     required this.saving,
     required this.onSave,
   });
@@ -112,6 +115,7 @@ class _EditForm extends StatelessWidget {
   final TextEditingController modelController;
   final bool obscureApiKey;
   final VoidCallback onToggleObscure;
+  final bool hasApiKey;
   final bool saving;
   final VoidCallback onSave;
 
@@ -139,7 +143,7 @@ class _EditForm extends StatelessWidget {
             controller: apiKeyController,
             decoration: InputDecoration(
               labelText: 'API key',
-              hintText: 'sk-...',
+              hintText: hasApiKey ? 'Leave empty to keep current' : 'sk-...',
               border: const OutlineInputBorder(),
               isDense: true,
               suffixIcon: FrostedIconButton(
@@ -153,7 +157,7 @@ class _EditForm extends StatelessWidget {
             ),
             obscureText: obscureApiKey,
             autocorrect: false,
-            validator: _validateApiKey,
+            validator: (value) => _validateApiKey(value, hasApiKey),
           ),
           const SizedBox(height: AppSpacing.space3),
           TextFormField(
@@ -197,9 +201,9 @@ class _EditForm extends StatelessWidget {
     return null;
   }
 
-  String? _validateApiKey(String? value) {
+  String? _validateApiKey(String? value, bool hasApiKey) {
     final trimmed = value?.trim() ?? '';
-    if (trimmed.isEmpty) return 'API key is required';
+    if (trimmed.isEmpty && !hasApiKey) return 'API key is required';
     return null;
   }
 

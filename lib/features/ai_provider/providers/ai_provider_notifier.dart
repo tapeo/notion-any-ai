@@ -26,18 +26,19 @@ class AiProviderNotifier extends Notifier<AiProviderState> {
   Future<void> save({
     required String endpoint,
     required String model,
-    required String apiKey,
+    String? apiKey,
   }) async {
     state = state.copyWith(saving: true);
     await _storage.saveConfig(
       endpoint: endpoint.trim(),
       model: model.trim(),
-      apiKey: apiKey.trim(),
+      apiKey: apiKey?.trim(),
     );
     state = state.copyWith(
       endpoint: endpoint.trim(),
       model: model.trim(),
-      hasApiKey: apiKey.trim().isNotEmpty,
+      hasApiKey:
+          (apiKey != null && apiKey.trim().isNotEmpty) ? true : state.hasApiKey,
       saving: false,
     );
   }

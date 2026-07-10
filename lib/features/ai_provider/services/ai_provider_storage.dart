@@ -27,11 +27,13 @@ class AiProviderStorage {
   Future<void> saveConfig({
     required String endpoint,
     required String model,
-    required String apiKey,
+    String? apiKey,
   }) async {
     await _sharedPrefs.setString(_keyEndpoint, endpoint);
     await _sharedPrefs.setString(_keyModel, model);
-    await _secureStorage.write(key: _keyApiKey, value: apiKey);
+    if (apiKey != null && apiKey.isNotEmpty) {
+      await _secureStorage.write(key: _keyApiKey, value: apiKey);
+    }
   }
 
   Future<void> clearConfig() async {
