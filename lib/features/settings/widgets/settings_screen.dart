@@ -371,6 +371,11 @@ class _LegalSectionGroup extends StatelessWidget {
       label: 'Open source - leave a Star 🌟',
       url: 'https://github.com/tapeo/notion-any-ai',
     ),
+    _LegalLink(
+      icon: Icons.dns_outlined,
+      label: 'Backend open source',
+      url: 'https://github.com/tapeo/notion-any-ai-backend',
+    ),
   ];
 
   @override
