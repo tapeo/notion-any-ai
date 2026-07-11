@@ -51,5 +51,5 @@ app.*.map.json
 changes/
 .env
 
-# Notion OAuth credentials (dart-define-from-file)
-api-keys.json
+# Backend environment (dart-define-from-file)
+env.json

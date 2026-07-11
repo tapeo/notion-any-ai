@@ -71,8 +71,8 @@ ARCHIVE_PATH="$PROJECT_DIR/build/ios/archive/Runner.xcarchive"
 IPA_DIR="$PROJECT_DIR/build/ios/ipa"
 
 if [ "$SKIP_BUILD" = false ]; then
-  echo "==> Building IPA (flutter build ipa --release)"
-  fvm flutter build ipa --release
+  echo "==> Building IPA (flutter build ipa --release --dart-define-from-file env.json)"
+  fvm flutter build ipa --release --dart-define-from-file env.json
   echo "    Archive: $ARCHIVE_PATH"
 else
   echo "==> Skipping build, using existing IPA"

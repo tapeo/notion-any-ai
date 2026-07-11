@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 
 const _installBackendUrl = String.fromEnvironment(
   'INSTALL_BACKEND_URL',
-  defaultValue: 'https://notion-any-ai-backend-824089784983.europe-west1.run.app',
+  defaultValue: '',
 );
 
 const _installationIdKey = 'installation_id';
@@ -28,6 +28,7 @@ class InstallService {
   final Uuid _uuid = const Uuid();
 
   Future<void> sendInstallPing() async {
+    if (_installBackendUrl.isEmpty) return;
     if (_sharedPrefs.getBool(_installSentKey) == true) return;
 
     final installationId = await _getOrCreateInstallationId();

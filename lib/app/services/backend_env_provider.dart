@@ -2,6 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'shared_prefs_provider.dart';
 
+const _productionBackendUrl = String.fromEnvironment(
+  'PRODUCTION_BACKEND_URL',
+  defaultValue: '',
+);
+
+const _localBackendUrl = 'http://localhost:3000';
+
 enum BackendEnv {
   local,
   production;
@@ -15,9 +22,9 @@ enum BackendEnv {
 
   String get url {
     if (this == BackendEnv.local) {
-      return 'http://localhost:3000';
+      return _localBackendUrl;
     }
-    return 'https://notion-any-ai-backend-824089784983.europe-west1.run.app';
+    return _productionBackendUrl;
   }
 }
 
@@ -31,7 +38,12 @@ class BackendEnvNotifier extends Notifier<BackendEnv> {
     if (stored == 'local') {
       return BackendEnv.local;
     }
-    return BackendEnv.production;
+    if (stored == 'production' && _productionBackendUrl.isNotEmpty) {
+      return BackendEnv.production;
+    }
+    return _productionBackendUrl.isNotEmpty
+        ? BackendEnv.production
+        : BackendEnv.local;
   }
 
   Future<void> setEnv(BackendEnv env) async {

@@ -36,5 +36,10 @@ parts:
       cd "$src"
       tar cf - \
         --exclude='linux/flutter/ephemeral' \
-        lib linux snap assets pubspec.yaml pubspec.lock analysis_options.yaml .metadata \
+        lib linux snap assets pubspec.yaml pubspec.lock analysis_options.yaml .metadata env.json \
       | (cd "$dest" && tar xf -)
+    override-build: |
+      cd "$CRAFT_PART_SRC"
+      flutter build linux --release --dart-define-from-file env.json
+      mkdir -p "$CRAFT_PART_INSTALL/bin"
+      cp -r build/linux/*/release/bundle/* "$CRAFT_PART_INSTALL/bin/"

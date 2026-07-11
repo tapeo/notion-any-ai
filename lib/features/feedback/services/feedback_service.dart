@@ -7,7 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 const _feedbackBackendUrl = String.fromEnvironment(
   'INSTALL_BACKEND_URL',
-  defaultValue: 'https://notion-any-ai-backend-824089784983.europe-west1.run.app',
+  defaultValue: '',
 );
 
 const _installationIdKey = 'installation_id';
@@ -22,6 +22,7 @@ class FeedbackService {
   final http.Client httpClient;
 
   Future<bool> sendFeedback({required String message, required String email}) async {
+    if (_feedbackBackendUrl.isEmpty) return false;
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       final installationId = await secureStorage.read(key: _installationIdKey);
