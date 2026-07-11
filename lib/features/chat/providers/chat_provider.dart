@@ -15,6 +15,7 @@ import '../../memory/providers/memory_notifier.dart';
 import '../../notion/models/notion_page_ref.dart';
 import '../../notion/models/notion_tool_meta.dart';
 import '../../notion/providers/notion_connection_notifier.dart';
+import '../../notion/services/notion_tool_registry.dart';
 import '../../notion/states/notion_connection_state.dart';
 import '../../system_prompt/providers/system_prompt_notifier.dart';
 import '../../system_prompt/states/system_prompt_state.dart';
@@ -98,7 +99,7 @@ class ChatNotifier extends Notifier<ChatState> {
         'The user has selected the following Notion pages as the '
         'focus of this message:\n$lines\n'
         'You MUST fetch each of these pages with the available Notion read '
-        "tools (e.g. notion_fetch with the page id) before answering, so your "
+        "tools (e.g. notion_fetch_page with the page id) before answering, so your "
         "response is grounded in their actual content. Treat the user's "
         'message as referring to these pages unless they clearly ask about '
         'something else.';
@@ -262,7 +263,7 @@ class ChatNotifier extends Notifier<ChatState> {
         enabledTools != null &&
         enabledTools.isNotEmpty) {
       final bridge = NotionToolBridge(
-        mcpClient: ref.read(notionMcpClientProvider),
+        apiClient: ref.read(notionApiClientProvider),
         accessToken: notionAccessToken,
         availableTools: notion.tools,
       );
@@ -372,7 +373,7 @@ class ChatNotifier extends Notifier<ChatState> {
         }
 
         final bridge = NotionToolBridge(
-          mcpClient: ref.read(notionMcpClientProvider),
+          apiClient: ref.read(notionApiClientProvider),
           accessToken: notionAccessToken ?? '',
           availableTools: notion.tools,
         );
@@ -553,27 +554,11 @@ class ChatNotifier extends Notifier<ChatState> {
   }
 
   List<String> _defaultEnabledTools(NotionConnectionState notion) {
-    if (notion.tools.isEmpty) {
-      return const [
-        'notion_search',
-        'notion_fetch',
-        'notion_get_comments',
-        'notion_get_teams',
-        'notion_get_users',
-        'notion_get_async_task',
-      ];
-    }
-    return notion.tools
-        .where((t) => _isReadTool(t.name) && !requiresBusinessPlan(t.name))
+    final tools = notion.tools.isEmpty ? NotionToolRegistry.allTools : notion.tools;
+    return tools
+        .where((t) => getToolKind(t.name) == NotionToolKind.read)
         .map((t) => t.name)
         .toList();
-  }
-
-  bool _isReadTool(String name) {
-    final base = name.replaceFirst(RegExp(r'^notion_'), '');
-    return RegExp(
-      r'^(fetch|search|query|get|list|retrieve|read)',
-    ).hasMatch(base);
   }
 
   void _appendAssistant(String content) {

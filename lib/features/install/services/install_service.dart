@@ -66,7 +66,7 @@ class InstallService {
       await _secureStorage.write(key: _installationIdKey, value: id);
       return id;
     } catch (_) {
-      return null;
+      rethrow;
     }
   }
 

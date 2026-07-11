@@ -44,7 +44,7 @@ class FeedbackService {
 
       return response.statusCode >= 200 && response.statusCode < 300;
     } catch (_) {
-      return false;
+      rethrow;
     }
   }
 

@@ -1,5 +1,6 @@
 // App entry: ProviderScope + MaterialApp with light/dark themes.
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ import 'features/memory/providers/memory_notifier.dart';
 import 'features/notifications/providers/notifications_provider.dart';
 import 'features/notifications/services/notifications_service_provider.dart';
 import 'features/notion/providers/notion_connection_notifier.dart';
-import 'features/notion/services/notion_platform.dart';
+import 'features/notion/services/notion_oauth_service.dart';
 import 'features/system_prompt/providers/system_prompt_notifier.dart';
 import 'features/voice_input/providers/voice_input_notifier.dart';
 
@@ -76,7 +77,6 @@ class _MainAppState extends ConsumerState<MainApp> {
   }
 
   void _initDeepLinks() {
-    if (isDesktopPlatform) return;
     final appLinks = AppLinks();
     _linkSub = appLinks.uriLinkStream.listen(
       (uri) => _handleUri(uri),
@@ -89,9 +89,8 @@ class _MainAppState extends ConsumerState<MainApp> {
 
   void _handleUri(Uri uri) {
     if (uri.scheme != 'notionopenai' || uri.host != 'oauth') return;
-    final code = uri.queryParameters['code'];
-    final state = uri.queryParameters['state'];
-    final error = uri.queryParameters['error'];
+    final params = uri.queryParameters;
+    final error = params['error'];
     if (error != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -100,8 +99,19 @@ class _MainAppState extends ConsumerState<MainApp> {
       });
       return;
     }
-    if (code == null || state == null) return;
-    ref.read(notionConnectionProvider.notifier).handleCallback(code, state);
+    if (params['access_token'] == null) return;
+    final oauth = NotionOAuthService();
+    try {
+      final tokens = oauth.parseCallbackTokens(params);
+      ref.read(notionConnectionProvider.notifier).handleCallbackTokens(tokens);
+    } catch (_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Notion connection failed')),
+        );
+      });
+      rethrow;
+    }
   }
 
   @override
@@ -184,7 +194,7 @@ class _MainAppState extends ConsumerState<MainApp> {
     final tertiary = AppColors.textTertiary(b);
     final border = AppColors.borderDefault(b);
     final subtleBorder = AppColors.borderSubtle(b);
-    final touch = isMobilePlatform;
+    final touch = Platform.isAndroid || Platform.isIOS;
     final iconButtonMin = touch ? const Size(44, 44) : const Size(28, 28);
     final iconButtonPadding = touch
         ? const EdgeInsets.all(AppSpacing.space2)

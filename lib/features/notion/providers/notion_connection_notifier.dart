@@ -4,27 +4,16 @@ import '../../../app/services/secure_storage_provider.dart';
 import '../../../app/services/shared_prefs_provider.dart';
 import '../models/notion_tokens.dart';
 import '../models/notion_tool_meta.dart';
-import '../services/notion_loopback_server.dart';
-import '../services/notion_mcp_client.dart';
+import '../services/notion_api_client.dart';
 import '../services/notion_oauth_service.dart';
-import '../services/notion_platform.dart';
 import '../services/notion_storage.dart';
+import '../services/notion_tool_registry.dart';
 import '../states/notion_connection_state.dart';
-
-const _notionDefaultTools = <String>[
-  'notion_search',
-  'notion_fetch',
-  'notion_get_comments',
-  'notion_get_teams',
-  'notion_get_users',
-  'notion_get_async_task',
-];
 
 class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
   late final NotionStorage _storage;
   late final NotionOAuthService _oauth;
-  late final NotionMcpClient _mcp;
-  NotionLoopbackServer? _loopbackServer;
+  late final NotionApiClient _api;
 
   @override
   NotionConnectionState build() {
@@ -33,7 +22,7 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
       sharedPrefs: ref.watch(sharedPrefsProvider),
     );
     _oauth = NotionOAuthService();
-    _mcp = ref.watch(notionMcpClientProvider);
+    _api = ref.watch(notionApiClientProvider);
     final state = NotionConnectionState(
       enabled: _storage.loadEnabled(),
       enabledTools: _storage.loadEnabledTools(),
@@ -56,75 +45,18 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
   Future<String?> connect() async {
     state = state.copyWith(connecting: true);
     try {
-      String redirectUri;
-      if (isDesktopPlatform) {
-        _loopbackServer = NotionLoopbackServer();
-        redirectUri = await _loopbackServer!.start();
-      } else {
-        redirectUri = defaultRedirectUri;
-      }
-
-      final result = await _oauth.start(redirectUri: redirectUri);
-      await _storage.savePending(result.pending);
-
-      if (isDesktopPlatform && _loopbackServer != null) {
-        _awaitLoopbackCallback();
-      }
+      final result = await _oauth.start();
       state = state.copyWith(connecting: false);
       return result.authorizationUrl;
     } catch (_) {
-      await _stopLoopbackServer();
       state = state.copyWith(connecting: false);
-      return null;
+      rethrow;
     }
   }
 
-  void _awaitLoopbackCallback() {
-    final server = _loopbackServer;
-    if (server == null) return;
-    server
-        .waitForCallback()
-        .then((result) {
-          if (result.error != null) {
-            _stopLoopbackServer();
-            return;
-          }
-          if (result.code != null && result.state != null) {
-            handleCallback(result.code!, result.state!);
-          }
-        })
-        .catchError((_) {
-          _stopLoopbackServer();
-        });
-  }
-
-  Future<void> _stopLoopbackServer() async {
-    await _loopbackServer?.stop();
-    _loopbackServer = null;
-  }
-
-  Future<bool> handleCallback(String code, String stateParam) async {
-    final pending = await _storage.loadPending();
-    if (pending == null) {
-      await _stopLoopbackServer();
-      return false;
-    }
-    if (pending.state != stateParam) {
-      await _storage.clearPending();
-      await _stopLoopbackServer();
-      return false;
-    }
-    if (pending.isExpired) {
-      await _storage.clearPending();
-      await _stopLoopbackServer();
-      return false;
-    }
+  Future<bool> handleCallbackTokens(NotionTokens tokens) async {
     try {
-      final tokens = await _oauth.handleCallback(pending: pending, code: code);
       await _storage.saveTokens(tokens);
-      await _storage.clearPending();
-      await _stopLoopbackServer();
-      _mcp.reset();
       state = state.copyWith(
         connected: true,
         workspaceName: tokens.workspaceName,
@@ -132,9 +64,7 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
       await _loadToolsAndIdentity(tokens);
       return true;
     } catch (_) {
-      await _storage.clearPending();
-      await _stopLoopbackServer();
-      return false;
+      rethrow;
     }
   }
 
@@ -142,8 +72,6 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
     state = state.copyWith(disconnecting: true);
     try {
       await _storage.clearTokens();
-      _mcp.reset();
-      await _stopLoopbackServer();
       state = NotionConnectionState(
         enabled: state.enabled,
         enabledTools: state.enabledTools,
@@ -163,7 +91,7 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
       }
       return validTokens.accessToken;
     } catch (_) {
-      return null;
+      rethrow;
     }
   }
 
@@ -174,12 +102,6 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
   }
 
   Future<void> toggleTool(String name, bool checked) async {
-    if (checked && requiresBusinessPlan(name)) {
-      state = state.copyWith(
-        businessPlanPrompt: DateTime.now().millisecondsSinceEpoch,
-      );
-      return;
-    }
     final current = state.enabledTools ?? _defaultWhitelist();
     final next = <String>{...current};
     if (checked) {
@@ -194,26 +116,15 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
     state = state.copyWith(saving: false);
   }
 
-  Future<void> bulkToggleTools(List<NotionToolMeta> tools, bool enable) async {
-    if (enable && tools.any((t) => requiresBusinessPlan(t.name))) {
-      final filtered = tools
-          .where((t) => !requiresBusinessPlan(t.name))
-          .toList();
-      if (filtered.isEmpty) {
-        state = state.copyWith(
-          businessPlanPrompt: DateTime.now().millisecondsSinceEpoch,
-        );
-        return;
-      }
-      tools = filtered;
-    }
+  Future<void> bulkToggleTools(List<dynamic> tools, bool enable) async {
     final current = state.enabledTools ?? _defaultWhitelist();
     final next = <String>{...current};
     for (final tool in tools) {
+      final name = tool is String ? tool : (tool.name as String);
       if (enable) {
-        next.add(tool.name);
+        next.add(name);
       } else {
-        next.remove(tool.name);
+        next.remove(name);
       }
     }
     final list = next.toList()..sort();
@@ -224,23 +135,21 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
   }
 
   List<String> _defaultWhitelist() {
-    if (state.tools.isEmpty) {
-      return [..._notionDefaultTools];
-    }
-    return state.tools
-        .where(
-          (t) =>
-              getToolKind(t.name) == NotionToolKind.read &&
-              !requiresBusinessPlan(t.name),
-        )
+    final tools = state.tools.isEmpty ? NotionToolRegistry.allTools : state.tools;
+    return tools
+        .where((t) => getToolKind(t.name) == NotionToolKind.read)
         .map((t) => t.name)
         .toList();
   }
 
   bool _isAllDefault(List<String> list) {
-    final sortedDefault = [..._notionDefaultTools]..sort();
-    return list.length == sortedDefault.length &&
-        list.every((n) => sortedDefault.contains(n));
+    final defaultNames = NotionToolRegistry.allTools
+        .where((t) => getToolKind(t.name) == NotionToolKind.read)
+        .map((t) => t.name)
+        .toSet();
+    final set = list.toSet();
+    return set.length == defaultNames.length &&
+        set.every((n) => defaultNames.contains(n));
   }
 
   Future<void> _loadToolsAndIdentity(NotionTokens tokens) async {
@@ -250,8 +159,10 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
       if (validTokens != tokens) {
         await _storage.saveTokens(validTokens);
       }
-      final tools = await _mcp.listTools(validTokens.accessToken);
-      state = state.copyWith(tools: tools, toolsLoading: false);
+      state = state.copyWith(
+        tools: NotionToolRegistry.allTools,
+        toolsLoading: false,
+      );
       await _captureSelfIdentity(validTokens);
     } catch (err) {
       state = state.copyWith(
@@ -260,12 +171,17 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
             ? err.message
             : 'Failed to load Notion tools',
       );
+      rethrow;
     }
   }
 
   Future<void> _captureSelfIdentity(NotionTokens tokens) async {
+    if (tokens.workspaceName != null) {
+      state = state.copyWith(workspaceName: tokens.workspaceName);
+      return;
+    }
     try {
-      final self = await _mcp.fetchSelf(tokens.accessToken);
+      final self = await _api.fetchSelf(tokens.accessToken);
       if (self == null) return;
       final updated = tokens.copyWith(
         workspaceId: self.workspaceId,
@@ -285,12 +201,8 @@ final notionConnectionProvider =
       NotionConnectionNotifier.new,
     );
 
-final businessPlanPromptSelector = Provider<int?>(
-  (ref) => ref.watch(notionConnectionProvider).businessPlanPrompt,
-);
-
-final notionMcpClientProvider = Provider<NotionMcpClient>((ref) {
-  final client = NotionMcpClient();
+final notionApiClientProvider = Provider<NotionApiClient>((ref) {
+  final client = NotionApiClient();
   ref.onDispose(client.close);
   return client;
 });

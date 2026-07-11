@@ -50,3 +50,6 @@ app.*.map.json
 # Internal dev-log (opencode workflow)
 changes/
 .env
+
+# Notion OAuth credentials (dart-define-from-file)
+api-keys.json

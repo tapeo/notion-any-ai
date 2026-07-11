@@ -7,6 +7,7 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../app/widgets/tool_row.dart';
 import '../models/notion_tool_meta.dart';
 import '../providers/notion_connection_notifier.dart';
+import '../services/notion_tool_registry.dart';
 import '../states/notion_connection_state.dart';
 
 class NotionToolList extends ConsumerWidget {
@@ -17,12 +18,6 @@ class NotionToolList extends ConsumerWidget {
     final state = ref.watch(notionConnectionProvider);
     final notifier = ref.read(notionConnectionProvider.notifier);
     final theme = Theme.of(context);
-
-    ref.listen<int?>(businessPlanPromptSelector, (previous, next) {
-      if (next != null && next != previous) {
-        _showBusinessPlanPrompt(context);
-      }
-    });
 
     if (state.toolsLoading) {
       return Row(
@@ -99,43 +94,11 @@ class NotionToolList extends ConsumerWidget {
   }
 
   List<String> _defaultWhitelist(covariant NotionConnectionState state) {
-    if (state.tools.isEmpty) {
-      return const [
-        'notion_search',
-        'notion_fetch',
-        'notion_get_comments',
-        'notion_get_teams',
-        'notion_get_users',
-        'notion_get_async_task',
-      ];
-    }
-    return state.tools
-        .where(
-          (t) =>
-              getToolKind(t.name) == NotionToolKind.read &&
-              !requiresBusinessPlan(t.name),
-        )
+    final tools = state.tools.isEmpty ? NotionToolRegistry.allTools : state.tools;
+    return tools
+        .where((t) => getToolKind(t.name) == NotionToolKind.read)
         .map((t) => t.name)
         .toList();
-  }
-
-  void _showBusinessPlanPrompt(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Business plan required'),
-        content: const Text(
-          'This Notion tool is only available on the Notion business plan. '
-          'Upgrade your Notion workspace to use it.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -160,15 +123,9 @@ class _ToolSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final label = kind == NotionToolKind.read ? 'Read' : 'Write';
-    final toggleable = tools
-        .where((t) => !requiresBusinessPlan(t.name))
-        .toList();
-    final enabledCount = toggleable
-        .where((t) => enabledSet.contains(t.name))
-        .length;
-    final allToggleableOn =
-        toggleable.isNotEmpty &&
-        toggleable.every((t) => enabledSet.contains(t.name));
+    final enabledCount = tools.where((t) => enabledSet.contains(t.name)).length;
+    final allOn =
+        tools.isNotEmpty && tools.every((t) => enabledSet.contains(t.name));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,14 +134,14 @@ class _ToolSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '$label ($enabledCount/${toggleable.length})'.toUpperCase(),
+              '$label ($enabledCount/${tools.length})'.toUpperCase(),
               style: AppFonts.microUpper().copyWith(
                 color: AppColors.textTertiary(theme.brightness),
               ),
             ),
-            if (enabledCount > 0 && enabledCount < toggleable.length)
+            if (enabledCount > 0 && enabledCount < tools.length)
               TextButton(
-                onPressed: saving ? null : () => onBulkToggle(toggleable, true),
+                onPressed: saving ? null : () => onBulkToggle(tools, true),
                 style: TextButton.styleFrom(
                   minimumSize: Size.zero,
                   padding: const EdgeInsets.symmetric(
@@ -197,11 +154,9 @@ class _ToolSection extends StatelessWidget {
                   style: const TextStyle(fontSize: 12),
                 ),
               )
-            else if (allToggleableOn)
+            else if (allOn)
               TextButton(
-                onPressed: saving
-                    ? null
-                    : () => onBulkToggle(toggleable, false),
+                onPressed: saving ? null : () => onBulkToggle(tools, false),
                 style: TextButton.styleFrom(
                   minimumSize: Size.zero,
                   padding: const EdgeInsets.symmetric(
@@ -223,27 +178,8 @@ class _ToolSection extends StatelessWidget {
             description: tool.description,
             isOn: enabledSet.contains(tool.name),
             saving: saving,
-            locked: requiresBusinessPlan(tool.name),
+            locked: false,
             onToggle: (checked) => onToggle(tool.name, checked),
-            badge: requiresBusinessPlan(tool.name)
-                ? Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.space1,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.borderSubtle(theme.brightness),
-                      borderRadius: BorderRadius.circular(AppSpacing.space1),
-                    ),
-                    child: Text(
-                      'Business plan',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppColors.textSecondary(theme.brightness),
-                        fontSize: 10,
-                      ),
-                    ),
-                  )
-                : null,
           ),
         ),
       ],

@@ -22,7 +22,7 @@ class ReminderStorage {
           .map((e) => ScheduledReminder.fromJson(e as Map<String, dynamic>))
           .toList();
     } catch (_) {
-      return const [];
+      rethrow;
     }
   }
 

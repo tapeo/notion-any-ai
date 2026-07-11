@@ -27,7 +27,7 @@ class NotionRecentPagesStorage {
       }
       return pages;
     } catch (_) {
-      return const [];
+      rethrow;
     }
   }
 

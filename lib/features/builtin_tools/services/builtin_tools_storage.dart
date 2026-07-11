@@ -28,7 +28,7 @@ class BuiltinToolsStorage {
       }
       return result;
     } catch (_) {
-      return _defaults();
+      rethrow;
     }
   }
 

@@ -14,7 +14,6 @@ class NotionConnectionState extends Equatable {
     this.connecting = false,
     this.disconnecting = false,
     this.saving = false,
-    this.businessPlanPrompt,
   });
 
   final bool connected;
@@ -27,7 +26,6 @@ class NotionConnectionState extends Equatable {
   final bool connecting;
   final bool disconnecting;
   final bool saving;
-  final int? businessPlanPrompt;
 
   NotionConnectionState copyWith({
     bool? connected,
@@ -40,7 +38,6 @@ class NotionConnectionState extends Equatable {
     bool? connecting,
     bool? disconnecting,
     bool? saving,
-    int? businessPlanPrompt,
   }) {
     return NotionConnectionState(
       connected: connected ?? this.connected,
@@ -53,7 +50,6 @@ class NotionConnectionState extends Equatable {
       connecting: connecting ?? this.connecting,
       disconnecting: disconnecting ?? this.disconnecting,
       saving: saving ?? this.saving,
-      businessPlanPrompt: businessPlanPrompt ?? this.businessPlanPrompt,
     );
   }
 
@@ -69,6 +65,5 @@ class NotionConnectionState extends Equatable {
     connecting,
     disconnecting,
     saving,
-    businessPlanPrompt,
   ];
 }
