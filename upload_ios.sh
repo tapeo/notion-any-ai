@@ -13,6 +13,13 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Stable macOS release build to stamp into the archive.
+# App Review rejects (ITMS-90111) binaries whose BuildMachineOSBuild is a beta
+# macOS build. Patch the archive so it carries a release OS build string.
+# Update this when Apple ships a new macOS release:
+#   https://developer.apple.com/news/releases
+STABLE_MACOS_BUILD="25F84"
+
 ENV_FILE="$PROJECT_DIR/.env"
 if [ ! -f "$ENV_FILE" ]; then
   echo "ERROR: .env not found at $ENV_FILE" >&2
@@ -76,6 +83,66 @@ if [ "$SKIP_BUILD" = false ]; then
   echo "    Archive: $ARCHIVE_PATH"
 else
   echo "==> Skipping build, using existing IPA"
+fi
+
+# --- Patch BuildMachineOSBuild in the archive -------------------------------
+# ITMS-90111: App Review rejects binaries whose BuildMachineOSBuild is a beta
+# macOS build. Patch the archive to carry a release OS build string, then
+# re-export so the IPA embeds the patched frameworks. Idempotent: skips
+# plists that already carry the stable build.
+if [ "$SKIP_BUILD" = false ]; then
+  echo "==> Patching BuildMachineOSBuild -> $STABLE_MACOS_BUILD"
+
+  APP_PATH="$ARCHIVE_PATH/Products/Applications/Runner.app"
+  if [ ! -d "$APP_PATH" ]; then
+    echo "ERROR: Runner.app not found in archive at $APP_PATH" >&2
+    exit 1
+  fi
+
+  patch_plist() {
+    local plist="$1"
+    [ -f "$plist" ] || return 0
+    local current
+    current=$(/usr/libexec/PlistBuddy -c "Print :BuildMachineOSBuild" "$plist" 2>/dev/null || true)
+    if [ -z "$current" ]; then
+      return 0
+    fi
+    if [ "$current" = "$STABLE_MACOS_BUILD" ]; then
+      return 0
+    fi
+    echo "    $(basename "$(dirname "$plist")"): $current -> $STABLE_MACOS_BUILD"
+    /usr/libexec/PlistBuddy -c "Set :BuildMachineOSBuild $STABLE_MACOS_BUILD" "$plist"
+  }
+
+  patch_plist "$APP_PATH/Info.plist"
+  if [ -d "$APP_PATH/Frameworks" ]; then
+    for fw in "$APP_PATH/Frameworks"/*.framework; do
+      patch_plist "$fw/Info.plist"
+    done
+  fi
+
+  echo "==> Re-exporting archive with corrected OS build"
+  EXPORT_OPTIONS="$IPA_DIR/ExportOptions.plist"
+  if [ ! -f "$EXPORT_OPTIONS" ]; then
+    echo "ERROR: ExportOptions.plist not found at $EXPORT_OPTIONS" >&2
+    echo "Run without --skip-build first." >&2
+    exit 1
+  fi
+  rm -f "$IPA_DIR"/*.ipa
+  xcodebuild -exportArchive \
+    -archivePath "$ARCHIVE_PATH" \
+    -exportPath "$IPA_DIR" \
+    -exportOptionsPlist "$EXPORT_OPTIONS"
+
+  echo "==> Verifying patched metadata"
+  APP_SDK=$(/usr/libexec/PlistBuddy -c "Print :DTSDKName" "$APP_PATH/Info.plist" 2>/dev/null || echo "MISSING")
+  APP_OS=$(/usr/libexec/PlistBuddy -c "Print :BuildMachineOSBuild" "$APP_PATH/Info.plist" 2>/dev/null || echo "MISSING")
+  APP_XCODE=$(/usr/libexec/PlistBuddy -c "Print :DTXcode" "$APP_PATH/Info.plist" 2>/dev/null || echo "MISSING")
+  echo "    Runner.app: DTSDKName=$APP_SDK BuildMachineOSBuild=$APP_OS DTXcode=$APP_XCODE"
+  if [ "$APP_OS" != "$STABLE_MACOS_BUILD" ]; then
+    echo "ERROR: Runner.app BuildMachineOSBuild is $APP_OS, expected $STABLE_MACOS_BUILD" >&2
+    exit 1
+  fi
 fi
 
 # --- Locate the IPA ---------------------------------------------------------
