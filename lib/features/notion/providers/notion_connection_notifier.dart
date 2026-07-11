@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/services/backend_env_provider.dart';
 import '../../../app/services/secure_storage_provider.dart';
 import '../../../app/services/shared_prefs_provider.dart';
 import '../models/notion_tokens.dart';
@@ -21,7 +22,8 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
       secureStorage: ref.watch(flutterSecureStorageProvider),
       sharedPrefs: ref.watch(sharedPrefsProvider),
     );
-    _oauth = NotionOAuthService();
+    final backendUrl = ref.watch(backendUrlProvider);
+    _oauth = NotionOAuthService(backendUrl: backendUrl);
     _api = ref.watch(notionApiClientProvider);
     final state = NotionConnectionState(
       enabled: _storage.loadEnabled(),
@@ -202,7 +204,8 @@ final notionConnectionProvider =
     );
 
 final notionApiClientProvider = Provider<NotionApiClient>((ref) {
-  final client = NotionApiClient();
+  final backendUrl = ref.watch(backendUrlProvider);
+  final client = NotionApiClient(backendUrl: backendUrl);
   ref.onDispose(client.close);
   return client;
 });

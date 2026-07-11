@@ -28,6 +28,7 @@ import '../../system_prompt/providers/system_prompt_notifier.dart';
 import '../../system_prompt/providers/system_prompt_storage_provider.dart';
 import '../../voice_input/providers/voice_input_notifier.dart';
 import '../../voice_input/providers/voice_input_storage_provider.dart';
+import 'environment_switcher_section.dart';
 
 class ClearAppDataSection extends ConsumerStatefulWidget {
   const ClearAppDataSection({super.key});
@@ -207,6 +208,8 @@ class _ClearAppDataSectionState extends ConsumerState<ClearAppDataSection> {
             ),
           ),
         if (_revealed) ...[
+          const SizedBox(height: AppSpacing.space3),
+          const EnvironmentSwitcherSection(),
           const SizedBox(height: AppSpacing.space3),
           _DangerZoneCard(
             clearing: _clearing,

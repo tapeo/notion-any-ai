@@ -15,17 +15,13 @@ class NotionOAuthError implements Exception {
       'NotionOAuthError: $message${code != null ? ' ($code)' : ''}';
 }
 
-const _backendUrl = String.fromEnvironment(
-  'BACKEND_URL',
-  defaultValue: 'http://localhost:3000',
-);
-
 const _refreshSkewMs = 60 * 1000;
 
 class NotionOAuthService {
-  NotionOAuthService({http.Client? httpClient})
+  NotionOAuthService({required this._backendUrl, http.Client? httpClient})
     : _httpClient = httpClient ?? http.Client();
 
+  final String _backendUrl;
   final http.Client _httpClient;
 
   Future<NotionStartResult> start() async {

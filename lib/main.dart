@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'app/services/backend_env_provider.dart';
 import 'app/services/shared_prefs_provider.dart';
 import 'app/theme/app_colors.dart';
 import 'app/theme/app_fonts.dart';
@@ -100,7 +101,8 @@ class _MainAppState extends ConsumerState<MainApp> {
       return;
     }
     if (params['access_token'] == null) return;
-    final oauth = NotionOAuthService();
+    final backendUrl = ref.read(backendUrlProvider);
+    final oauth = NotionOAuthService(backendUrl: backendUrl);
     try {
       final tokens = oauth.parseCallbackTokens(params);
       ref.read(notionConnectionProvider.notifier).handleCallbackTokens(tokens);

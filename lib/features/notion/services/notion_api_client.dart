@@ -2,15 +2,11 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-const _backendUrl = String.fromEnvironment(
-  'BACKEND_URL',
-  defaultValue: 'http://localhost:3000',
-);
-
 class NotionApiClient {
-  NotionApiClient({http.Client? httpClient})
+  NotionApiClient({required this._backendUrl, http.Client? httpClient})
     : _httpClient = httpClient ?? http.Client();
 
+  final String _backendUrl;
   final http.Client _httpClient;
 
   bool get isInitialized => true;
