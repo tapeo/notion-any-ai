@@ -12,9 +12,9 @@ import '../services/notion_tool_registry.dart';
 import '../states/notion_connection_state.dart';
 
 class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
-  late final NotionStorage _storage;
-  late final NotionOAuthService _oauth;
-  late final NotionApiClient _api;
+  late NotionStorage _storage;
+  late NotionOAuthService _oauth;
+  late NotionApiClient _api;
 
   @override
   NotionConnectionState build() {

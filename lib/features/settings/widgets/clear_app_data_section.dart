@@ -169,14 +169,27 @@ class _ClearAppDataSectionState extends ConsumerState<ClearAppDataSection> {
         .read(flutterSecureStorageProvider)
         .delete(key: 'installation_id');
 
-    ref.read(aiProviderProvider.notifier).init();
-    ref.read(voiceInputProvider.notifier).init();
-    ref.read(notionConnectionProvider.notifier).disconnect();
-    ref.read(systemPromptProvider.notifier).init();
-    ref.read(builtinToolsProvider.notifier).init();
-    ref.read(conversationsProvider.notifier).init();
-    ref.read(memoryProvider.notifier).init();
-    await ref.read(notificationsProvider.notifier).init();
+    ref.invalidate(aiProviderProvider);
+    ref.invalidate(voiceInputProvider);
+    ref.invalidate(notionConnectionProvider);
+    ref.invalidate(systemPromptProvider);
+    ref.invalidate(builtinToolsProvider);
+    ref.invalidate(conversationsProvider);
+    ref.invalidate(memoryProvider);
+    ref.invalidate(notificationsProvider);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(aiProviderProvider.notifier).init();
+      ref.read(voiceInputProvider.notifier).init();
+      ref.read(notionConnectionProvider.notifier).init();
+      ref.read(systemPromptProvider.notifier).init();
+      ref.read(builtinToolsProvider.notifier).init();
+      ref.read(conversationsProvider.notifier).init();
+      ref.read(memoryProvider.notifier).init();
+      () async {
+        await ref.read(notificationsProvider.notifier).init();
+      }();
+    });
   }
 
   @override

@@ -5,7 +5,7 @@ import '../states/ai_provider_state.dart';
 import 'ai_provider_storage_provider.dart';
 
 class AiProviderNotifier extends Notifier<AiProviderState> {
-  late final AiProviderStorage _storage;
+  late AiProviderStorage _storage;
 
   @override
   AiProviderState build() {

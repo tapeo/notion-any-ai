@@ -6,7 +6,7 @@ import '../states/voice_input_state.dart';
 import 'voice_input_storage_provider.dart';
 
 class VoiceInputNotifier extends Notifier<VoiceInputState> {
-  late final VoiceInputStorage _storage;
+  late VoiceInputStorage _storage;
 
   @override
   VoiceInputState build() {
