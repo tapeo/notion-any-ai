@@ -188,9 +188,44 @@
       </p>
       <h3>4.3 AI Prompts &amp; Responses</h3>
       <p>
-        When you send a prompt to an AI provider, the communication goes
-        <strong>directly from your device to your chosen AI provider</strong>.
-        We have no access to your prompts or the responses you receive.
+        When you send a message in the chat, the app transmits the following
+        data to the AI provider endpoint you have configured:
+      </p>
+      <ul>
+        <li>Your typed messages and full conversation history</li>
+        <li>Your system prompt</li>
+        <li>The content of your persistent memory file (injected into every request)</li>
+        <li>Notion page content, retrieved via Notion tool calls when the assistant requests it</li>
+        <li>Content fetched from web pages via the built-in fetch_url tool</li>
+        <li>Tool call schemas describing the available Notion and built-in tools</li>
+      </ul>
+      <p>
+        <strong>How it is transmitted:</strong> Data is sent via HTTPS POST to
+        the <code>/chat/completions</code> endpoint URL you entered in Settings,
+        authenticated with your API key as a Bearer token.
+      </p>
+      <p>
+        <strong>Who it is sent to:</strong> The AI provider you have chosen and
+        configured (e.g. OpenAI, OpenRouter, Azure OpenAI, or a self-hosted
+        server like Ollama or LM Studio). The app does not route data through
+        any intermediary server. Communication goes directly from your device
+        to your configured endpoint.
+      </p>
+      <p>
+        <strong>Purpose:</strong> To generate chat responses and execute tool
+        calls (reading/writing Notion pages, setting reminders, searching
+        memory, fetching web content).
+      </p>
+      <p>
+        <strong>Third-party protection:</strong> Your AI provider's privacy
+        policy governs how they handle the data they receive. We have no
+        control over how third-party AI providers process, store, or retain
+        your data. We encourage you to review your provider's privacy policy.
+      </p>
+      <p>
+        <strong>Local LLM mode:</strong> When using a local server (Ollama, LM
+        Studio, etc.), data stays on your machine and is never sent to the
+        internet.
       </p>
       <h3>4.4 Configuration &amp; Preferences</h3>
       <p>
@@ -245,12 +280,18 @@
       </p>
       <h3>8.2 AI Providers</h3>
       <p>
-        When you use an AI provider (OpenAI, Anthropic, Google, etc.), your data
-        is subject to that provider's privacy policy. We encourage you to review
-        their policies:
+        When you use an AI provider (OpenAI, OpenRouter, Anthropic, Google, or a
+        self-hosted server), the app sends your messages, conversation history,
+        system prompt, persistent memory content, Notion page content (via tool
+        call results), and fetched web page content to the provider's endpoint.
+        This data is transmitted directly from your device to the endpoint URL
+        you configured, via HTTPS, using your API key for authentication. Your
+        use of the AI provider is subject to that provider's privacy policy. We
+        encourage you to review their policies:
       </p>
       <ul>
         <li><a href="https://openai.com/privacy/">OpenAI Privacy Policy</a></li>
+        <li><a href="https://openrouter.ai/privacy">OpenRouter Privacy Policy</a></li>
         <li>
           <a href="https://www.anthropic.com/privacy"
             >Anthropic Privacy Policy</a

@@ -165,6 +165,7 @@ class _ClearAppDataSectionState extends ConsumerState<ClearAppDataSection> {
 
     final sharedPrefs = ref.read(sharedPrefsProvider);
     await sharedPrefs.remove('install_sent');
+    await sharedPrefs.remove('onboarding_completed');
     await ref
         .read(flutterSecureStorageProvider)
         .delete(key: 'installation_id');

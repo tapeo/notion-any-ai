@@ -20,6 +20,7 @@ import 'features/chat/widgets/chat_screen.dart';
 import 'features/conversations/providers/conversation_storage_provider.dart';
 import 'features/conversations/providers/conversations_notifier.dart';
 import 'features/install/services/install_service.dart';
+import 'features/onboarding/widgets/onboarding_screen.dart';
 import 'features/memory/providers/memory_notifier.dart';
 import 'features/notifications/providers/notifications_provider.dart';
 import 'features/notifications/services/notifications_service_provider.dart';
@@ -56,11 +57,13 @@ class MainApp extends ConsumerStatefulWidget {
 
 class _MainAppState extends ConsumerState<MainApp> {
   StreamSubscription<Uri>? _linkSub;
+  bool _onboardingNeeded = true;
 
   @override
   void initState() {
     super.initState();
     _initDeepLinks();
+    _checkOnboarding();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(aiProviderProvider.notifier).init();
       ref.read(voiceInputProvider.notifier).init();
@@ -86,6 +89,18 @@ class _MainAppState extends ConsumerState<MainApp> {
     appLinks.getInitialLink().then((uri) {
       if (uri != null) _handleUri(uri);
     });
+  }
+
+  Future<void> _checkOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    final completed = prefs.getBool('onboarding_completed') ?? false;
+    if (mounted) {
+      setState(() => _onboardingNeeded = !completed);
+    }
+  }
+
+  void _onCompleteOnboarding() {
+    setState(() => _onboardingNeeded = false);
   }
 
   void _handleUri(Uri uri) {
@@ -130,7 +145,9 @@ class _MainAppState extends ConsumerState<MainApp> {
       theme: _lightTheme(),
       darkTheme: _darkTheme(),
       themeMode: ThemeMode.system,
-      home: const ChatScreen(),
+      home: _onboardingNeeded
+          ? OnboardingScreen(onComplete: _onCompleteOnboarding)
+          : const ChatScreen(),
     );
   }
 
