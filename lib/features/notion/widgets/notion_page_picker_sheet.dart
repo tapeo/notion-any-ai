@@ -191,9 +191,9 @@ class _NotionPagePickerSheetState
         if (!mounted) return;
         if (generation != _searchGeneration) return;
         final page = pending[index++];
-        final chain = await search.fetchBreadcrumbForPage(
+        final chain = await search.fetchBreadcrumb(
           accessToken: token,
-          pageId: page.id,
+          ref: page,
         );
         if (!mounted) return;
         if (generation != _searchGeneration) return;
@@ -229,14 +229,14 @@ class _NotionPagePickerSheetState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Choose a Notion page',
+            'Choose a Notion page or database',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: AppSpacing.space1),
           Text(
-            'Add a page to focus on',
+            'Add a page or database to focus on',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary(theme.brightness),
             ),
@@ -273,7 +273,7 @@ class _NotionPagePickerSheetState
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.space4),
               child: Text(
-                'Type to search your Notion pages.',
+                'Type to search your Notion pages and databases.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: AppColors.textTertiary(theme.brightness),
@@ -288,7 +288,7 @@ class _NotionPagePickerSheetState
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.space4),
           child: Text(
-            'Type to search your Notion pages.',
+            'Type to search your Notion pages and databases.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.textTertiary(theme.brightness),
@@ -370,7 +370,7 @@ class _SearchField extends StatelessWidget {
                 textInputAction: TextInputAction.search,
                 style: theme.textTheme.bodyMedium,
                 decoration: InputDecoration(
-                  hintText: 'Search pages...',
+                  hintText: 'Search pages and databases...',
                   hintStyle: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.textTertiary(theme.brightness),
                   ),
@@ -431,7 +431,9 @@ class _PageRow extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: AppSpacing.space2),
                 child: Icon(
-                  Icons.description_outlined,
+                  page.isDataSource
+                      ? Icons.table_view_outlined
+                      : Icons.description_outlined,
                   size: AppIconSize.lg,
                   color: muted,
                 ),

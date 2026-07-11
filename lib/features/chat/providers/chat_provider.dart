@@ -94,15 +94,25 @@ class ChatNotifier extends Notifier<ChatState> {
     if (pages.isEmpty) {
       return base;
     }
-    final lines = pages.map((p) => "- '${p.title}' (id: ${p.id})").join('\n');
+    final pagesList = pages.where((p) => !p.isDataSource).toList();
+    final dataSourcesList = pages.where((p) => p.isDataSource).toList();
+    final lines = <String>[];
+    for (final p in pagesList) {
+      lines.add("- '${p.title}' (page id: ${p.id})");
+    }
+    for (final ds in dataSourcesList) {
+      lines.add("- '${ds.title}' (database/data source id: ${ds.id})");
+    }
     final hint =
-        'The user has selected the following Notion pages as the '
-        'focus of this message:\n$lines\n'
-        'You MUST fetch each of these pages with the available Notion read '
-        "tools (e.g. notion_fetch_page with the page id) before answering, so your "
-        "response is grounded in their actual content. Treat the user's "
-        'message as referring to these pages unless they clearly ask about '
-        'something else.';
+        'The user has selected the following Notion resources as the '
+        'focus of this message:\n${lines.join('\n')}\n'
+        'You MUST fetch each of these with the available Notion read '
+        'tools before answering, so your response is grounded in their '
+        'actual content. For pages, use notion_fetch_page with the page '
+        'id. For databases and data sources, use notion_get_database or '
+        'notion_query_database with the database/data source id. Treat '
+        "the user's message as referring to these resources unless they "
+        'clearly ask about something else.';
     return '$base\n\n$hint';
   }
 

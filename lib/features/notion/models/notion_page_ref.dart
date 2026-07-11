@@ -6,6 +6,7 @@ class NotionPageRef extends Equatable {
     required this.title,
     this.icon,
     this.url,
+    this.objectType,
     this.breadcrumb = const [],
   });
 
@@ -13,7 +14,10 @@ class NotionPageRef extends Equatable {
   final String title;
   final String? icon;
   final String? url;
+  final String? objectType;
   final List<String> breadcrumb;
+
+  bool get isDataSource => objectType == 'data_source';
 
   NotionPageRef copyWith({List<String>? breadcrumb}) {
     return NotionPageRef(
@@ -21,6 +25,7 @@ class NotionPageRef extends Equatable {
       title: title,
       icon: icon,
       url: url,
+      objectType: objectType,
       breadcrumb: breadcrumb ?? this.breadcrumb,
     );
   }
@@ -30,6 +35,7 @@ class NotionPageRef extends Equatable {
     'title': title,
     if (icon != null) 'icon': icon,
     if (url != null) 'url': url,
+    if (objectType != null) 'object_type': objectType,
     'breadcrumb': breadcrumb,
   };
 
@@ -40,6 +46,7 @@ class NotionPageRef extends Equatable {
       title: json['title'] as String,
       icon: json['icon'] as String?,
       url: json['url'] as String?,
+      objectType: (json['object_type'] as String?) ?? (json['object'] as String?),
       breadcrumb: breadcrumbRaw is List
           ? breadcrumbRaw.whereType<String>().toList()
           : const [],
@@ -47,5 +54,5 @@ class NotionPageRef extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, title, icon, url, breadcrumb];
+  List<Object?> get props => [id, title, icon, url, objectType, breadcrumb];
 }

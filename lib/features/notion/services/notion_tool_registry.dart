@@ -17,8 +17,9 @@ class NotionToolRegistry {
           },
           'filter': {
             'type': 'string',
-            'enum': ['page', 'database'],
-            'description': 'Filter results to only pages or only databases.',
+            'enum': ['page', 'database', 'data_source'],
+            'description': 'Filter results to only pages, only databases, '
+                'or only data sources.',
           },
           'page_size': {
             'type': 'integer',
@@ -121,8 +122,30 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_get_database',
-      description: 'Retrieve a Notion database by ID, including its '
-          'properties schema, title, parent, and metadata.',
+      description: 'Retrieve a Notion data source by ID (pass either '
+          'database_id or data_source_id), including its properties schema, '
+          'title, parent, and metadata.',
+      parameters: {
+        'type': 'object',
+        'properties': {
+          'database_id': {
+            'type': 'string',
+            'description': 'The ID of the Notion database. The single '
+                'data source under it is resolved automatically.',
+          },
+          'data_source_id': {
+            'type': 'string',
+            'description': 'The ID of the data source to fetch directly.',
+          },
+        },
+        'required': [],
+      },
+    ),
+    NotionToolMeta(
+      name: 'notion_fetch_database',
+      description: 'Retrieve the raw Notion database object by ID, including '
+          'its title, parent, data sources list, and metadata. Use this to '
+          'read the database itself (not the data source schema).',
       parameters: {
         'type': 'object',
         'properties': {

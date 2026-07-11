@@ -61,10 +61,10 @@ class _AttachButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.book_outlined, color: iconColor, size: AppIconSize.md),
+              Icon(Icons.add, color: iconColor, size: AppIconSize.md),
               const SizedBox(width: AppSpacing.space2),
               Text(
-                'Notion page',
+                'Notion',
                 style: AppFonts.labelMd().copyWith(color: textColor),
               ),
             ],
