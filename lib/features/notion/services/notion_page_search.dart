@@ -91,6 +91,25 @@ class NotionPageSearch {
           }
           if (parts.isNotEmpty) return parts.join();
         }
+      } else {
+        for (final entry in properties.entries) {
+          if (entry.value is Map<String, dynamic>) {
+            final propMap = entry.value as Map<String, dynamic>;
+            if (propMap['type'] == 'title') {
+              final titleArray = propMap['title'];
+              if (titleArray is List) {
+                final parts = <String>[];
+                for (final part in titleArray) {
+                  if (part is Map<String, dynamic>) {
+                    final plain = part['plain_text'];
+                    if (plain is String) parts.add(plain);
+                  }
+                }
+                if (parts.isNotEmpty) return parts.join();
+              }
+            }
+          }
+        }
       }
     }
     final title = page['title'];
