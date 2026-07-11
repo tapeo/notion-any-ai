@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Any AI for Notion
-Comment=Open-source Flutter chat client that connects OpenAI to Notion via MCP
+Comment=Open-source Flutter chat client that connects any AI provider to Notion via the Notion API
 Exec=any-ai-for-notion
 Icon=${SNAP}/meta/gui/any-ai-for-notion.png
 Terminal=false

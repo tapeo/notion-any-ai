@@ -1,6 +1,6 @@
 # Privacy Policy – Any AI for Notion
 
-**Last Updated:** July 9, 2026
+**Last Updated:** July 12, 2026
 
 ## 1. Introduction
 
@@ -54,11 +54,11 @@ Beyond the single `/track` ping described above, **we collect nothing else**:
 
 ### 4.1 API Keys
 
-Your AI provider API keys (OpenAI, Anthropic, Google, etc.) are stored **locally on your device**. They are never sent to us, never uploaded anywhere, and never shared with anyone unless you choose to share them.
+Your AI provider API keys (OpenAI, Anthropic, Google, etc.) and your Notion integration token are stored **locally on your device**. They are never sent to us, never uploaded anywhere, and never shared with anyone unless you choose to share them.
 
 ### 4.2 Notion Content
 
-Your Notion workspace data is accessed locally through the Notion MCP protocol on your machine. We never see, store, or process your Notion content.
+Your Notion workspace data is accessed through the Notion API. We never see, store, or process your Notion content.
 
 ### 4.3 AI Prompts & Responses
 
@@ -115,7 +115,7 @@ There is **no persistent database** of user information anywhere in the system.
 
 ### 8.1 Notion
 
-When you connect to Notion, communications are handled through the Notion MCP protocol. Your use of Notion is subject to [Notion's Privacy Policy](https://www.notion.so/privacy).
+When you connect to Notion, communications are handled through the Notion API. Your use of Notion is subject to [Notion's Privacy Policy](https://www.notion.so/privacy).
 
 ### 8.2 AI Providers
 
@@ -173,4 +173,4 @@ If you have any questions about this Privacy Policy, please reach out through ou
 
 ---
 
-_This product uses the Notion MCP protocol. "Notion" is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners._
+_This product uses the Notion API. "Notion" is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners._

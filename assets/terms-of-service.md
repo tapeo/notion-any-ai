@@ -1,6 +1,6 @@
 # Terms of Service – Any AI for Notion
 
-**Last Updated:** July 9, 2026
+**Last Updated:** July 12, 2026
 
 ## 1. Acceptance of Terms
 
@@ -73,7 +73,7 @@ When using local LLMs (Ollama, LM Studio, etc.), all AI processing occurs **enti
 
 ### 5.1 Notion Integration
 
-The Software connects via the **Notion MCP protocol** to your Notion workspace. Your use of Notion is governed by Notion's own Terms of Service and Privacy Policy.
+The Software connects via the **Notion API** to your Notion workspace. Your use of Notion is governed by Notion's own Terms of Service and Privacy Policy.
 
 ### 5.2 AI Providers
 
@@ -147,4 +147,4 @@ For questions about these Terms, please reach out through our official project c
 
 ---
 
-_This product uses the Notion MCP protocol. "Notion" is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners._
+_This product uses the Notion API. "Notion" is a trademark of Notion Labs Inc. All AI provider names are trademarks of their respective owners._

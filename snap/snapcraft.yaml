@@ -3,8 +3,8 @@ version: 0.7.0
 title: Any AI for Notion
 summary: Any AI for Notion chat client
 description: |
-  Open-source Flutter app that connects OpenAI to Notion via the Model Context
-  Protocol (MCP), with voice input, reminders, and conversation memory.
+  Open-source Flutter app that connects any AI provider to Notion via the
+  Notion API, with voice input, reminders, and conversation memory.
 license: GPL-3.0
 contact: tapeo@users.noreply.github.com
 website: https://github.com/tapeo/notion-any-ai
