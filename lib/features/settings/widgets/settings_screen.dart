@@ -9,6 +9,7 @@ import '../../../app/widgets/frosted_icon_button.dart';
 import '../../ai_provider/widgets/ai_provider_setup.dart';
 import '../../builtin_tools/widgets/builtin_tools_setup.dart';
 import '../../feedback/widgets/feedback_dialog.dart';
+import 'clear_app_data_section.dart';
 import '../../memory/widgets/memory_setup.dart';
 import '../../notifications/widgets/notifications_setup.dart';
 import '../../notion/services/notion_platform.dart';
@@ -119,6 +120,8 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.space4),
                 const _LegalSectionGroup(),
+                const SizedBox(height: AppSpacing.space4),
+                const ClearAppDataSection(),
               ],
             ),
           ),
