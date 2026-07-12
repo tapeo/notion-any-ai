@@ -126,8 +126,8 @@ class SettingsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
           top: topInset + AppSpacing.space3,
-          left: AppSpacing.space4,
-          right: AppSpacing.space4,
+          left: AppSpacing.space0,
+          right: AppSpacing.space0,
           bottom: AppSpacing.space4,
         ),
         child: Center(
@@ -144,9 +144,9 @@ class SettingsScreen extends StatelessWidget {
                   _MinimalTile(
                     icon: section.icon,
                     label: section.label,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => section.screen),
-                    ),
+                    onTap: () => Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(builder: (_) => section.screen)),
                   ),
                   const SizedBox(height: AppSpacing.space1),
                 ],
@@ -215,16 +215,14 @@ class _GroupLabel extends StatelessWidget {
     final b = Theme.of(context).brightness;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.space0,
+        AppSpacing.space4,
         AppSpacing.space3,
-        AppSpacing.space0,
+        AppSpacing.space4,
         AppSpacing.space2,
       ),
       child: Text(
         text,
-        style: AppFonts.microUpper().copyWith(
-          color: AppColors.textTertiary(b),
-        ),
+        style: AppFonts.microUpper().copyWith(color: AppColors.textTertiary(b)),
       ),
     );
   }
@@ -260,36 +258,41 @@ class _MinimalTileState extends State<_MinimalTile> {
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
-      child: Material(
-        color: bg,
-        shape: AppShapes.sm(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: widget.onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.space0,
-              vertical: AppSpacing.space2,
-            ),
-            child: Row(
-              children: [
-                Icon(widget.icon, size: 18, color: AppColors.accent),
-                const SizedBox(width: AppSpacing.space3),
-                Expanded(
-                  child: Text(
-                    widget.label,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.space2,
+        ),
+        child: Material(
+          color: bg,
+          shape: AppShapes.sm(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: widget.onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space3,
+                vertical: AppSpacing.space2,
+              ),
+              child: Row(
+                children: [
+                  Icon(widget.icon, size: 18, color: AppColors.accent),
+                  const SizedBox(width: AppSpacing.space3),
+                  Expanded(
+                    child: Text(
+                      widget.label,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: AppSpacing.space2),
-                Icon(
-                  widget.trailing,
-                  size: AppIconSize.lg,
-                  color: AppColors.textTertiary(b),
-                ),
-              ],
+                  const SizedBox(width: AppSpacing.space2),
+                  Icon(
+                    widget.trailing,
+                    size: AppIconSize.lg,
+                    color: AppColors.textTertiary(b),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
