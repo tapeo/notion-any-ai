@@ -22,7 +22,6 @@ class _MessageListState extends ConsumerState<MessageList> {
   final ScrollController _controller = ScrollController();
   static const double _bottomThreshold = 80.0;
   bool _autoScrollEnabled = true;
-  bool _wasEmpty = true;
   String? _lastActiveId;
   String? _lastMessageId;
   int _lastLastMessageLength = 0;
@@ -80,28 +79,21 @@ class _MessageListState extends ConsumerState<MessageList> {
     final chat = ref.watch(chatProvider);
     final messages = chat.messages;
 
-    final mediaQuery = MediaQuery.of(context);
-    final topInset = mediaQuery.padding.top + kToolbarHeight;
+    final topInset = MediaQuery.of(context).padding.top;
     final bottomInset = widget.bottomInset;
 
     if (messages.isEmpty) {
-      _wasEmpty = true;
       return GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapDown: (_) => FocusScope.of(context).unfocus(),
         onPanDown: (_) => FocusScope.of(context).unfocus(),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: topInset + AppSpacing.space4,
-                  bottom: bottomInset + AppSpacing.space6,
-                ),
-                child: const EmptyChatState(),
-              ),
-            ),
-          ],
+        child: ListView(
+          controller: _controller,
+          padding: EdgeInsets.only(
+            top: topInset + AppSpacing.space4,
+            bottom: bottomInset + AppSpacing.space6,
+          ),
+          children: [const EmptyChatState()],
         ),
       );
     }
@@ -136,17 +128,6 @@ class _MessageListState extends ConsumerState<MessageList> {
     _lastActiveId = activeId;
     _lastMessageId = lastMessageId;
     _lastLastMessageLength = lastMessageLength;
-
-    // Reset scroll offset and enable auto-scroll when transitioning from
-    // the empty state to the first message so the bubble lands at the top
-    // rather than inheriting a stale scroll position.
-    if (_wasEmpty) {
-      _wasEmpty = false;
-      _autoScrollEnabled = true;
-      if (_controller.hasClients) {
-        _controller.jumpTo(0);
-      }
-    }
 
     if (activeChanged) {
       _autoScrollEnabled = true;
