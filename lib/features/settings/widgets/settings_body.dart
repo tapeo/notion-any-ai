@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/theme/app_colors.dart';
-import '../../../app/theme/app_shapes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../app/widgets/frosted_app_bar.dart';
 import '../../../app/widgets/frosted_icon_button.dart';
@@ -47,95 +46,25 @@ class SettingsBody extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: AppLayout.settingsWidth,
             ),
-            child: _SettingsCard(
-              icon: icon,
-              title: title,
-              description: description,
-              child: child,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsCard extends StatelessWidget {
-  const _SettingsCard({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.child,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      color: AppColors.surfaceCard(theme.brightness),
-      shape: AppShapes.lg(
-        side: BorderSide(color: AppColors.borderSubtle(theme.brightness)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.space4,
-              AppSpacing.space4,
-              AppSpacing.space4,
-              AppSpacing.space2,
-            ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Material(
-                  color: AppColors.accent.withValues(alpha: 0.10),
-                  shape: AppShapes.md(),
-                  clipBehavior: Clip.antiAlias,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.space2 - 2),
-                    child: Icon(icon, size: 18, color: AppColors.accent),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.space2),
+                Icon(icon, size: 18, color: AppColors.accent),
+                const SizedBox(height: AppSpacing.space2),
                 Text(
-                  title,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  description,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary(
+                          Theme.of(context).brightness,
+                        ),
+                      ),
                 ),
+                const SizedBox(height: AppSpacing.space5),
+                child,
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
-            child: Text(
-              description,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary(theme.brightness),
-              ),
-            ),
-          ),
-          Divider(
-            height: AppSpacing.space5,
-            color: AppColors.borderSubtle(theme.brightness),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.space4,
-              0,
-              AppSpacing.space4,
-              AppSpacing.space4,
-            ),
-            child: child,
-          ),
-        ],
+        ),
       ),
     );
   }
