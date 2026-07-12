@@ -7,6 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_fonts.dart';
 import '../../../app/theme/app_shapes.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../builtin_tools/models/builtin_tool_meta.dart';
 import '../models/tool_call.dart';
 
 class ToolCallEntry {
@@ -34,17 +35,28 @@ class ToolCallGroup extends StatelessWidget {
       (e) =>
           e.resultContent != null && e.resultContent!.startsWith('Tool error:'),
     );
+    final hasUnansweredAskUser = entries.any(
+      (e) =>
+          e.toolCall.name == BuiltinToolRegistry.askUserId &&
+          e.resultContent == null,
+    );
 
-    final headerIcon = !allDone
-        ? Icons.build_outlined
-        : (hasError ? Icons.error_outline : Icons.check_circle_outline);
+    final headerIcon = hasUnansweredAskUser
+        ? Icons.help_outline
+        : (!allDone
+            ? Icons.build_outlined
+            : (hasError ? Icons.error_outline : Icons.check_circle_outline));
     final headerColor = hasError
         ? AppColors.error
-        : (allDone ? AppColors.success : muted);
+        : (hasUnansweredAskUser
+            ? muted
+            : (allDone ? AppColors.success : muted));
 
-    final headerLabel = !allDone
-        ? 'Running $doneCount/$total'
-        : (hasError ? 'Completed with errors' : 'Completed');
+    final headerLabel = hasUnansweredAskUser
+        ? 'Unanswered'
+        : (!allDone
+            ? 'Running $doneCount/$total'
+            : (hasError ? 'Completed with errors' : 'Completed'));
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -79,7 +91,7 @@ class ToolCallGroup extends StatelessWidget {
                     headerLabel,
                     style: AppFonts.labelSmall().copyWith(color: headerColor),
                   ),
-                  if (!allDone) ...[
+                  if (!allDone && !hasUnansweredAskUser) ...[
                     const SizedBox(width: AppSpacing.space2),
                     SizedBox(
                       width: AppIconSize.md,
@@ -125,6 +137,9 @@ class _ToolRow extends StatelessWidget {
   bool get _isError =>
       entry.resultContent != null &&
       entry.resultContent!.startsWith('Tool error:');
+  bool get _isUnansweredAskUser =>
+      entry.toolCall.name == BuiltinToolRegistry.askUserId &&
+      entry.resultContent == null;
 
   @override
   Widget build(BuildContext context) {
@@ -132,14 +147,20 @@ class _ToolRow extends StatelessWidget {
     final brightness = theme.brightness;
     final muted = AppColors.textSecondary(brightness);
 
-    final icon = !_isDone
-        ? Icons.hourglass_top_outlined
-        : (_isError ? Icons.error_outline : Icons.check_circle_outline);
+    final icon = _isUnansweredAskUser
+        ? Icons.help_outline
+        : (!_isDone
+            ? Icons.hourglass_top_outlined
+            : (_isError ? Icons.error_outline : Icons.check_circle_outline));
     final iconColor = _isError
         ? AppColors.error
-        : (_isDone ? AppColors.success : muted);
+        : (_isUnansweredAskUser
+            ? muted
+            : (_isDone ? AppColors.success : muted));
 
-    final statusLabel = !_isDone ? 'running' : (_isError ? 'error' : 'done');
+    final statusLabel = _isUnansweredAskUser
+        ? 'unanswered'
+        : (!_isDone ? 'running' : (_isError ? 'error' : 'done'));
 
     return InkWell(
       onTap: () => showToolCallDetails(context, entry),

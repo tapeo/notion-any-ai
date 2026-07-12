@@ -5,11 +5,14 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 import '../../chat/models/tool_call.dart' show ToolCall;
 import '../../memory/models/memory_section.dart';
 import '../../memory/providers/memory_notifier.dart';
 import '../../notifications/providers/notifications_provider.dart';
+import '../models/pending_question.dart';
+import '../providers/pending_question_provider.dart';
 
 typedef BuiltinToolExecutor =
     Future<String> Function(Map<String, dynamic> arguments, Ref ref);
@@ -262,6 +265,32 @@ Future<String> _fetchUrl(Map<String, dynamic> arguments, Ref ref) async {
   }
 }
 
+Future<String> _askUser(Map<String, dynamic> arguments, Ref ref) async {
+  final question = arguments['question'] as String?;
+  if (question == null || question.trim().isEmpty) {
+    return 'Tool error: Missing required parameter \'question\' for ask_user.';
+  }
+  final pendingState = ref.read(pendingQuestionProvider);
+  if (pendingState.pending != null) {
+    return 'Tool error: Another question is already pending. '
+        'Ask one question at a time.';
+  }
+  final optionsRaw = arguments['options'] as List?;
+  final options = optionsRaw
+      ?.map((e) => e.toString())
+      .where((s) => s.isNotEmpty)
+      .toList();
+  final context = arguments['context'] as String?;
+  final uuid = const Uuid().v4();
+  final pending = PendingQuestion(
+    id: uuid,
+    question: question.trim(),
+    options: options,
+    context: context,
+  );
+  return ref.read(pendingQuestionProvider.notifier).ask(pending);
+}
+
 class BuiltinToolRegistry {
   BuiltinToolRegistry._();
 
@@ -274,6 +303,7 @@ class BuiltinToolRegistry {
   static const String addMemoryId = 'add_memory';
   static const String deleteMemoryId = 'delete_memory';
   static const String fetchUrlId = 'fetch_url';
+  static const String askUserId = 'ask_user';
 
   static const Set<String> memoryToolIds = {
     readMemoryId,
@@ -490,6 +520,45 @@ class BuiltinToolRegistry {
         'required': ['url'],
       },
       executor: _fetchUrl,
+    ),
+    BuiltinToolMeta(
+      id: askUserId,
+      name: 'ask_user',
+      description:
+          'Ask the user a question when you need more information to '
+          'proceed. Use this when the request is ambiguous, missing required '
+          'details, or when you need confirmation before taking an action. '
+          'Pass \'question\' with the text to show. Optionally pass \'options\' '
+          'as a list of strings for a multiple-choice question. If \'options\' '
+          'is omitted the user can type a free-text answer. Optionally pass '
+          '\'context\' to explain why you are asking. The tool returns the '
+          'user\'s answer as a string, or \'User dismissed the question.\' if '
+          'they skipped it. Only one question can be pending at a time.',
+      parameters: const {
+        'type': 'object',
+        'properties': {
+          'question': {
+            'type': 'string',
+            'description': 'The question to ask the user.',
+          },
+          'options': {
+            'type': 'array',
+            'items': {'type': 'string'},
+            'description':
+                'Optional list of choices. If provided, the user '
+                'selects one (or types "Other"). If omitted, the user types '
+                'a free-text answer.',
+          },
+          'context': {
+            'type': 'string',
+            'description':
+                'Optional explanation of why you are asking, shown as '
+                'helper text below the question.',
+          },
+        },
+        'required': ['question'],
+      },
+      executor: _askUser,
     ),
   ];
 

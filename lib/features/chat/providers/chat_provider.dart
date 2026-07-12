@@ -9,6 +9,7 @@ import '../../ai_provider/providers/ai_provider_notifier.dart';
 import '../../ai_provider/providers/ai_provider_storage_provider.dart';
 import '../../builtin_tools/models/builtin_tool_meta.dart';
 import '../../builtin_tools/providers/builtin_tools_notifier.dart';
+import '../../builtin_tools/providers/pending_question_provider.dart';
 import '../../conversations/providers/conversation_storage_provider.dart';
 import '../../conversations/providers/conversations_notifier.dart';
 import '../../memory/providers/memory_notifier.dart';
@@ -228,6 +229,7 @@ class ChatNotifier extends Notifier<ChatState> {
   }
 
   void stopStreaming() {
+    ref.read(pendingQuestionProvider.notifier).dismiss();
     if (!state.isSending) {
       return;
     }

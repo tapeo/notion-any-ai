@@ -1,9 +1,13 @@
 // Bubble for a single chat message, aligned and styled per role.
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_shapes.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../builtin_tools/models/builtin_tool_meta.dart';
+import '../../builtin_tools/providers/pending_question_provider.dart';
+import '../../builtin_tools/widgets/ask_user_card.dart';
 import '../models/chat_message.dart';
 import '../models/chat_role.dart';
 import '../models/tool_call.dart';
@@ -11,7 +15,7 @@ import 'copy_button.dart';
 import 'markdown_text.dart';
 import 'tool_call_group.dart';
 
-class MessageBubble extends StatelessWidget {
+class MessageBubble extends ConsumerWidget {
   const MessageBubble({
     super.key,
     required this.message,
@@ -24,7 +28,7 @@ class MessageBubble extends StatelessWidget {
   final bool playEntrance;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (message.role == ChatRole.tool) {
       return _ToolResultBubble(message: message, allMessages: allMessages);
     }
@@ -279,7 +283,7 @@ class _Dot extends StatelessWidget {
   }
 }
 
-class _ToolCallBubble extends StatelessWidget {
+class _ToolCallBubble extends ConsumerWidget {
   const _ToolCallBubble({required this.message, required this.allMessages});
 
   final ChatMessage message;
@@ -295,7 +299,34 @@ class _ToolCallBubble extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pendingQuestion = ref.watch(
+      pendingQuestionProvider.select((s) => s.pending),
+    );
+    final notifier = ref.read(pendingQuestionProvider.notifier);
+
+    final askUserEntries = <Widget>[];
+    final otherEntries = <ToolCallEntry>[];
+
+    for (final call in message.toolCalls!) {
+      final result = _resultFor(call.id);
+      if (call.name == BuiltinToolRegistry.askUserId &&
+          result == null &&
+          pendingQuestion != null) {
+        askUserEntries.add(
+          AskUserCard(
+            question: pendingQuestion,
+            onSubmit: notifier.submitAnswer,
+            onDismiss: notifier.dismiss,
+          ),
+        );
+      } else {
+        otherEntries.add(
+          ToolCallEntry(toolCall: call, resultContent: result),
+        );
+      }
+    }
+
     final children = <Widget>[];
 
     if (message.content != null && message.content!.trim().isNotEmpty) {
@@ -307,14 +338,11 @@ class _ToolCallBubble extends StatelessWidget {
       );
     }
 
-    children.add(
-      ToolCallGroup(
-        entries: [
-          for (final call in message.toolCalls!)
-            ToolCallEntry(toolCall: call, resultContent: _resultFor(call.id)),
-        ],
-      ),
-    );
+    if (otherEntries.isNotEmpty) {
+      children.add(ToolCallGroup(entries: otherEntries));
+    }
+
+    children.addAll(askUserEntries);
 
     return Padding(
       padding: const EdgeInsets.symmetric(
