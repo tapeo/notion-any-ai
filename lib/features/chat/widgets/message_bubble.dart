@@ -47,13 +47,47 @@ class _TextBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isUser = message.role == ChatRole.user;
-
-    final bubbleColor = isUser
-        ? AppColors.userBubble
-        : AppColors.assistantBubble(theme.brightness);
-
     final alignment = isUser ? MainAxisAlignment.end : MainAxisAlignment.start;
     final hasContent = message.content != null && message.content!.isNotEmpty;
+
+    final contentWidget = isUser
+        ? SelectableText(
+            message.content ?? '',
+            style: (theme.textTheme.bodyMedium ?? const TextStyle()).copyWith(
+              color: AppColors.userBubbleText,
+            ),
+          )
+        : !hasContent
+        ? const _TypingIndicator()
+        : MarkdownText(data: message.content!, isUser: false);
+
+    final messageWidget = isUser
+        ? ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+            ),
+            child: Material(
+              color: AppColors.userBubble,
+              shape: AppShapes.sm(),
+              clipBehavior: Clip.antiAlias,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.space3 + 1,
+                  AppSpacing.space2 + 1,
+                  AppSpacing.space3 + 1,
+                  AppSpacing.space2 + 1,
+                ),
+                child: contentWidget,
+              ),
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.space1,
+              vertical: AppSpacing.space1,
+            ),
+            child: contentWidget,
+          );
 
     final child = Padding(
       padding: const EdgeInsets.symmetric(
@@ -71,37 +105,7 @@ class _TextBubble extends StatelessWidget {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.8,
-                  ),
-                  child: Material(
-                    color: bubbleColor,
-                    shape: AppShapes.sm(),
-                    clipBehavior: Clip.antiAlias,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.space3 + 1,
-                        AppSpacing.space2 + 1,
-                        AppSpacing.space3 + 1,
-                        AppSpacing.space2 + 1,
-                      ),
-                      child: isUser
-                          ? SelectableText(
-                              message.content ?? '',
-                              style:
-                                  (theme.textTheme.bodyMedium ??
-                                          const TextStyle())
-                                      .copyWith(
-                                        color: AppColors.userBubbleText,
-                                      ),
-                            )
-                          : !hasContent
-                          ? const _TypingIndicator()
-                          : MarkdownText(data: message.content!, isUser: false),
-                    ),
-                  ),
-                ),
+                messageWidget,
                 if (hasContent) ...[
                   const SizedBox(height: AppSpacing.space1 - 2),
                   Padding(
@@ -343,31 +347,16 @@ class _AssistantText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final bubbleColor = AppColors.assistantBubble(theme.brightness);
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.8,
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.space1,
+            vertical: AppSpacing.space1,
           ),
-          child: Material(
-            color: bubbleColor,
-            shape: AppShapes.sm(),
-            clipBehavior: Clip.antiAlias,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.space3 + 1,
-                AppSpacing.space2 + 1,
-                AppSpacing.space3 + 1,
-                AppSpacing.space2 + 1 - (AppSpacing.space1 + 4),
-              ),
-              child: MarkdownText(data: message.content ?? '', isUser: false),
-            ),
-          ),
+          child: MarkdownText(data: message.content ?? '', isUser: false),
         ),
         const SizedBox(height: AppSpacing.space1 - 2),
         Padding(
