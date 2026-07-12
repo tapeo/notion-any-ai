@@ -87,13 +87,12 @@ class _MessageListState extends ConsumerState<MessageList> {
         behavior: HitTestBehavior.translucent,
         onTapDown: (_) => FocusScope.of(context).unfocus(),
         onPanDown: (_) => FocusScope.of(context).unfocus(),
-        child: ListView(
-          controller: _controller,
-          padding: EdgeInsets.only(
-            top: topInset + AppSpacing.space4,
-            bottom: bottomInset + AppSpacing.space6,
-          ),
-          children: [const EmptyChatState()],
+        child: Column(
+          children: [
+            SizedBox(height: topInset + AppSpacing.space4),
+            Expanded(child: const EmptyChatState()),
+            SizedBox(height: bottomInset + AppSpacing.space6),
+          ],
         ),
       );
     }

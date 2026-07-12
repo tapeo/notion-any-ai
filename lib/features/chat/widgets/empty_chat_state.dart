@@ -25,7 +25,7 @@ class EmptyChatState extends StatelessWidget {
             const SizedBox(height: AppSpacing.space4),
             Text(
               'How can I help you?',
-              style: AppFonts.headingMd().copyWith(
+              style: AppFonts.headingLg().copyWith(
                 color: theme.colorScheme.onSurface,
               ),
             ),
