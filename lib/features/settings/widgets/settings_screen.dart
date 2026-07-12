@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_fonts.dart';
 import '../../../app/theme/app_shapes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../app/widgets/frosted_app_bar.dart';
@@ -83,6 +84,31 @@ class SettingsScreen extends StatelessWidget {
     ),
   ];
 
+  static const _legalLinks = <_LegalLink>[
+    _LegalLink(
+      icon: Icons.description_outlined,
+      label: 'Terms of Service',
+      url:
+          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/terms-of-service.md',
+    ),
+    _LegalLink(
+      icon: Icons.privacy_tip_outlined,
+      label: 'Privacy Policy',
+      url:
+          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/privacy-policy.md',
+    ),
+    _LegalLink(
+      icon: Icons.code_outlined,
+      label: 'Open source - leave a Star',
+      url: 'https://github.com/tapeo/notion-any-ai',
+    ),
+    _LegalLink(
+      icon: Icons.dns_outlined,
+      label: 'Backend open source',
+      url: 'https://github.com/tapeo/notion-any-ai-backend',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final topInset = MediaQuery.of(context).padding.top + kToolbarHeight;
@@ -113,11 +139,35 @@ class SettingsScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _SettingsSectionGroup(sections: _sections),
-                const SizedBox(height: AppSpacing.space4),
-                _FeedbackTile(onTap: () => showFeedbackDialog(context)),
-                const SizedBox(height: AppSpacing.space4),
-                const _LegalSectionGroup(),
+                const _GroupLabel('General'),
+                for (final section in _sections) ...[
+                  _MinimalTile(
+                    icon: section.icon,
+                    label: section.label,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => section.screen),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.space1),
+                ],
+                const SizedBox(height: AppSpacing.space3),
+                const _GroupLabel('Feedback'),
+                _MinimalTile(
+                  icon: Icons.feedback_outlined,
+                  label: 'Leave feedback',
+                  onTap: () => showFeedbackDialog(context),
+                ),
+                const SizedBox(height: AppSpacing.space3),
+                const _GroupLabel('Legal'),
+                for (final link in _legalLinks) ...[
+                  _MinimalTile(
+                    icon: link.icon,
+                    label: link.label,
+                    trailing: Icons.open_in_new,
+                    onTap: () => _launchUrlInBrowser(context, link.url),
+                  ),
+                  const SizedBox(height: AppSpacing.space1),
+                ],
                 const SizedBox(height: AppSpacing.space4),
                 const ClearAppDataSection(),
               ],
@@ -143,202 +193,6 @@ class SettingsSection {
   final Widget screen;
 }
 
-class _FeedbackTile extends StatefulWidget {
-  const _FeedbackTile({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  State<_FeedbackTile> createState() => _FeedbackTileState();
-}
-
-class _FeedbackTileState extends State<_FeedbackTile> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final b = theme.brightness;
-    final bg = _hovered ? AppColors.hoverFillFor(b) : Colors.transparent;
-
-    return Material(
-      color: AppColors.surfaceCard(theme.brightness),
-      shape: AppShapes.lg(
-        side: BorderSide(color: AppColors.borderSubtle(theme.brightness)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: Material(
-          color: bg,
-          child: InkWell(
-            onTap: widget.onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.space4,
-                vertical: AppSpacing.space3,
-              ),
-              child: Row(
-                children: [
-                  Material(
-                    color: AppColors.accent.withValues(alpha: 0.10),
-                    shape: AppShapes.md(),
-                    clipBehavior: Clip.antiAlias,
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.space2 - 2),
-                      child: Icon(
-                        Icons.feedback_outlined,
-                        size: 18,
-                        color: AppColors.accent,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.space3),
-                  Expanded(
-                    child: Text(
-                      'Leave feedback',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.space2),
-                  Icon(
-                    Icons.chevron_right,
-                    size: AppIconSize.lg,
-                    color: AppColors.textTertiary(b),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsSectionGroup extends StatelessWidget {
-  const _SettingsSectionGroup({required this.sections});
-
-  final List<SettingsSection> sections;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      color: AppColors.surfaceCard(theme.brightness),
-      shape: AppShapes.lg(
-        side: BorderSide(color: AppColors.borderSubtle(theme.brightness)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          for (var i = 0; i < sections.length; i++) ...[
-            _SettingsSectionTile(section: sections[i]),
-            if (i < sections.length - 1)
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: AppColors.borderSubtle(theme.brightness),
-              ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _SettingsSectionTile extends StatefulWidget {
-  const _SettingsSectionTile({required this.section});
-
-  final SettingsSection section;
-
-  @override
-  State<_SettingsSectionTile> createState() => _SettingsSectionTileState();
-}
-
-class _SettingsSectionTileState extends State<_SettingsSectionTile> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final b = theme.brightness;
-    final bg = _hovered ? AppColors.hoverFillFor(b) : Colors.transparent;
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: Material(
-        color: bg,
-        child: InkWell(
-          onTap: () => _open(context),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.space4,
-              vertical: AppSpacing.space3,
-            ),
-            child: Row(
-              children: [
-                Material(
-                  color: AppColors.accent.withValues(alpha: 0.10),
-                  shape: AppShapes.md(),
-                  clipBehavior: Clip.antiAlias,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.space2 - 2),
-                    child: Icon(
-                      widget.section.icon,
-                      size: 18,
-                      color: AppColors.accent,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.space3),
-                Expanded(
-                  child: Text(
-                    widget.section.label,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.space2),
-                Icon(
-                  Icons.chevron_right,
-                  size: AppIconSize.lg,
-                  color: AppColors.textTertiary(b),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _open(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => widget.section.screen));
-  }
-}
-
-Future<void> _launchUrlInBrowser(BuildContext context, String url) async {
-  final mode = isDesktopPlatform
-      ? LaunchMode.externalApplication
-      : LaunchMode.inAppBrowserView;
-  final uri = Uri.parse(url);
-  if (!await launchUrl(uri, mode: mode) && context.mounted) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Could not open link.')));
-  }
-}
-
 class _LegalLink {
   const _LegalLink({
     required this.icon,
@@ -351,70 +205,49 @@ class _LegalLink {
   final String url;
 }
 
-class _LegalSectionGroup extends StatelessWidget {
-  const _LegalSectionGroup();
+class _GroupLabel extends StatelessWidget {
+  const _GroupLabel(this.text);
 
-  static const _links = <_LegalLink>[
-    _LegalLink(
-      icon: Icons.description_outlined,
-      label: 'Terms of Service',
-      url:
-          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/terms-of-service.md',
-    ),
-    _LegalLink(
-      icon: Icons.privacy_tip_outlined,
-      label: 'Privacy Policy',
-      url:
-          'https://raw.githubusercontent.com/tapeo/notion-any-ai/refs/heads/main/assets/privacy-policy.md',
-    ),
-    _LegalLink(
-      icon: Icons.code_outlined,
-      label: 'Open source - leave a Star 🌟',
-      url: 'https://github.com/tapeo/notion-any-ai',
-    ),
-    _LegalLink(
-      icon: Icons.dns_outlined,
-      label: 'Backend open source',
-      url: 'https://github.com/tapeo/notion-any-ai-backend',
-    ),
-  ];
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      color: AppColors.surfaceCard(theme.brightness),
-      shape: AppShapes.lg(
-        side: BorderSide(color: AppColors.borderSubtle(theme.brightness)),
+    final b = Theme.of(context).brightness;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.space0,
+        AppSpacing.space3,
+        AppSpacing.space0,
+        AppSpacing.space2,
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          for (var i = 0; i < _links.length; i++) ...[
-            _LegalTile(link: _links[i]),
-            if (i < _links.length - 1)
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: AppColors.borderSubtle(theme.brightness),
-              ),
-          ],
-        ],
+      child: Text(
+        text,
+        style: AppFonts.microUpper().copyWith(
+          color: AppColors.textTertiary(b),
+        ),
       ),
     );
   }
 }
 
-class _LegalTile extends StatefulWidget {
-  const _LegalTile({required this.link});
+class _MinimalTile extends StatefulWidget {
+  const _MinimalTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.trailing = Icons.chevron_right,
+  });
 
-  final _LegalLink link;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final IconData trailing;
 
   @override
-  State<_LegalTile> createState() => _LegalTileState();
+  State<_MinimalTile> createState() => _MinimalTileState();
 }
 
-class _LegalTileState extends State<_LegalTile> {
+class _MinimalTileState extends State<_MinimalTile> {
   bool _hovered = false;
 
   @override
@@ -429,32 +262,22 @@ class _LegalTileState extends State<_LegalTile> {
       onExit: (_) => setState(() => _hovered = false),
       child: Material(
         color: bg,
+        shape: AppShapes.sm(),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () => _launchUrlInBrowser(context, widget.link.url),
+          onTap: widget.onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.space4,
-              vertical: AppSpacing.space3,
+              horizontal: AppSpacing.space0,
+              vertical: AppSpacing.space2,
             ),
             child: Row(
               children: [
-                Material(
-                  color: AppColors.accent.withValues(alpha: 0.10),
-                  shape: AppShapes.md(),
-                  clipBehavior: Clip.antiAlias,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.space2 - 2),
-                    child: Icon(
-                      widget.link.icon,
-                      size: 18,
-                      color: AppColors.accent,
-                    ),
-                  ),
-                ),
+                Icon(widget.icon, size: 18, color: AppColors.accent),
                 const SizedBox(width: AppSpacing.space3),
                 Expanded(
                   child: Text(
-                    widget.link.label,
+                    widget.label,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -462,7 +285,7 @@ class _LegalTileState extends State<_LegalTile> {
                 ),
                 const SizedBox(width: AppSpacing.space2),
                 Icon(
-                  Icons.open_in_new,
+                  widget.trailing,
                   size: AppIconSize.lg,
                   color: AppColors.textTertiary(b),
                 ),
@@ -472,5 +295,17 @@ class _LegalTileState extends State<_LegalTile> {
         ),
       ),
     );
+  }
+}
+
+Future<void> _launchUrlInBrowser(BuildContext context, String url) async {
+  final mode = isDesktopPlatform
+      ? LaunchMode.externalApplication
+      : LaunchMode.inAppBrowserView;
+  final uri = Uri.parse(url);
+  if (!await launchUrl(uri, mode: mode) && context.mounted) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Could not open link.')));
   }
 }
