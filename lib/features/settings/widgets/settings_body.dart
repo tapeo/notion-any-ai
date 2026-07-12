@@ -22,7 +22,6 @@ class SettingsBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: FrostedAppBar(
         title: title,
         leading: FrostedIconButton(
@@ -33,10 +32,7 @@ class SettingsBody extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
-          top:
-              MediaQuery.of(context).padding.top +
-              kToolbarHeight +
-              AppSpacing.space3,
+          top: AppSpacing.space3,
           left: AppSpacing.space4,
           right: AppSpacing.space4,
           bottom: AppSpacing.space4,

@@ -4,10 +4,10 @@ class AppFonts {
   AppFonts._();
 
   static TextStyle display() => const TextStyle(
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.5,
-        height: 1.3,
-      );
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.5,
+    height: 1.3,
+  );
 
   static TextStyle displayLarge() =>
       display().copyWith(fontSize: 57, letterSpacing: -1.4, height: 1.1);
@@ -19,25 +19,25 @@ class AppFonts {
       display().copyWith(fontSize: 36, letterSpacing: -0.72, height: 1.2);
 
   static TextStyle headlineLarge() => const TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.5,
-        height: 1.3,
-      );
+    fontSize: 28,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.5,
+    height: 1.3,
+  );
 
   static TextStyle headlineMedium() => const TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.32,
-        height: 1.3,
-      );
+    fontSize: 28,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.32,
+    height: 1.3,
+  );
 
   static TextStyle headlineSmall() => const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.16,
-        height: 1.35,
-      );
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.16,
+    height: 1.35,
+  );
 
   static TextStyle titleLarge() =>
       const TextStyle(fontSize: 22, fontWeight: FontWeight.w500, height: 1.5);
@@ -64,35 +64,35 @@ class AppFonts {
       const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, height: 1.4);
 
   static TextStyle labelSmall() => const TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.2,
-        height: 1.3,
-      );
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.2,
+    height: 1.3,
+  );
 
   static TextStyle caption() =>
       const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 1.4);
 
   static TextStyle codeMd() => const TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w400,
-        height: 1.6,
-        fontFamily: 'Menlo',
-        fontFamilyFallback: ['Courier', 'Courier New', 'monospace'],
-      );
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    height: 1.6,
+    fontFamily: 'Menlo',
+    fontFamilyFallback: ['Courier', 'Courier New', 'monospace'],
+  );
 
   static TextStyle codeSm() => const TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w400,
-        height: 1.5,
-        fontFamily: 'Menlo',
-        fontFamilyFallback: ['Courier', 'Courier New', 'monospace'],
-      );
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    fontFamily: 'Menlo',
+    fontFamilyFallback: ['Courier', 'Courier New', 'monospace'],
+  );
 
   static TextStyle microUpper() => const TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.8,
-        height: 1.3,
-      );
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.8,
+    height: 1.3,
+  );
 }

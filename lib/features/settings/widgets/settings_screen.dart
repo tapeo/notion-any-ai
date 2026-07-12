@@ -111,10 +111,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.of(context).padding.top + kToolbarHeight;
-
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: FrostedAppBar(
         title: 'Settings',
         leading: FrostedIconButton(
@@ -125,7 +122,6 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
-          top: topInset + AppSpacing.space3,
           left: AppSpacing.space0,
           right: AppSpacing.space0,
           bottom: AppSpacing.space4,
@@ -259,9 +255,7 @@ class _MinimalTileState extends State<_MinimalTile> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.space2,
-        ),
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.space2),
         child: Material(
           color: bg,
           shape: AppShapes.sm(),

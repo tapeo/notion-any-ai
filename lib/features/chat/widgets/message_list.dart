@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../conversations/providers/conversations_notifier.dart';
-import '../providers/chat_provider.dart';
 import '../models/chat_role.dart';
+import '../providers/chat_provider.dart';
 import 'empty_chat_state.dart';
 import 'message_bubble.dart';
 
@@ -79,7 +79,6 @@ class _MessageListState extends ConsumerState<MessageList> {
     final chat = ref.watch(chatProvider);
     final messages = chat.messages;
 
-    final topInset = MediaQuery.of(context).padding.top;
     final bottomInset = widget.bottomInset;
 
     if (messages.isEmpty) {
@@ -89,7 +88,7 @@ class _MessageListState extends ConsumerState<MessageList> {
         onPanDown: (_) => FocusScope.of(context).unfocus(),
         child: Column(
           children: [
-            SizedBox(height: topInset + AppSpacing.space4),
+            SizedBox(height: AppSpacing.space4),
             Expanded(child: const EmptyChatState()),
             SizedBox(height: bottomInset + AppSpacing.space6),
           ],
@@ -142,7 +141,7 @@ class _MessageListState extends ConsumerState<MessageList> {
       child: ListView.builder(
         controller: _controller,
         padding: EdgeInsets.only(
-          top: topInset + AppSpacing.space4,
+          top: AppSpacing.space1,
           bottom: bottomInset + AppSpacing.space6,
         ),
         itemCount: messages.length,

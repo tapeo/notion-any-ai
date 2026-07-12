@@ -56,7 +56,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       chatProvider.select((s) => s.messages.isNotEmpty),
     );
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: FrostedAppBar(
         title: 'Any AI for Notion',
         leading: FrostedIconButton(
