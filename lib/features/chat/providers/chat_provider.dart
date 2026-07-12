@@ -7,7 +7,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../ai_provider/providers/ai_provider_notifier.dart';
 import '../../ai_provider/providers/ai_provider_storage_provider.dart';
-import '../../ai_provider/states/ai_provider_state.dart';
 import '../../builtin_tools/models/builtin_tool_meta.dart';
 import '../../builtin_tools/providers/builtin_tools_notifier.dart';
 import '../../conversations/providers/conversation_storage_provider.dart';
@@ -33,11 +32,6 @@ class ChatNotifier extends Notifier<ChatState> {
 
   static const int _maxIterations = 100;
 
-  late AiProviderState _ai;
-  late NotionConnectionState _notion;
-  late SystemPromptState _systemPrompt;
-  late String _memoryContent;
-
   StreamSubscription<dynamic>? _streamSub;
   Completer<void>? _streamCompleter;
   bool _stopped = false;
@@ -45,12 +39,6 @@ class ChatNotifier extends Notifier<ChatState> {
 
   @override
   ChatState build() {
-    _ai = ref.watch(aiProviderProvider);
-    _notion = ref.watch(notionConnectionProvider);
-    _systemPrompt = ref.watch(systemPromptProvider);
-    _memoryContent = ref.watch(memoryProvider.select((s) => s.content));
-    ref.watch(builtinToolsProvider);
-
     ref.listen<String?>(conversationsProvider.select((s) => s.activeId), (
       previous,
       next,
@@ -83,21 +71,24 @@ class ChatNotifier extends Notifier<ChatState> {
   }
 
   String get _effectiveSystemPrompt {
-    final base = _systemPrompt.prompt.isEmpty
-        ? SystemPromptState.defaultPrompt
-        : _systemPrompt.prompt;
+    final prompt = ref.read(systemPromptProvider).prompt;
+    final base =
+        prompt.isEmpty ? SystemPromptState.defaultPrompt : prompt;
     return base;
   }
 
   String _systemPromptWithPages(List<NotionPageRef> pages) {
     var base = _effectiveSystemPrompt;
-    if (_memoryContent.trim().isNotEmpty) {
+    final memoryContent = ref.read(
+      memoryProvider.select((s) => s.content),
+    );
+    if (memoryContent.trim().isNotEmpty) {
       base =
           '$base\n\n## Persistent memory\n'
           'The following is the shared persistent memory. Treat it as facts '
           'the user asked you to remember across conversations. You can read, '
           'search, add, and delete sections using the memory tools.\n\n'
-          '$_memoryContent';
+          '$memoryContent';
     }
     if (pages.isEmpty) {
       return base;
@@ -136,7 +127,7 @@ class ChatNotifier extends Notifier<ChatState> {
     if (trimmed.isEmpty || state.isSending) {
       return;
     }
-    if (!_ai.isConfigured) {
+    if (!ref.read(aiProviderProvider).isConfigured) {
       _appendAssistant(
         'Configure the AI provider in Settings to start chatting.',
       );
@@ -212,6 +203,11 @@ class ChatNotifier extends Notifier<ChatState> {
     ref.read(conversationsProvider.notifier).open(id);
   }
 
+  Future<void> reloadActiveConversation() async {
+    final id = ref.read(conversationsProvider.select((s) => s.activeId));
+    await _loadActiveConversation(id);
+  }
+
   Future<void> deleteConversation(String id) async {
     await ref.read(conversationsProvider.notifier).delete(id);
   }
@@ -246,6 +242,8 @@ class ChatNotifier extends Notifier<ChatState> {
   Future<void> _runCompletionLoop({
     List<NotionPageRef> selectedPages = const [],
   }) async {
+    final ai = ref.read(aiProviderProvider);
+    final notion = ref.read(notionConnectionProvider);
     final client = ref.read(openAiChatClientProvider);
     final apiKey = await _loadApiKey();
     if (apiKey == null) {
@@ -266,10 +264,10 @@ class ChatNotifier extends Notifier<ChatState> {
       final bridge = NotionToolBridge(
         mcpClient: ref.read(notionMcpClientProvider),
         accessToken: notionAccessToken,
-        availableTools: _notion.tools,
+        availableTools: notion.tools,
       );
       toolSchemas.addAll(
-        bridge.buildTools(available: _notion.tools, enabled: enabledTools),
+        bridge.buildTools(available: notion.tools, enabled: enabledTools),
       );
     }
     toolSchemas.addAll(
@@ -317,9 +315,9 @@ class ChatNotifier extends Notifier<ChatState> {
       _streamCompleter = completer;
       _streamSub = client
           .streamComplete(
-            endpoint: _ai.endpoint,
+            endpoint: ai.endpoint,
             apiKey: apiKey,
-            model: _ai.model,
+            model: ai.model,
             messages: conversation,
             tools: toolSchemas,
           )
@@ -376,7 +374,7 @@ class ChatNotifier extends Notifier<ChatState> {
         final bridge = NotionToolBridge(
           mcpClient: ref.read(notionMcpClientProvider),
           accessToken: notionAccessToken ?? '',
-          availableTools: _notion.tools,
+          availableTools: notion.tools,
         );
         for (final call in toolCalls) {
           final String result;
@@ -438,7 +436,8 @@ class ChatNotifier extends Notifier<ChatState> {
   }
 
   Future<void> _generateTitle(String conversationId) async {
-    if (!_ai.isConfigured) return;
+    final ai = ref.read(aiProviderProvider);
+    if (!ai.isConfigured) return;
     final apiKey = await _loadApiKey();
     if (apiKey == null) return;
 
@@ -474,9 +473,9 @@ class ChatNotifier extends Notifier<ChatState> {
     try {
       final client = ref.read(openAiChatClientProvider);
       final title = await client.complete(
-        endpoint: _ai.endpoint,
+        endpoint: ai.endpoint,
         apiKey: apiKey,
-        model: _ai.model,
+        model: ai.model,
         messages: titleMessages,
       );
       if (title != null && title.trim().isNotEmpty) {
@@ -543,12 +542,13 @@ class ChatNotifier extends Notifier<ChatState> {
 
   Future<({String? accessToken, List<String>? enabledTools})>
   _loadNotionContext() async {
-    if (!_notion.connected || !_notion.enabled) {
+    final notion = ref.read(notionConnectionProvider);
+    if (!notion.connected || !notion.enabled) {
       return (accessToken: null, enabledTools: null);
     }
     final notifier = ref.read(notionConnectionProvider.notifier);
     final accessToken = await notifier.validAccessToken();
-    final enabled = _notion.enabledTools ?? _defaultEnabledTools(_notion);
+    final enabled = notion.enabledTools ?? _defaultEnabledTools(notion);
     return (accessToken: accessToken, enabledTools: enabled);
   }
 
@@ -557,11 +557,10 @@ class ChatNotifier extends Notifier<ChatState> {
       return const [
         'notion_search',
         'notion_fetch',
-        'notion_query',
-        'notion_get',
-        'notion_list',
-        'notion_retrieve',
-        'notion_read',
+        'notion_get_comments',
+        'notion_get_teams',
+        'notion_get_users',
+        'notion_get_async_task',
       ];
     }
     return notion.tools

@@ -1,30 +1,40 @@
-name: notion_any_ai
-version: 0.1.0
+name: any-ai-for-notion
+version: 0.7.0
+title: Any AI for Notion
 summary: Any AI for Notion chat client
 description: |
   Open-source Flutter app that connects OpenAI to Notion via the Model Context
   Protocol (MCP), with voice input, reminders, and conversation memory.
+license: GPL-3.0
+contact: tapeo@users.noreply.github.com
+website: https://github.com/tapeo/notion-any-ai
+source-code: https://github.com/tapeo/notion-any-ai
+issues: https://github.com/tapeo/notion-any-ai/issues
 
 confinement: strict
 base: core22
 grade: stable
 
-slots:
-  dbus-notion_any_ai:
-    interface: dbus
-    bus: session
-    name: it.ricu.notion_any_ai
-
 apps:
-  notion_any_ai:
+  any-ai-for-notion:
     command: notion_any_ai
-    extensions: [gnome] # gnome includes the libraries required by flutter
+    extensions: [gnome]
     plugs:
       - network
-    slots:
-      - dbus-notion_any_ai
+      - audio-record
+      - audio-playback
+      - desktop
+      - desktop-legacy
 parts:
-  notion_any_ai:
+  any-ai-for-notion:
     source: .
     plugin: flutter
-    flutter-target: lib/main.dart # The main entry-point file of the application
+    flutter-target: lib/main.dart
+    override-pull: |
+      src="${CRAFT_PROJECT_DIR:-$SNAPCRAFT_PROJECT_DIR}"
+      dest="$CRAFT_PART_SRC"
+      cd "$src"
+      tar cf - \
+        --exclude='linux/flutter/ephemeral' \
+        lib linux snap assets pubspec.yaml pubspec.lock analysis_options.yaml .metadata \
+      | (cd "$dest" && tar xf -)

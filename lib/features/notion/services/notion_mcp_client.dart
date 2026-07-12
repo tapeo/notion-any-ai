@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/notion_tool_meta.dart';
+import 'notion_schema_normalizer.dart';
 
 const _notionMcpUrl = 'https://mcp.notion.com/mcp';
 
@@ -71,7 +72,7 @@ class NotionMcpClient {
     return NotionToolMeta(
       name: exposedName,
       description: description,
-      parameters: inputSchema,
+      parameters: normalizeOpenAiSchema(inputSchema),
     );
   }
 

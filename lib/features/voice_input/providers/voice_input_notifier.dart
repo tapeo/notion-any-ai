@@ -27,18 +27,19 @@ class VoiceInputNotifier extends Notifier<VoiceInputState> {
 
   Future<void> save({
     required String model,
-    required String apiKey,
+    String? apiKey,
     required String language,
   }) async {
     state = state.copyWith(saving: true);
     await _storage.saveConfig(
       model: model.trim(),
-      apiKey: apiKey.trim(),
+      apiKey: apiKey?.trim(),
       language: language,
     );
     state = state.copyWith(
       model: model.trim(),
-      hasApiKey: apiKey.trim().isNotEmpty,
+      hasApiKey:
+          (apiKey != null && apiKey.trim().isNotEmpty) ? true : state.hasApiKey,
       language: language,
       saving: false,
     );

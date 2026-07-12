@@ -21,11 +21,13 @@ class VoiceInputStorage {
 
   Future<void> saveConfig({
     required String model,
-    required String apiKey,
+    String? apiKey,
     required String language,
   }) async {
     await _sharedPrefs.setString(_keyModel, model);
-    await _secureStorage.write(key: _keyApiKey, value: apiKey);
+    if (apiKey != null && apiKey.isNotEmpty) {
+      await _secureStorage.write(key: _keyApiKey, value: apiKey);
+    }
     await _sharedPrefs.setString(_keyLanguage, language);
   }
 

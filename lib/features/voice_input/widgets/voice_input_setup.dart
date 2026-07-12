@@ -58,6 +58,7 @@ class _VoiceInputSetupState extends ConsumerState<VoiceInputSetup> {
         onToggleObscure: _toggleObscure,
         selectedLanguage: _selectedLanguage,
         onLanguageChanged: _handleLanguageChanged,
+        hasApiKey: state.hasApiKey,
         saving: state.saving,
         onSave: _handleSave,
       ),
@@ -72,9 +73,10 @@ class _VoiceInputSetupState extends ConsumerState<VoiceInputSetup> {
 
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
+    final apiKey = _apiKeyController.text.trim();
     await ref.read(voiceInputProvider.notifier).save(
       model: _modelController.text,
-      apiKey: _apiKeyController.text,
+      apiKey: apiKey.isEmpty ? null : apiKey,
       language: _selectedLanguage,
     );
     if (!mounted) return;
@@ -114,6 +116,7 @@ class _EditForm extends StatelessWidget {
     required this.onToggleObscure,
     required this.selectedLanguage,
     required this.onLanguageChanged,
+    required this.hasApiKey,
     required this.saving,
     required this.onSave,
   });
@@ -125,6 +128,7 @@ class _EditForm extends StatelessWidget {
   final VoidCallback onToggleObscure;
   final String selectedLanguage;
   final ValueChanged<String?> onLanguageChanged;
+  final bool hasApiKey;
   final bool saving;
   final VoidCallback onSave;
 
@@ -151,7 +155,7 @@ class _EditForm extends StatelessWidget {
             controller: apiKeyController,
             decoration: InputDecoration(
               labelText: 'API key',
-              hintText: 'sk-...',
+              hintText: hasApiKey ? 'Leave empty to keep current' : 'sk-...',
               border: const OutlineInputBorder(),
               isDense: true,
               suffixIcon: FrostedIconButton(
@@ -165,7 +169,7 @@ class _EditForm extends StatelessWidget {
             ),
             obscureText: obscureApiKey,
             autocorrect: false,
-            validator: _validateApiKey,
+            validator: (value) => _validateApiKey(value, hasApiKey),
           ),
           const SizedBox(height: AppSpacing.space3),
           DropdownButtonFormField<String>(
@@ -213,9 +217,9 @@ class _EditForm extends StatelessWidget {
     );
   }
 
-  String? _validateApiKey(String? value) {
+  String? _validateApiKey(String? value, bool hasApiKey) {
     final trimmed = value?.trim() ?? '';
-    if (trimmed.isEmpty) return 'API key is required';
+    if (trimmed.isEmpty && !hasApiKey) return 'API key is required';
     return null;
   }
 

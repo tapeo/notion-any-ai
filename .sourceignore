@@ -1,0 +1,9 @@
+build/
+.dart_tool/
+.git/
+.fvm/
+ios/
+macos/
+android/
+windows/
+changes/
