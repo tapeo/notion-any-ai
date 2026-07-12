@@ -38,8 +38,13 @@ parts:
         --exclude='linux/flutter/ephemeral' \
         lib linux snap assets pubspec.yaml pubspec.lock analysis_options.yaml .metadata env.json \
       | (cd "$dest" && tar xf -)
+      cd "$dest"
+      git clone --depth 1 -b 3.44.4 https://github.com/flutter/flutter.git flutter-distro
+      export PATH="$dest/flutter-distro/bin:$PATH"
+      flutter precache --linux
+      flutter pub get
     override-build: |
       cd "$CRAFT_PART_SRC"
-      flutter build linux --release --dart-define-from-file env.json
+      flutter build linux --release --target lib/main.dart --dart-define-from-file env.json
       mkdir -p "$CRAFT_PART_INSTALL/bin"
       cp -r build/linux/*/release/bundle/* "$CRAFT_PART_INSTALL/bin/"
