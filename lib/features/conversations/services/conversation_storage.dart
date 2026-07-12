@@ -36,7 +36,7 @@ class ConversationStorage {
           .toList()
         ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     } catch (_) {
-      return const [];
+      rethrow;
     }
   }
 
@@ -48,7 +48,7 @@ class ConversationStorage {
       if (raw.isEmpty) return null;
       return Conversation.fromJson(jsonDecode(raw) as Map<String, dynamic>);
     } catch (_) {
-      return null;
+      rethrow;
     }
   }
 

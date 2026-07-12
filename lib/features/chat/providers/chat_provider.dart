@@ -15,6 +15,7 @@ import '../../memory/providers/memory_notifier.dart';
 import '../../notion/models/notion_page_ref.dart';
 import '../../notion/models/notion_tool_meta.dart';
 import '../../notion/providers/notion_connection_notifier.dart';
+import '../../notion/services/notion_tool_registry.dart';
 import '../../notion/states/notion_connection_state.dart';
 import '../../system_prompt/providers/system_prompt_notifier.dart';
 import '../../system_prompt/states/system_prompt_state.dart';
@@ -93,15 +94,25 @@ class ChatNotifier extends Notifier<ChatState> {
     if (pages.isEmpty) {
       return base;
     }
-    final lines = pages.map((p) => "- '${p.title}' (id: ${p.id})").join('\n');
+    final pagesList = pages.where((p) => !p.isDataSource).toList();
+    final dataSourcesList = pages.where((p) => p.isDataSource).toList();
+    final lines = <String>[];
+    for (final p in pagesList) {
+      lines.add("- '${p.title}' (page id: ${p.id})");
+    }
+    for (final ds in dataSourcesList) {
+      lines.add("- '${ds.title}' (database/data source id: ${ds.id})");
+    }
     final hint =
-        'The user has selected the following Notion pages as the '
-        'focus of this message:\n$lines\n'
-        'You MUST fetch each of these pages with the available Notion read '
-        "tools (e.g. notion_fetch with the page id) before answering, so your "
-        "response is grounded in their actual content. Treat the user's "
-        'message as referring to these pages unless they clearly ask about '
-        'something else.';
+        'The user has selected the following Notion resources as the '
+        'focus of this message:\n${lines.join('\n')}\n'
+        'You MUST fetch each of these with the available Notion read '
+        'tools before answering, so your response is grounded in their '
+        'actual content. For pages, use notion_fetch_page with the page '
+        'id. For databases and data sources, use notion_get_database or '
+        'notion_query_database with the database/data source id. Treat '
+        "the user's message as referring to these resources unless they "
+        'clearly ask about something else.';
     return '$base\n\n$hint';
   }
 
@@ -262,7 +273,7 @@ class ChatNotifier extends Notifier<ChatState> {
         enabledTools != null &&
         enabledTools.isNotEmpty) {
       final bridge = NotionToolBridge(
-        mcpClient: ref.read(notionMcpClientProvider),
+        apiClient: ref.read(notionApiClientProvider),
         accessToken: notionAccessToken,
         availableTools: notion.tools,
       );
@@ -372,7 +383,7 @@ class ChatNotifier extends Notifier<ChatState> {
         }
 
         final bridge = NotionToolBridge(
-          mcpClient: ref.read(notionMcpClientProvider),
+          apiClient: ref.read(notionApiClientProvider),
           accessToken: notionAccessToken ?? '',
           availableTools: notion.tools,
         );
@@ -553,27 +564,11 @@ class ChatNotifier extends Notifier<ChatState> {
   }
 
   List<String> _defaultEnabledTools(NotionConnectionState notion) {
-    if (notion.tools.isEmpty) {
-      return const [
-        'notion_search',
-        'notion_fetch',
-        'notion_get_comments',
-        'notion_get_teams',
-        'notion_get_users',
-        'notion_get_async_task',
-      ];
-    }
-    return notion.tools
-        .where((t) => _isReadTool(t.name) && !requiresBusinessPlan(t.name))
+    final tools = notion.tools.isEmpty ? NotionToolRegistry.allTools : notion.tools;
+    return tools
+        .where((t) => getToolKind(t.name) == NotionToolKind.read)
         .map((t) => t.name)
         .toList();
-  }
-
-  bool _isReadTool(String name) {
-    final base = name.replaceFirst(RegExp(r'^notion_'), '');
-    return RegExp(
-      r'^(fetch|search|query|get|list|retrieve|read)',
-    ).hasMatch(base);
   }
 
   void _appendAssistant(String content) {

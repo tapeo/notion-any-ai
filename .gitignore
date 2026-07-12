@@ -47,6 +47,7 @@ app.*.map.json
 # FVM Version Cache
 .fvm/
 
-# Internal dev-log (opencode workflow)
-changes/
 .env
+
+# Backend environment (dart-define-from-file)
+env.json

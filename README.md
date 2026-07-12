@@ -53,7 +53,7 @@ fvm flutter run -d chrome       # web (desktop-only OAuth flow)
 
 1. Open the app. You land on the chat screen.
 2. Open settings and configure your **AI provider**: the chat completion endpoint URL and model name (for example `https://api.openai.com/v1/chat/completions` and `gpt-4o`).
-3. Connect Notion: tap **Connect Notion** and authorize the app in the browser. On desktop the app runs a temporary local loopback server to receive the OAuth callback. On mobile it uses an in-app browser and a custom URL scheme (`notionopenai://oauth/callback`).
+3. Connect Notion: tap **Connect Notion** and authorize the app in the browser. The browser redirects back to the app via the `notionopenai://oauth/callback` custom URL scheme on all platforms.
 4. Optionally configure a **system prompt**, enable **built-in tools**, and set up **voice input** transcription.
 5. Start chatting. The assistant can now call Notion tools and built-in tools.
 
@@ -65,9 +65,9 @@ No API keys, Notion client IDs, or secrets are needed at build time. The AI prov
 | -------- | ----------------------------------------- | ------------------- | ---------------------------------------------------- |
 | Android  | in-app browser + `notionopenai://` scheme | persistent          | microphone permission requested on first voice input |
 | iOS      | in-app browser + `notionopenai://` scheme | persistent          | microphone permission requested on first voice input |
-| macOS    | local loopback HTTP server                | persistent          | entitlements include keychain and network            |
-| Windows  | local loopback HTTP server                | persistent          | firewall may prompt on first OAuth                   |
-| Linux    | local loopback HTTP server                | only while app runs | Snap package uses strict confinement                 |
+| macOS    | external browser + `notionopenai://` scheme | persistent          | entitlements include keychain and network            |
+| Windows  | external browser + `notionopenai://` scheme | persistent          | firewall may prompt on first OAuth                   |
+| Linux    | external browser + `notionopenai://` scheme | only while app runs | Snap package uses strict confinement                 |
 
 ## Project structure
 

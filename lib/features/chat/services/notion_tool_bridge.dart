@@ -1,16 +1,15 @@
-// Maps Notion MCP tools to OpenAI tool schemas and executes tool calls.
 import '../../notion/models/notion_tool_meta.dart';
-import '../../notion/services/notion_mcp_client.dart';
+import '../../notion/services/notion_api_client.dart';
 import '../models/tool_call.dart';
 
 class NotionToolBridge {
   NotionToolBridge({
-    required NotionMcpClient mcpClient,
+    required NotionApiClient apiClient,
     required this._accessToken,
     required this._availableTools,
-  }) : _mcp = mcpClient;
+  }) : _api = apiClient;
 
-  final NotionMcpClient _mcp;
+  final NotionApiClient _api;
   final String _accessToken;
   final List<NotionToolMeta> _availableTools;
 
@@ -65,7 +64,7 @@ class NotionToolBridge {
             '${missing.map((m) => "'$m'").join(', ')} for ${call.name}. '
             'Provide the missing parameter${missing.length > 1 ? 's' : ''} and retry.';
       }
-      final result = await _mcp.callTool(
+      final result = await _api.callTool(
         accessToken: _accessToken,
         name: call.name,
         arguments: call.arguments,

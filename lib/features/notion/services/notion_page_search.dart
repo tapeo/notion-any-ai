@@ -4,12 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/notion_page_ref.dart';
 import '../providers/notion_connection_notifier.dart';
-import 'notion_mcp_client.dart';
+import 'notion_api_client.dart';
 
 class NotionPageSearch {
-  NotionPageSearch({required NotionMcpClient mcpClient}) : _mcp = mcpClient;
+  NotionPageSearch({required NotionApiClient apiClient}) : _api = apiClient;
 
-  final NotionMcpClient _mcp;
+  final NotionApiClient _api;
   final Map<String, List<String>> _breadcrumbCache = {};
 
   Future<List<NotionPageRef>> search({
@@ -20,7 +20,7 @@ class NotionPageSearch {
     if (trimmed.isEmpty) {
       return const [];
     }
-    final result = await _mcp.callTool(
+    final result = await _api.callTool(
       accessToken: accessToken,
       name: 'notion_search',
       arguments: <String, dynamic>{'query': trimmed},
@@ -31,58 +31,270 @@ class NotionPageSearch {
     return _parseResults(result.content);
   }
 
-  /// Resolves the full ancestor title chain (root-first) for [pageId] by
-  /// fetching the page via `notion_fetch` and parsing the embedded
-  /// `<ancestor-path>` markup. Results are cached per page id.
-  Future<List<String>> fetchBreadcrumbForPage({
+  Future<List<String>> fetchBreadcrumb({
     required String accessToken,
-    required String pageId,
+    required NotionPageRef ref,
   }) async {
-    if (_breadcrumbCache.containsKey(pageId)) {
-      return _breadcrumbCache[pageId]!;
+    final cacheKey = '${ref.objectType ?? 'page'}:${ref.id}';
+    if (_breadcrumbCache.containsKey(cacheKey)) {
+      return _breadcrumbCache[cacheKey]!;
     }
-    final result = await _mcp.callTool(
-      accessToken: accessToken,
-      name: 'notion_fetch',
-      arguments: <String, dynamic>{'id': pageId},
-    );
-    if (result.isError) return const [];
-    final decoded = _tryDecodeJson(result.content);
-    if (decoded is! Map<String, dynamic>) return const [];
-    final text = decoded['text'];
-    if (text is! String) return const [];
-    final chain = _parseAncestorPath(text);
-    _breadcrumbCache[pageId] = chain;
+
+    final chain = <String>[];
+    final visited = <String>{};
+
+    if (ref.isDataSource) {
+      final dsResult = await _api.callTool(
+        accessToken: accessToken,
+        name: 'notion_get_database',
+        arguments: <String, dynamic>{'data_source_id': ref.id},
+      );
+      if (dsResult.isError) {
+        _breadcrumbCache[cacheKey] = chain;
+        return chain;
+      }
+      final dsDecoded = _tryDecodeJson(dsResult.content);
+      if (dsDecoded is! Map<String, dynamic>) {
+        _breadcrumbCache[cacheKey] = chain;
+        return chain;
+      }
+      final dsTitle = _extractTitle(dsDecoded);
+      if (dsTitle.isNotEmpty) {
+        chain.insert(0, dsTitle);
+      }
+      final dsParent = dsDecoded['parent'];
+      if (dsParent is Map<String, dynamic>) {
+        final dsParentType = dsParent['type'] as String?;
+        if (dsParentType == 'database_id') {
+          final databaseId = dsParent['database_id'] as String? ?? '';
+          if (databaseId.isNotEmpty) {
+            await _walkDatabaseParent(
+              accessToken: accessToken,
+              databaseId: databaseId,
+              chain: chain,
+              visited: visited,
+            );
+          }
+        }
+      }
+      _breadcrumbCache[cacheKey] = chain;
+      return chain;
+    }
+
+    var currentId = ref.id;
+    while (currentId.isNotEmpty && !visited.contains(currentId)) {
+      visited.add(currentId);
+      final result = await _api.callTool(
+        accessToken: accessToken,
+        name: 'notion_fetch_page',
+        arguments: <String, dynamic>{'page_id': currentId},
+      );
+      if (result.isError) break;
+
+      final decoded = _tryDecodeJson(result.content);
+      if (decoded is! Map<String, dynamic>) break;
+
+      final title = _extractTitle(decoded);
+      if (title.isNotEmpty) {
+        chain.insert(0, title);
+      }
+
+      final parent = decoded['parent'];
+      if (parent is! Map<String, dynamic>) break;
+
+      final parentType = parent['type'] as String?;
+      if (parentType == 'page_id') {
+        currentId = parent['page_id'] as String? ?? '';
+      } else if (parentType == 'database_id') {
+        final databaseId = parent['database_id'] as String? ?? '';
+        if (databaseId.isEmpty) break;
+        await _walkDatabaseParent(
+          accessToken: accessToken,
+          databaseId: databaseId,
+          chain: chain,
+          visited: visited,
+        );
+        break;
+      } else if (parentType == 'data_source_id') {
+        final dataSourceId = parent['data_source_id'] as String? ?? '';
+        if (dataSourceId.isEmpty) break;
+        final dsResult = await _api.callTool(
+          accessToken: accessToken,
+          name: 'notion_get_database',
+          arguments: <String, dynamic>{'data_source_id': dataSourceId},
+        );
+        if (dsResult.isError) break;
+        final dsDecoded = _tryDecodeJson(dsResult.content);
+        if (dsDecoded is! Map<String, dynamic>) break;
+        final dsTitle = _extractTitle(dsDecoded);
+        if (dsTitle.isNotEmpty) {
+          chain.insert(0, dsTitle);
+        }
+        final dsParent = dsDecoded['parent'];
+        if (dsParent is Map<String, dynamic>) {
+          final dsParentType = dsParent['type'] as String?;
+          if (dsParentType == 'database_id') {
+            final databaseId = dsParent['database_id'] as String? ?? '';
+            if (databaseId.isNotEmpty) {
+              await _walkDatabaseParent(
+                accessToken: accessToken,
+                databaseId: databaseId,
+                chain: chain,
+                visited: visited,
+              );
+            }
+          }
+        }
+        break;
+      } else {
+        break;
+      }
+    }
+
+    _breadcrumbCache[cacheKey] = chain;
     return chain;
   }
 
-  List<String> _parseAncestorPath(String text) {
-    final pathStart = text.indexOf('<ancestor-path>');
-    if (pathStart < 0) return const [];
-    final pathEnd = text.indexOf('</ancestor-path>', pathStart);
-    if (pathEnd < 0) return const [];
-    final segment = text.substring(
-      pathStart + '<ancestor-path>'.length,
-      pathEnd,
+  Future<void> _walkDatabaseParent({
+    required String accessToken,
+    required String databaseId,
+    required List<String> chain,
+    required Set<String> visited,
+  }) async {
+    if (visited.contains(databaseId)) return;
+    visited.add(databaseId);
+
+    final result = await _api.callTool(
+      accessToken: accessToken,
+      name: 'notion_fetch_database',
+      arguments: <String, dynamic>{'database_id': databaseId},
     );
-    final names = <String>[];
-    final tagRegex = RegExp(
-      r'<(?:parent|ancestor-\d+)-(?:page|data-source|database)\b([^>]*)/>',
-    );
-    for (final match in tagRegex.allMatches(segment)) {
-      final attrs = match.group(1) ?? '';
-      final name = _readAttr(attrs, 'name') ?? _readAttr(attrs, 'title');
-      if (name != null && name.isNotEmpty) {
-        names.add(name);
-      }
+    if (result.isError) return;
+
+    final decoded = _tryDecodeJson(result.content);
+    if (decoded is! Map<String, dynamic>) return;
+
+    final title = _extractTitle(decoded);
+    if (title.isNotEmpty) {
+      chain.insert(0, title);
     }
-    return names.reversed.toList();
+
+    final parent = decoded['parent'];
+    if (parent is! Map<String, dynamic>) return;
+
+    final parentType = parent['type'] as String?;
+    if (parentType == 'page_id') {
+      final pageId = parent['page_id'] as String? ?? '';
+      if (pageId.isEmpty) return;
+      await _walkPageParent(
+        accessToken: accessToken,
+        pageId: pageId,
+        chain: chain,
+        visited: visited,
+      );
+    }
   }
 
-  String? _readAttr(String attrs, String key) {
-    final regex = RegExp('$key="([^"]*)"');
-    final match = regex.firstMatch(attrs);
-    return match?.group(1);
+  Future<void> _walkPageParent({
+    required String accessToken,
+    required String pageId,
+    required List<String> chain,
+    required Set<String> visited,
+  }) async {
+    var currentId = pageId;
+    while (currentId.isNotEmpty && !visited.contains(currentId)) {
+      visited.add(currentId);
+      final result = await _api.callTool(
+        accessToken: accessToken,
+        name: 'notion_fetch_page',
+        arguments: <String, dynamic>{'page_id': currentId},
+      );
+      if (result.isError) break;
+
+      final decoded = _tryDecodeJson(result.content);
+      if (decoded is! Map<String, dynamic>) break;
+
+      final title = _extractTitle(decoded);
+      if (title.isNotEmpty) {
+        chain.insert(0, title);
+      }
+
+      final parent = decoded['parent'];
+      if (parent is! Map<String, dynamic>) break;
+
+      final parentType = parent['type'] as String?;
+      if (parentType == 'page_id') {
+        currentId = parent['page_id'] as String? ?? '';
+      } else if (parentType == 'database_id') {
+        final databaseId = parent['database_id'] as String? ?? '';
+        if (databaseId.isEmpty) break;
+        await _walkDatabaseParent(
+          accessToken: accessToken,
+          databaseId: databaseId,
+          chain: chain,
+          visited: visited,
+        );
+        break;
+      } else {
+        break;
+      }
+    }
+  }
+
+  String _extractTitle(Map<String, dynamic> page) {
+    final titleArray = page['title'];
+    if (titleArray is List) {
+      final parts = <String>[];
+      for (final part in titleArray) {
+        if (part is Map<String, dynamic>) {
+          final plain = part['plain_text'];
+          if (plain is String) parts.add(plain);
+        }
+      }
+      if (parts.isNotEmpty) return parts.join();
+    }
+    final properties = page['properties'];
+    if (properties is Map<String, dynamic>) {
+      final titleProp = properties['title'];
+      if (titleProp is Map<String, dynamic>) {
+        final titleArray = titleProp['title'];
+        if (titleArray is List) {
+          final parts = <String>[];
+          for (final part in titleArray) {
+            if (part is Map<String, dynamic>) {
+              final plain = part['plain_text'];
+              if (plain is String) parts.add(plain);
+            }
+          }
+          if (parts.isNotEmpty) return parts.join();
+        }
+      } else {
+        for (final entry in properties.entries) {
+          if (entry.value is Map<String, dynamic>) {
+            final propMap = entry.value as Map<String, dynamic>;
+            if (propMap['type'] == 'title') {
+              final titleArray = propMap['title'];
+              if (titleArray is List) {
+                final parts = <String>[];
+                for (final part in titleArray) {
+                  if (part is Map<String, dynamic>) {
+                    final plain = part['plain_text'];
+                    if (plain is String) parts.add(plain);
+                  }
+                }
+                if (parts.isNotEmpty) return parts.join();
+              }
+            }
+          }
+        }
+      }
+    }
+    if (titleArray is String) return titleArray;
+    final title = page['title'];
+    if (title is String) return title;
+    final name = page['name'];
+    if (name is String) return name;
+    return '';
   }
 
   List<NotionPageRef> _parseResults(String content) {
@@ -110,12 +322,6 @@ class NotionPageSearch {
         if (item is Map<String, dynamic>) candidates.add(item);
       }
     }
-    final pagesField = decoded['pages'];
-    if (pagesField is List) {
-      for (final item in pagesField) {
-        if (item is Map<String, dynamic>) candidates.add(item);
-      }
-    }
     if (candidates.isEmpty && decoded.containsKey('id')) {
       candidates.add(decoded);
     }
@@ -128,42 +334,24 @@ class NotionPageSearch {
 
   NotionPageRef? _mapPage(Map<String, dynamic> item) {
     final id = _readId(item);
-    final title = _readTitle(item);
+    final title = _extractTitle(item);
     if (id == null || title.isEmpty) return null;
     final icon = _readIcon(item);
     final url = item['url'] as String?;
-    return NotionPageRef(id: id, title: title, icon: icon, url: url);
+    final objectType = item['object'] as String?;
+    return NotionPageRef(
+      id: id,
+      title: title,
+      icon: icon,
+      url: url,
+      objectType: objectType,
+    );
   }
 
   String? _readId(Map<String, dynamic> item) {
     final id = item['id'];
     if (id is String && id.isNotEmpty) return id;
     return null;
-  }
-
-  String _readTitle(Map<String, dynamic> item) {
-    final title = item['title'];
-    if (title is String) return title;
-    final properties = item['properties'];
-    if (properties is Map<String, dynamic>) {
-      final titleProp = properties['title'];
-      if (titleProp is Map<String, dynamic>) {
-        final titleArray = titleProp['title'];
-        if (titleArray is List) {
-          final parts = <String>[];
-          for (final part in titleArray) {
-            if (part is Map<String, dynamic>) {
-              final plain = part['plain_text'];
-              if (plain is String) parts.add(plain);
-            }
-          }
-          if (parts.isNotEmpty) return parts.join();
-        }
-      }
-    }
-    final name = item['name'];
-    if (name is String) return name;
-    return '';
   }
 
   String? _readIcon(Map<String, dynamic> item) {
@@ -177,5 +365,5 @@ class NotionPageSearch {
 }
 
 final notionPageSearchProvider = Provider<NotionPageSearch>((ref) {
-  return NotionPageSearch(mcpClient: ref.watch(notionMcpClientProvider));
+  return NotionPageSearch(apiClient: ref.watch(notionApiClientProvider));
 });

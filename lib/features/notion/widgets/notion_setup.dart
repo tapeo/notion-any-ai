@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_shapes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../settings/widgets/settings_body.dart';
 import '../providers/notion_connection_notifier.dart';
-import '../services/notion_platform.dart';
+import '../services/notion_connect_helper.dart';
 import '../states/notion_connection_state.dart';
 import 'notion_tool_list.dart';
 
@@ -81,20 +80,7 @@ class _DisconnectedView extends StatelessWidget {
   }
 
   Future<void> _handleConnect(BuildContext context) async {
-    final notifier = ref.read(notionConnectionProvider.notifier);
-    final url = await notifier.connect();
-    if (url == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to start Notion connection.')),
-        );
-      }
-      return;
-    }
-    final mode = isDesktopPlatform
-        ? LaunchMode.externalApplication
-        : LaunchMode.inAppBrowserView;
-    await launchUrl(Uri.parse(url), mode: mode);
+    await connectNotion(context, ref);
   }
 }
 

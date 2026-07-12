@@ -12,7 +12,6 @@ class NotionStorage {
   final SharedPreferences sharedPrefs;
 
   static const _keyTokens = 'notion_tokens';
-  static const _keyPending = 'notion_pending';
   static const _keyEnabled = 'notion_enabled';
   static const _keyEnabledTools = 'notion_enabled_tools';
 
@@ -22,7 +21,7 @@ class NotionStorage {
     try {
       return NotionTokens.fromJson(jsonDecode(json) as Map<String, dynamic>);
     } catch (_) {
-      return null;
+      rethrow;
     }
   }
 
@@ -35,29 +34,6 @@ class NotionStorage {
 
   Future<void> clearTokens() async {
     await secureStorage.delete(key: _keyTokens);
-  }
-
-  Future<NotionPendingFlow?> loadPending() async {
-    final json = await secureStorage.read(key: _keyPending);
-    if (json == null) return null;
-    try {
-      return NotionPendingFlow.fromJson(
-        jsonDecode(json) as Map<String, dynamic>,
-      );
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<void> savePending(NotionPendingFlow pending) async {
-    await secureStorage.write(
-      key: _keyPending,
-      value: jsonEncode(pending.toJson()),
-    );
-  }
-
-  Future<void> clearPending() async {
-    await secureStorage.delete(key: _keyPending);
   }
 
   bool loadEnabled() {

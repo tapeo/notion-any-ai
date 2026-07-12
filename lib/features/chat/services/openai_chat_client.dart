@@ -263,7 +263,7 @@ class OpenAiChatClient {
       final message = choice['message'] as Map<String, dynamic>?;
       return message?['content'] as String?;
     } catch (_) {
-      return null;
+      rethrow;
     }
   }
 }

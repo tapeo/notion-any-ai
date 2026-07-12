@@ -24,7 +24,7 @@ class MemoryStorage {
       final raw = _file.readAsStringSync();
       return raw;
     } catch (_) {
-      return '';
+      rethrow;
     }
   }
 

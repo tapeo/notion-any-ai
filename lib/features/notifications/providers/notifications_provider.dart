@@ -7,7 +7,7 @@ import '../services/reminder_storage.dart';
 import '../states/notifications_state.dart';
 
 class NotificationsNotifier extends Notifier<NotificationsState> {
-  late final ReminderStorage _storage;
+  late ReminderStorage _storage;
   final Uuid _uuid = const Uuid();
 
   @override

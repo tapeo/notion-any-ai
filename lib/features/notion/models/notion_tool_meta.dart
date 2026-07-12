@@ -39,12 +39,3 @@ NotionToolKind getToolKind(String name) {
   }
   return NotionToolKind.write;
 }
-
-const businessPlanRequiredTools = <String>{
-  'notion_query_data_sources',
-  'notion_query_database_view',
-  'notion_query_meeting_notes',
-};
-
-bool requiresBusinessPlan(String name) =>
-    businessPlanRequiredTools.contains(name);

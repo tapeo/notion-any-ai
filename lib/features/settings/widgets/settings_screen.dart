@@ -15,11 +15,19 @@ import '../../notion/services/notion_platform.dart';
 import '../../notion/widgets/notion_setup.dart';
 import '../../system_prompt/widgets/system_prompt_setup.dart';
 import '../../voice_input/widgets/voice_input_setup.dart';
+import 'clear_app_data_section.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   static const _sections = <SettingsSection>[
+    SettingsSection(
+      icon: Icons.link_outlined,
+      label: 'Notion',
+      description:
+          'Connect your Notion workspace so the assistant can search, read, and update your Notion pages from the chat.',
+      screen: NotionSetup(),
+    ),
     SettingsSection(
       icon: Icons.smart_toy_outlined,
       label: 'AI Provider',
@@ -35,13 +43,6 @@ class SettingsScreen extends StatelessWidget {
           'an API key and model. Press and hold the microphone button in '
           'the chat input bar to dictate a message.',
       screen: VoiceInputSetup(),
-    ),
-    SettingsSection(
-      icon: Icons.link_outlined,
-      label: 'Notion',
-      description:
-          'Connect your Notion workspace so the assistant can search, read, and update your Notion pages from the chat.',
-      screen: NotionSetup(),
     ),
     SettingsSection(
       icon: Icons.edit_note_outlined,
@@ -114,11 +115,11 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 _SettingsSectionGroup(sections: _sections),
                 const SizedBox(height: AppSpacing.space4),
-                _FeedbackTile(
-                  onTap: () => showFeedbackDialog(context),
-                ),
+                _FeedbackTile(onTap: () => showFeedbackDialog(context)),
                 const SizedBox(height: AppSpacing.space4),
                 const _LegalSectionGroup(),
+                const SizedBox(height: AppSpacing.space4),
+                const ClearAppDataSection(),
               ],
             ),
           ),
@@ -370,6 +371,11 @@ class _LegalSectionGroup extends StatelessWidget {
       icon: Icons.code_outlined,
       label: 'Open source - leave a Star 🌟',
       url: 'https://github.com/tapeo/notion-any-ai',
+    ),
+    _LegalLink(
+      icon: Icons.dns_outlined,
+      label: 'Backend open source',
+      url: 'https://github.com/tapeo/notion-any-ai-backend',
     ),
   ];
 
