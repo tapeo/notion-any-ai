@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_fonts.dart';
-import '../../../app/theme/app_shapes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../notion/models/notion_page_ref.dart';
 import 'chat_page_chip.dart';
@@ -23,8 +22,8 @@ class ChatPageSelectorRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: AppSpacing.space2,
-      runSpacing: AppSpacing.space2,
+      spacing: AppSpacing.space1,
+      runSpacing: AppSpacing.space1,
       children: [
         _AttachButton(onPressed: onAttach),
         ...selectedPages.map(
@@ -43,32 +42,25 @@ class _AttachButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final iconColor = AppColors.textTertiary(theme.brightness);
-    final textColor = AppColors.textTertiary(theme.brightness);
-    return Material(
-      color: AppColors.bgPrimary(theme.brightness),
-      shape: AppShapes.sm(
-        side: BorderSide(color: AppColors.borderDefault(theme.brightness)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.space3,
-            vertical: AppSpacing.space2 + 1,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add, color: iconColor, size: AppIconSize.md),
-              const SizedBox(width: AppSpacing.space2),
-              Text(
-                'Notion',
-                style: AppFonts.labelLarge().copyWith(color: textColor),
-              ),
-            ],
-          ),
+    final color = AppColors.textTertiary(theme.brightness);
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.space2,
+          vertical: AppSpacing.space1,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.add, color: color, size: AppIconSize.sm),
+            const SizedBox(width: AppSpacing.space1),
+            Text(
+              'Notion page',
+              style: AppFonts.labelSmall().copyWith(color: color),
+            ),
+          ],
         ),
       ),
     );

@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_fonts.dart';
-import '../../../app/theme/app_shapes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../notion/models/notion_page_ref.dart';
 
@@ -19,7 +18,7 @@ class ChatPageChip extends StatelessWidget {
     final muted = AppColors.textTertiary(theme.brightness);
     return Material(
       color: AppColors.bgPrimary(theme.brightness),
-      shape: AppShapes.sm(
+      shape: StadiumBorder(
         side: BorderSide(color: AppColors.borderDefault(theme.brightness)),
       ),
       clipBehavior: Clip.antiAlias,
@@ -30,35 +29,35 @@ class ChatPageChip extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.space3,
-            vertical: AppSpacing.space2 + 1,
+            horizontal: AppSpacing.space2,
+            vertical: AppSpacing.space1,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 Icons.check_rounded,
-                size: AppIconSize.md,
+                size: AppIconSize.sm,
                 color: AppColors.accent,
               ),
-              const SizedBox(width: AppSpacing.space2),
+              const SizedBox(width: AppSpacing.space1),
               if (page.icon != null && page.icon!.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.only(right: AppSpacing.space2),
-                  child: Text(page.icon!, style: const TextStyle(fontSize: 16)),
+                  padding: const EdgeInsets.only(right: AppSpacing.space1),
+                  child: Text(page.icon!, style: const TextStyle(fontSize: 13)),
                 ),
               Flexible(
                 child: Text(
                   page.title,
-                  style: AppFonts.labelLarge().copyWith(color: muted),
+                  style: AppFonts.labelSmall().copyWith(color: muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: AppSpacing.space2),
+              const SizedBox(width: AppSpacing.space1),
               Icon(
                 Icons.close,
-                size: AppIconSize.md,
+                size: AppIconSize.sm,
                 color: AppColors.textTertiary(theme.brightness),
               ),
             ],

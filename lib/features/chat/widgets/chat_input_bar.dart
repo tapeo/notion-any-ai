@@ -267,40 +267,22 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AnimatedSize(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOut,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: AppSpacing.space1),
-                ChatPageSelectorRow(
-                  selectedPages: selectedPages,
-                  onAttach: _openPagePicker,
-                  onRemovePage: (page) =>
-                      ref.read(chatProvider.notifier).removePage(page),
-                ),
-                const SizedBox(height: AppSpacing.space2),
-              ],
+          Material(
+            color: barColor,
+            shape: AppShapes.superellipse(
+              AppRadius.xxl,
+              side: BorderSide(color: borderColor),
             ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Material(
-                  color: barColor,
-                  shape: AppShapes.superellipse(
-                    AppRadius.xxl,
-                    side: BorderSide(color: borderColor),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.space4,
-                      vertical: AppSpacing.space1,
-                    ),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space3,
+                vertical: AppSpacing.space2,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
                     child: TextField(
                       controller: _controller,
                       focusNode: _focusNode,
@@ -327,28 +309,39 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
                       ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: AppSpacing.space2),
+                  _MicButton(
+                    isRecording: _recorder.isRecording,
+                    isTranscribing: voiceState.isTranscribing,
+                    enabled: canRecord,
+                    onPress: _startRecording,
+                    onRelease: _stopRecordingAndTranscribe,
+                    onCancel: _cancelRecording,
+                    onDisabledTap: _showNotConfiguredDialog,
+                  ),
+                  const SizedBox(width: AppSpacing.space2),
+                  if (isSending)
+                    _StopButton(
+                      onPressed: () {
+                        ref.read(chatProvider.notifier).stopStreaming();
+                      },
+                    )
+                  else
+                    _SendButton(enabled: _canSend, onPressed: _send),
+                ],
               ),
-              const SizedBox(width: AppSpacing.space2),
-              _MicButton(
-                isRecording: _recorder.isRecording,
-                isTranscribing: voiceState.isTranscribing,
-                enabled: canRecord,
-                onPress: _startRecording,
-                onRelease: _stopRecordingAndTranscribe,
-                onCancel: _cancelRecording,
-                onDisabledTap: _showNotConfiguredDialog,
-              ),
-              const SizedBox(width: AppSpacing.space2),
-              if (isSending)
-                _StopButton(
-                  onPressed: () {
-                    ref.read(chatProvider.notifier).stopStreaming();
-                  },
-                )
-              else
-                _SendButton(enabled: _canSend, onPressed: _send),
-            ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.space2),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            child: ChatPageSelectorRow(
+              selectedPages: selectedPages,
+              onAttach: _openPagePicker,
+              onRemovePage: (page) =>
+                  ref.read(chatProvider.notifier).removePage(page),
+            ),
           ),
         ],
       ),
