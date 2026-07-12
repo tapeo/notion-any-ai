@@ -69,6 +69,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       extendBodyBehindAppBar: true,
       appBar: FrostedAppBar(
         title: 'Any AI for Notion',
+        showBorder: false,
         leading: FrostedIconButton(
           onPressed: _toggleDrawer,
           icon: Icons.menu,
@@ -140,6 +141,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             right: 0,
             bottom: 0,
             child: FrostedBottomBar(
+              showBorder: false,
               child: MeasureSize(
                 onHeightChanged: (h) => _inputBarHeight.value = h,
                 child: const ChatInputBar(),

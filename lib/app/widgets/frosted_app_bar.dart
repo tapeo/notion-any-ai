@@ -11,12 +11,14 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions = const [],
     this.leading,
     this.bottom,
+    this.showBorder = true,
   });
 
   final String title;
   final List<Widget> actions;
   final Widget? leading;
   final PreferredSizeWidget? bottom;
+  final bool showBorder;
 
   @override
   Size get preferredSize {
@@ -31,9 +33,17 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
     final barColor = AppColors.bgSecondary(
       isDark ? Brightness.dark : Brightness.light,
     );
+    final dividerColor = AppColors.borderSubtle(
+      isDark ? Brightness.dark : Brightness.light,
+    );
 
     return DecoratedBox(
-      decoration: BoxDecoration(color: barColor),
+      decoration: BoxDecoration(
+        color: barColor,
+        border: showBorder
+            ? Border(bottom: BorderSide(width: 0.5, color: dividerColor))
+            : null,
+      ),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -86,9 +96,10 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 /// Frosted bar pinned at the bottom edge of the screen.
 class FrostedBottomBar extends StatelessWidget {
-  const FrostedBottomBar({super.key, required this.child});
+  const FrostedBottomBar({super.key, required this.child, this.showBorder = true});
 
   final Widget child;
+  final bool showBorder;
 
   @override
   Widget build(BuildContext context) {
@@ -97,9 +108,17 @@ class FrostedBottomBar extends StatelessWidget {
     final barColor = AppColors.bgSecondary(
       isDark ? Brightness.dark : Brightness.light,
     );
+    final dividerColor = AppColors.borderSubtle(
+      isDark ? Brightness.dark : Brightness.light,
+    );
 
     return DecoratedBox(
-      decoration: BoxDecoration(color: barColor),
+      decoration: BoxDecoration(
+        color: barColor,
+        border: showBorder
+            ? Border(top: BorderSide(width: 0.5, color: dividerColor))
+            : null,
+      ),
       child: SafeArea(top: false, child: child),
     );
   }
