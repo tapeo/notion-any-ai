@@ -31,15 +31,9 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
     final barColor = AppColors.bgSecondary(
       isDark ? Brightness.dark : Brightness.light,
     );
-    final dividerColor = AppColors.borderSubtle(
-      isDark ? Brightness.dark : Brightness.light,
-    );
 
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: barColor,
-        border: Border(bottom: BorderSide(width: 0.5, color: dividerColor)),
-      ),
+      decoration: BoxDecoration(color: barColor),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -103,15 +97,9 @@ class FrostedBottomBar extends StatelessWidget {
     final barColor = AppColors.bgSecondary(
       isDark ? Brightness.dark : Brightness.light,
     );
-    final dividerColor = AppColors.borderSubtle(
-      isDark ? Brightness.dark : Brightness.light,
-    );
 
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: barColor,
-        border: Border(top: BorderSide(width: 0.5, color: dividerColor)),
-      ),
+      decoration: BoxDecoration(color: barColor),
       child: SafeArea(top: false, child: child),
     );
   }

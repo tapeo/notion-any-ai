@@ -10,9 +10,10 @@ import 'empty_chat_state.dart';
 import 'message_bubble.dart';
 
 class MessageList extends ConsumerStatefulWidget {
-  const MessageList({super.key, this.bottomInset = 0.0});
+  const MessageList({super.key, this.bottomInset = 0.0, this.topInset = 0.0});
 
   final double bottomInset;
+  final double topInset;
 
   @override
   ConsumerState<MessageList> createState() => _MessageListState();
@@ -80,6 +81,7 @@ class _MessageListState extends ConsumerState<MessageList> {
     final messages = chat.messages;
 
     final bottomInset = widget.bottomInset;
+    final topInset = widget.topInset;
 
     if (messages.isEmpty) {
       return GestureDetector(
@@ -88,7 +90,7 @@ class _MessageListState extends ConsumerState<MessageList> {
         onPanDown: (_) => FocusScope.of(context).unfocus(),
         child: Column(
           children: [
-            SizedBox(height: AppSpacing.space4),
+            SizedBox(height: topInset + AppSpacing.space4),
             Expanded(child: const EmptyChatState()),
             SizedBox(height: bottomInset + AppSpacing.space6),
           ],
@@ -141,7 +143,7 @@ class _MessageListState extends ConsumerState<MessageList> {
       child: ListView.builder(
         controller: _controller,
         padding: EdgeInsets.only(
-          top: AppSpacing.space1,
+          top: topInset + AppSpacing.space1,
           bottom: bottomInset + AppSpacing.space6,
         ),
         itemCount: messages.length,
