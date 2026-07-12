@@ -257,7 +257,7 @@ class _DangerZoneCardState extends State<_DangerZoneCard> {
         : Colors.transparent;
 
     return Material(
-      color: theme.colorScheme.surfaceContainerLowest,
+      color: AppColors.surfaceCard(theme.brightness),
       shape: AppShapes.lg(
         side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
       ),

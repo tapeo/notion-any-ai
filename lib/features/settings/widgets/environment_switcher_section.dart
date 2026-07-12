@@ -68,7 +68,7 @@ class _EnvironmentSwitcherSectionState
         : Colors.transparent;
 
     return Material(
-      color: theme.colorScheme.surfaceContainerLowest,
+      color: AppColors.surfaceCard(b),
       shape: AppShapes.lg(
         side: BorderSide(color: AppColors.borderSubtle(b)),
       ),

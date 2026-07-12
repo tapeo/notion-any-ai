@@ -77,7 +77,7 @@ class _SettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Material(
-      color: theme.colorScheme.surfaceContainerLowest,
+      color: AppColors.surfaceCard(theme.brightness),
       shape: AppShapes.lg(
         side: BorderSide(color: AppColors.borderSubtle(theme.brightness)),
       ),

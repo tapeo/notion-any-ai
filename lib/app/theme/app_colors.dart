@@ -34,9 +34,11 @@ class AppColors {
   static Color bgPrimary(Brightness b) =>
       b == Brightness.dark ? const Color(0xFF191919) : white;
   static Color bgSecondary(Brightness b) =>
-      b == Brightness.dark ? const Color(0xFF202020) : cream;
+      b == Brightness.dark ? const Color(0xFF202020) : white;
   static Color bgTertiary(Brightness b) =>
-      b == Brightness.dark ? const Color(0xFF2A2A2A) : graySurface;
+      b == Brightness.dark ? const Color(0xFF2A2A2A) : cream;
+  static Color surfaceCard(Brightness b) =>
+      b == Brightness.dark ? const Color(0xFF191919) : cream;
 
   static Color borderDefault(Brightness b) =>
       b == Brightness.dark ? const Color(0x21FFFFFF) : const Color(0x2937352F);
@@ -58,8 +60,10 @@ class AppColors {
 
   static const Color focusRing = Color(0x472383E2);
 
-  static const Color userBubble = ink;
-  static const Color userBubbleText = white;
+  static Color userBubble(Brightness b) =>
+      b == Brightness.dark ? ink : graySurface;
+  static Color userBubbleText(Brightness b) =>
+      b == Brightness.dark ? white : ink;
 
   static Color assistantBubble(Brightness b) =>
       b == Brightness.dark ? const Color(0xFF2A2A2A) : graySurface;

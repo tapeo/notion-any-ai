@@ -53,9 +53,7 @@ class _TextBubble extends StatelessWidget {
     final contentWidget = isUser
         ? SelectableText(
             message.content ?? '',
-            style: (theme.textTheme.bodyMedium ?? const TextStyle()).copyWith(
-              color: AppColors.userBubbleText,
-            ),
+            style: TextStyle(color: AppColors.userBubbleText(theme.brightness)),
           )
         : !hasContent
         ? const _TypingIndicator()
@@ -67,7 +65,7 @@ class _TextBubble extends StatelessWidget {
               maxWidth: MediaQuery.of(context).size.width * 0.8,
             ),
             child: Material(
-              color: AppColors.userBubble,
+              color: AppColors.userBubble(theme.brightness),
               shape: AppShapes.sm(),
               clipBehavior: Clip.antiAlias,
               child: Padding(
