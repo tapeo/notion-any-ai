@@ -457,7 +457,7 @@ class _PageRow extends StatelessWidget {
                     ),
                   Text(
                     page.title,
-                    style: AppFonts.labelMd().copyWith(color: titleColor),
+                    style: AppFonts.labelLarge().copyWith(color: titleColor),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

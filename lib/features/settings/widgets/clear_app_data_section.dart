@@ -214,7 +214,7 @@ class _ClearAppDataSectionState extends ConsumerState<ClearAppDataSection> {
               child: Center(
                 child: Text(
                   'Version $_version',
-                  style: AppFonts.micro().copyWith(
+                  style: AppFonts.labelSmall().copyWith(
                     color: AppColors.textTertiary(b),
                   ),
                 ),

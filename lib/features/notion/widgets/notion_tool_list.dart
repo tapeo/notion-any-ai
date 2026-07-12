@@ -151,7 +151,7 @@ class _ToolSection extends StatelessWidget {
                 ),
                 child: Text(
                   'Enable all ${label.toLowerCase()}',
-                  style: const TextStyle(fontSize: 12),
+                  style: AppFonts.labelMedium(),
                 ),
               )
             else if (allOn)
@@ -166,7 +166,7 @@ class _ToolSection extends StatelessWidget {
                 ),
                 child: Text(
                   'Disable all ${label.toLowerCase()}',
-                  style: const TextStyle(fontSize: 12),
+                  style: AppFonts.labelMedium(),
                 ),
               ),
           ],

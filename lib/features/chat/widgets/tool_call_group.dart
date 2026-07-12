@@ -72,12 +72,12 @@ class ToolCallGroup extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Tool calls',
-                      style: AppFonts.micro().copyWith(color: muted),
+                      style: AppFonts.labelSmall().copyWith(color: muted),
                     ),
                   ),
                   Text(
                     headerLabel,
-                    style: AppFonts.micro().copyWith(color: headerColor),
+                    style: AppFonts.labelSmall().copyWith(color: headerColor),
                   ),
                   if (!allDone) ...[
                     const SizedBox(width: AppSpacing.space2),
@@ -155,13 +155,13 @@ class _ToolRow extends StatelessWidget {
             Expanded(
               child: Text(
                 entry.toolCall.name,
-                style: AppFonts.labelSm().copyWith(
+                style: AppFonts.titleSmall().copyWith(
                   color: theme.colorScheme.onSurface,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(statusLabel, style: AppFonts.micro().copyWith(color: muted)),
+            Text(statusLabel, style: AppFonts.labelSmall().copyWith(color: muted)),
             const SizedBox(width: AppSpacing.space2),
             Icon(Icons.chevron_right, size: AppIconSize.md, color: muted),
           ],
@@ -196,9 +196,9 @@ void showToolCallDetails(BuildContext context, ToolCallEntry entry) {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(toolCall.name, style: AppFonts.headingSm()),
+            Text(toolCall.name, style: AppFonts.headlineSmall()),
             const SizedBox(height: AppSpacing.space3),
-            Text('arguments', style: AppFonts.labelMd().copyWith(color: muted)),
+            Text('arguments', style: AppFonts.labelLarge().copyWith(color: muted)),
             const SizedBox(height: AppSpacing.space1),
             Flexible(
               child: SizedBox(
@@ -226,7 +226,7 @@ void showToolCallDetails(BuildContext context, ToolCallEntry entry) {
               const SizedBox(height: AppSpacing.space4),
               Text(
                 isError ? 'error' : 'result',
-                style: AppFonts.labelMd().copyWith(
+                style: AppFonts.labelLarge().copyWith(
                   color: isError ? AppColors.error : muted,
                 ),
               ),

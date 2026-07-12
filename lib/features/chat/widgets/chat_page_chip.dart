@@ -50,7 +50,7 @@ class ChatPageChip extends StatelessWidget {
               Flexible(
                 child: Text(
                   page.title,
-                  style: AppFonts.labelMd().copyWith(color: muted),
+                  style: AppFonts.labelLarge().copyWith(color: muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

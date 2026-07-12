@@ -65,7 +65,7 @@ class _AttachButton extends StatelessWidget {
               const SizedBox(width: AppSpacing.space2),
               Text(
                 'Notion',
-                style: AppFonts.labelMd().copyWith(color: textColor),
+                style: AppFonts.labelLarge().copyWith(color: textColor),
               ),
             ],
           ),

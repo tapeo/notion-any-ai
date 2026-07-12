@@ -201,7 +201,7 @@ class _ConsentPage extends StatelessWidget {
                 Center(
                   child: Text(
                     'Any AI for Notion',
-                    style: AppFonts.headingMd().copyWith(
+                    style: AppFonts.headlineMedium().copyWith(
                       color: theme.colorScheme.onSurface,
                     ),
                   ),

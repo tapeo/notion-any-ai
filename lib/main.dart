@@ -220,21 +220,21 @@ class _MainAppState extends ConsumerState<MainApp> {
         : const EdgeInsets.all(AppSpacing.space2 - 2);
 
     TextTheme textTheme = TextTheme(
-      displayLarge: AppFonts.displayHero().copyWith(color: ink),
-      displayMedium: AppFonts.displayLg().copyWith(color: ink),
-      displaySmall: AppFonts.displayMd().copyWith(color: ink),
-      headlineLarge: AppFonts.headingLg().copyWith(color: ink),
-      headlineMedium: AppFonts.headingMd().copyWith(color: ink),
-      headlineSmall: AppFonts.headingSm().copyWith(color: ink),
-      titleLarge: AppFonts.labelLg().copyWith(color: ink),
-      titleMedium: AppFonts.labelMd().copyWith(color: ink),
-      titleSmall: AppFonts.labelSm().copyWith(color: ink),
-      bodyLarge: AppFonts.bodyLg().copyWith(color: ink),
-      bodyMedium: AppFonts.bodyMd().copyWith(color: ink),
-      bodySmall: AppFonts.bodySm().copyWith(color: secondary),
-      labelLarge: AppFonts.labelLg().copyWith(color: ink),
-      labelMedium: AppFonts.labelMd().copyWith(color: ink),
-      labelSmall: AppFonts.micro().copyWith(color: secondary),
+      displayLarge: AppFonts.displayLarge().copyWith(color: ink),
+      displayMedium: AppFonts.displayMedium().copyWith(color: ink),
+      displaySmall: AppFonts.displaySmall().copyWith(color: ink),
+      headlineLarge: AppFonts.headlineLarge().copyWith(color: ink),
+      headlineMedium: AppFonts.headlineMedium().copyWith(color: ink),
+      headlineSmall: AppFonts.headlineSmall().copyWith(color: ink),
+      titleLarge: AppFonts.titleLarge().copyWith(color: ink),
+      titleMedium: AppFonts.titleMedium().copyWith(color: ink),
+      titleSmall: AppFonts.titleSmall().copyWith(color: ink),
+      bodyLarge: AppFonts.bodyLarge().copyWith(color: ink),
+      bodyMedium: AppFonts.bodyMedium().copyWith(color: ink),
+      bodySmall: AppFonts.bodySmall().copyWith(color: secondary),
+      labelLarge: AppFonts.labelLarge().copyWith(color: ink),
+      labelMedium: AppFonts.labelMedium().copyWith(color: ink),
+      labelSmall: AppFonts.labelSmall().copyWith(color: secondary),
     );
 
     final inputBorder = OutlineInputBorder(
@@ -264,16 +264,16 @@ class _MainAppState extends ConsumerState<MainApp> {
         foregroundColor: ink,
         surfaceTintColor: Colors.transparent,
         centerTitle: false,
-        titleTextStyle: AppFonts.labelLg().copyWith(color: ink),
+        titleTextStyle: AppFonts.titleLarge().copyWith(color: ink),
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: false,
         isDense: true,
-        labelStyle: AppFonts.bodySm().copyWith(color: secondary),
-        hintStyle: AppFonts.bodySm().copyWith(color: tertiary),
-        floatingLabelStyle: AppFonts.bodySm().copyWith(color: AppColors.accent),
+        labelStyle: AppFonts.bodySmall().copyWith(color: secondary),
+        hintStyle: AppFonts.bodySmall().copyWith(color: tertiary),
+        floatingLabelStyle: AppFonts.bodySmall().copyWith(color: AppColors.accent),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.space3,
           vertical: AppSpacing.space2,
@@ -297,7 +297,7 @@ class _MainAppState extends ConsumerState<MainApp> {
           ),
           minimumSize: const Size(0, 32),
           shape: buttonShape,
-          textStyle: AppFonts.labelMd(),
+          textStyle: AppFonts.labelLarge(),
           elevation: 0,
         ),
       ),
@@ -313,7 +313,7 @@ class _MainAppState extends ConsumerState<MainApp> {
           ),
           minimumSize: const Size(0, 32),
           shape: buttonShape,
-          textStyle: AppFonts.labelMd(),
+          textStyle: AppFonts.labelLarge(),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -327,7 +327,7 @@ class _MainAppState extends ConsumerState<MainApp> {
           minimumSize: const Size(0, 32),
           shape: buttonShape,
           side: BorderSide(width: 1, color: border),
-          textStyle: AppFonts.labelMd(),
+          textStyle: AppFonts.labelLarge(),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -340,7 +340,7 @@ class _MainAppState extends ConsumerState<MainApp> {
           ),
           minimumSize: const Size(0, 28),
           shape: buttonShape,
-          textStyle: AppFonts.bodySm(),
+          textStyle: AppFonts.bodySmall(),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
@@ -406,7 +406,7 @@ class _MainAppState extends ConsumerState<MainApp> {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.ink,
-        contentTextStyle: AppFonts.bodySm().copyWith(color: AppColors.white),
+        contentTextStyle: AppFonts.bodySmall().copyWith(color: AppColors.white),
         behavior: SnackBarBehavior.floating,
         shape: AppShapes.md(),
         elevation: 0,
@@ -414,11 +414,11 @@ class _MainAppState extends ConsumerState<MainApp> {
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.bgPrimary(b),
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: AppFonts.bodyLg().copyWith(
+        titleTextStyle: AppFonts.bodyLarge().copyWith(
           color: ink,
           fontWeight: FontWeight.w600,
         ),
-        contentTextStyle: AppFonts.bodySm().copyWith(color: ink),
+        contentTextStyle: AppFonts.bodySmall().copyWith(color: ink),
         shape: AppShapes.lg(),
         elevation: 0,
       ),

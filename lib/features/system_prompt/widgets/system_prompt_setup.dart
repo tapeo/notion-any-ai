@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/theme/app_fonts.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../settings/widgets/settings_body.dart';
 import '../providers/system_prompt_notifier.dart';
@@ -54,7 +55,7 @@ class _SystemPromptSetupState extends ConsumerState<SystemPromptSetup> {
             TextFormField(
               controller: _controller,
               maxLines: 6,
-              style: const TextStyle(fontSize: 14),
+              style: AppFonts.bodyMedium(),
               decoration: const InputDecoration(
                 labelText: 'System prompt',
                 hintText:

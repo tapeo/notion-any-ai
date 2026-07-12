@@ -146,7 +146,7 @@ class _EnvironmentSwitcherSectionState
                 const SizedBox(height: AppSpacing.space2),
                 Text(
                   env.url,
-                  style: AppFonts.micro().copyWith(
+                  style: AppFonts.labelSmall().copyWith(
                     color: AppColors.textTertiary(b),
                   ),
                 ),

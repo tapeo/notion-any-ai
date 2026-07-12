@@ -74,7 +74,7 @@ class _MemorySetupState extends ConsumerState<MemorySetup> {
               controller: _controller,
               maxLines: 16,
               minLines: 8,
-              style: const TextStyle(fontSize: 14),
+              style: AppFonts.bodyMedium(),
               decoration: const InputDecoration(
                 labelText: 'Memory',
                 hintText: 'Shared persistent memory. Sections use ## Title.',
@@ -151,9 +151,9 @@ class _MemorySetupState extends ConsumerState<MemorySetup> {
                       ),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Disable all',
-                      style: TextStyle(fontSize: 12),
+                      style: AppFonts.labelMedium(),
                     ),
                   ),
               ],

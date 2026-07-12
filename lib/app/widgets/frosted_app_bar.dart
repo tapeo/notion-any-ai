@@ -58,7 +58,7 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
                 middleSpacing: 0,
                 middle: Text(
                   title,
-                  style: AppFonts.labelLg().copyWith(
+                  style: AppFonts.titleMedium().copyWith(
                     color: theme.appBarTheme.foregroundColor,
                   ),
                 ),
