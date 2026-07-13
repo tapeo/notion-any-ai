@@ -1,6 +1,6 @@
 # Any AI for Notion
 
-Open-source Flutter app that connects an OpenAI-compatible chat model to your Notion workspace via the [Model Context Protocol](https://modelcontextprotocol.io) (MCP). Chat with an assistant that can read and write your Notion pages, set reminders, remember things across conversations, and fetch web content, all on-device with OAuth-based Notion access.
+Open-source Flutter app that connects an OpenAI-compatible chat model to your Notion workspace via the Notion REST API, proxied through a small [Next.js backend](https://github.com/tapeo/notion-any-ai-backend). Chat with an assistant that can read and write your Notion pages, set reminders, remember things across conversations, and fetch web content, all on-device with OAuth-based Notion access.
 
 Cross-platform: Android, iOS, macOS, Windows, Linux.
 
@@ -11,7 +11,7 @@ Cross-platform: Android, iOS, macOS, Windows, Linux.
 ## Features
 
 - **Streamed chat** with an OpenAI-compatible endpoint (any server implementing the OpenAI Chat Completions API with tool calls).
-- **Notion MCP tool calls**. The assistant can call Notion tools exposed by `mcp.notion.com` to search pages, read content, and create or update pages. Notion connection uses OAuth 2.0 with [RFC 7591 dynamic client registration](https://datatracker.ietf.org/doc/html/rfc7591), so no client ID or secret is baked into the app.
+- **Notion tool calls**. The assistant can call Notion tools to search pages, read content, create or update pages, query databases, append blocks, and more. Notion API calls are proxied through a stateless [Next.js backend](https://github.com/tapeo/notion-any-ai-backend) that holds the OAuth client secret and forwards requests to the Notion REST API. The backend is stateless, has no database, and no user accounts. Notion access tokens are stored on-device in platform secure storage and sent per request to the backend. Notion connection uses OAuth 2.0 with a registered public integration.
 - **Built-in tools**, always available alongside Notion tools:
   - `get_current_datetime` - current date/time in the local timezone.
   - `schedule_reminder`, `list_reminders`, `cancel_reminder` - local push notifications that fire on-device. Reminders persist across app restarts on iOS, Android, macOS, and Windows (Linux fires only while the app runs).
@@ -28,6 +28,7 @@ Cross-platform: Android, iOS, macOS, Windows, Linux.
 - Flutter 3.44.4 (managed via [FVM](https://fvm.app))
 - Dart SDK ^3.12.2
 - An OpenAI-compatible chat completion endpoint (OpenAI, Azure OpenAI, a local server, etc.) that supports tool/function calls and streaming
+- A running instance of the [notion-any-ai-backend](https://github.com/tapeo/notion-any-ai-backend) server
 - A Notion account (the app connects to your workspace via OAuth on first use)
 
 ## Getting started
@@ -41,23 +42,24 @@ fvm install
 fvm flutter pub get
 ```
 
-Run on your preferred device:
+Run on your preferred device (pointing `BACKEND_URL` at your backend instance):
 
 ```bash
-fvm flutter run                 # default device
-fvm flutter run -d macos        # macOS
-fvm flutter run -d chrome       # web (desktop-only OAuth flow)
+fvm flutter run --dart-define-from-file=api-keys.json
 ```
+
+See `api-keys.example.json` for the expected keys (`BACKEND_URL`). The Notion OAuth client secret lives only in the backend's `.env.local`, never in the app.
 
 ### First-run setup
 
-1. Open the app. You land on the chat screen.
-2. Open settings and configure your **AI provider**: the chat completion endpoint URL and model name (for example `https://api.openai.com/v1/chat/completions` and `gpt-4o`).
-3. Connect Notion: tap **Connect Notion** and authorize the app in the browser. The browser redirects back to the app via the `notionopenai://oauth/callback` custom URL scheme on all platforms.
-4. Optionally configure a **system prompt**, enable **built-in tools**, and set up **voice input** transcription.
-5. Start chatting. The assistant can now call Notion tools and built-in tools.
+1. Start the [backend](https://github.com/tapeo/notion-any-ai-backend) and configure its `.env.local` with your Notion OAuth client ID, client secret, redirect URI, and state secret.
+2. Open the app. You land on the chat screen.
+3. Open settings and configure your **AI provider**: the chat completion endpoint URL and model name (for example `https://api.openai.com/v1/chat/completions` and `gpt-4o`).
+4. Connect Notion: tap **Connect Notion** and authorize the app in the browser. The backend exchanges the OAuth code and redirects tokens back to the app via the `notionopenai://oauth/callback` custom URL scheme. Tokens are stored in platform secure storage.
+5. Optionally configure a **system prompt**, enable **built-in tools**, and set up **voice input** transcription.
+6. Start chatting. The assistant can now call Notion tools (proxied through the backend) and built-in tools.
 
-No API keys, Notion client IDs, or secrets are needed at build time. The AI provider endpoint is the only thing you must configure in-app. Notion credentials are obtained at runtime via OAuth and stored in platform secure storage.
+No Notion client ID or secret is needed in the app. The only compile-time value the app needs is `BACKEND_URL`. Notion credentials are obtained at runtime via OAuth, exchanged by the backend, and stored on-device.
 
 ## Platform notes
 
@@ -79,11 +81,11 @@ lib/
   features/
     ai_provider/      # OpenAI-compatible endpoint config
     builtin_tools/    # registry of local tools (datetime, reminders, memory, fetch)
-    chat/             # chat screen, message list, bubbles, OpenAI client, MCP bridge
+    chat/             # chat screen, message list, bubbles, OpenAI client, Notion tool bridge
     conversations/    # local conversation history (JSON files)
     memory/           # shared memory.md read/write UI and storage
     notifications/    # local push reminders
-    notion/           # OAuth, MCP client, page search, page picker, tool list
+    notion/           # OAuth, REST API client (proxied via backend), page search, page picker, tool list
     settings/         # settings screen
     system_prompt/    # configurable system prompt
     voice_input/      # recording and transcription
