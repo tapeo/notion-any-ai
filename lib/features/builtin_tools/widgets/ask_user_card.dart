@@ -35,7 +35,8 @@ class _AskUserCardState extends State<AskUserCard> {
   }
 
   bool get _canSubmit {
-    if (widget.question.options != null && widget.question.options!.isNotEmpty) {
+    if (widget.question.options != null &&
+        widget.question.options!.isNotEmpty) {
       if (_showOtherField) {
         return _textController.text.trim().isNotEmpty;
       }
@@ -45,7 +46,8 @@ class _AskUserCardState extends State<AskUserCard> {
   }
 
   String get _answerValue {
-    if (widget.question.options != null && widget.question.options!.isNotEmpty) {
+    if (widget.question.options != null &&
+        widget.question.options!.isNotEmpty) {
       if (_showOtherField) {
         return _textController.text.trim();
       }
@@ -69,14 +71,12 @@ class _AskUserCardState extends State<AskUserCard> {
     final brightness = theme.brightness;
     final muted = AppColors.textSecondary(brightness);
 
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
-      ),
+    return SizedBox(
+      width: double.infinity,
       child: Material(
         color: AppColors.assistantBubble(brightness),
         shape: AppShapes.sm(
-          side: BorderSide(color: AppColors.accent.withValues(alpha: 0.4)),
+          side: BorderSide(color: AppColors.borderDefault(brightness)),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -158,7 +158,8 @@ class _AskUserCardState extends State<AskUserCard> {
   }
 
   Widget _buildInput(Brightness brightness, Color muted) {
-    if (widget.question.options != null && widget.question.options!.isNotEmpty) {
+    if (widget.question.options != null &&
+        widget.question.options!.isNotEmpty) {
       return _buildOptionsInput(brightness, muted);
     }
     return _buildFreeTextInput(brightness, muted);
@@ -194,6 +195,7 @@ class _AskUserCardState extends State<AskUserCard> {
             controller: _textController,
             onChanged: (_) => setState(() {}),
             brightness: brightness,
+            onSubmit: _canSubmit ? _handleSubmit : null,
           ),
         ],
         const SizedBox(height: AppSpacing.space3),
@@ -215,6 +217,7 @@ class _AskUserCardState extends State<AskUserCard> {
           controller: _textController,
           brightness: brightness,
           onChanged: (_) => setState(() {}),
+          onSubmit: _canSubmit ? _handleSubmit : null,
         ),
         const SizedBox(height: AppSpacing.space3),
         _ActionRow(
@@ -275,30 +278,64 @@ class _OptionTile extends StatelessWidget {
   }
 }
 
-class _FreeTextField extends StatelessWidget {
+class _FreeTextField extends StatefulWidget {
   const _FreeTextField({
     required this.controller,
     this.brightness,
     this.onChanged,
+    this.onSubmit,
   });
 
   final TextEditingController controller;
   final Brightness? brightness;
   final ValueChanged<String>? onChanged;
+  final VoidCallback? onSubmit;
+
+  @override
+  State<_FreeTextField> createState() => _FreeTextFieldState();
+}
+
+class _FreeTextFieldState extends State<_FreeTextField> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.onKeyEvent = _onKeyEvent;
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+      final shift = HardwareKeyboard.instance.isShiftPressed;
+      if (!shift && widget.onSubmit != null) {
+        widget.onSubmit!();
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final b = brightness ?? Theme.of(context).brightness;
+    final b = widget.brightness ?? Theme.of(context).brightness;
     return Material(
       color: AppColors.bgTertiary(b),
       shape: AppShapes.sm(),
       clipBehavior: Clip.antiAlias,
       child: TextField(
-        controller: controller,
+        controller: widget.controller,
+        focusNode: _focusNode,
         minLines: 1,
         maxLines: 4,
         autofocus: true,
-        onChanged: onChanged,
+        onChanged: widget.onChanged,
+        onSubmitted: widget.onSubmit != null ? (_) => widget.onSubmit!() : null,
         style: AppFonts.bodyMedium(),
         textInputAction: TextInputAction.newline,
         decoration: InputDecoration(
@@ -337,10 +374,7 @@ class _ActionRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        TextButton(
-          onPressed: onSkip,
-          child: const Text('Skip'),
-        ),
+        TextButton(onPressed: onSkip, child: const Text('Skip')),
         const SizedBox(width: AppSpacing.space2),
         FilledButton(
           onPressed: canSubmit ? onSubmit : null,
