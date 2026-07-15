@@ -21,7 +21,21 @@ class ToolCall extends Equatable {
     try {
       arguments = jsonDecode(argumentsRaw) as Map<String, dynamic>;
     } catch (_) {
-      arguments = <String, dynamic>{};
+      final length = argumentsRaw.length;
+      const maxFragment = 200;
+      String fragment;
+      if (length <= maxFragment * 2) {
+        fragment = argumentsRaw;
+      } else {
+        fragment =
+            '${argumentsRaw.substring(0, maxFragment)} ... '
+            '${argumentsRaw.substring(length - maxFragment)}';
+      }
+      arguments = <String, dynamic>{
+        '_parseError': true,
+        'length': length,
+        'fragment': fragment,
+      };
     }
     return ToolCall(
       id: json['id'] as String? ?? '',

@@ -58,6 +58,16 @@ class NotionToolBridge {
           parameters: const {},
         ),
       );
+      final parseError = call.arguments['_parseError'];
+      if (parseError == true) {
+        final length = call.arguments['length'];
+        final fragment = call.arguments['fragment'];
+        return 'Tool error: arguments JSON could not be parsed '
+            '(length=$length). The streamed arguments were likely '
+            'truncated or malformed. Retry with a simpler structure, '
+            'appending one block per call, especially for nested '
+            'blocks such as tables and column lists. Fragment: $fragment';
+      }
       final missing = _missingRequiredParams(tool, call.arguments);
       if (missing.isNotEmpty) {
         return 'Tool error: Missing required parameter${missing.length > 1 ? 's' : ''} '

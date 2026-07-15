@@ -207,7 +207,22 @@ class NotionToolRegistry {
       name: 'notion_create_page',
       description:
           'Create a new page in a Notion database or as a child of '
-          'another page.',
+          'another page. Optional `children` adds content blocks to the '
+          'new page. Each item in `children` is a block object with a '
+          '`type` field and a same-named payload. Supported block types: '
+          'paragraph, heading_1, heading_2, heading_3, '
+          'bulleted_list_item, numbered_list_item, to_do, toggle, code, '
+          'callout, quote, divider, table_of_contents, breadcrumb, '
+          'embed, bookmark, image, video, pdf, file, audio, table, '
+          'column_list. For nested blocks (table, column_list, and any '
+          'block carrying a `children` array), keep `children` minimal '
+          'and prefer appending complex blocks via notion_append_blocks '
+          'in separate calls. A table block has the shape '
+          '{"type":"table","table":{"table_width":N,'
+          '"has_column_header":true,"children":[{"type":"table_row",'
+          '"table_row":{"cells":[[{"type":"text","text":{"content":"..."}}]]}}]}}. '
+          'Keep rich_text items minimal '
+          '({"type":"text","text":{"content":"..."}}).',
       parameters: {
         'type': 'object',
         'properties': {
@@ -275,7 +290,23 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_append_blocks',
-      description: 'Append content blocks to a Notion page or block.',
+      description:
+          'Append content blocks to a Notion page or block. Each item in '
+          '`children` is a block object with a `type` field and a same-named '
+          'payload. Supported block types: paragraph, heading_1, heading_2, '
+          'heading_3, bulleted_list_item, numbered_list_item, to_do, toggle, '
+          'code, callout, quote, divider, table_of_contents, breadcrumb, '
+          'embed, bookmark, image, video, pdf, file, audio, table, '
+          'column_list. For nested blocks (table, column_list, and any '
+          'block carrying a `children` array), append ONE block per call to '
+          'avoid malformed JSON during streaming. A table block has the '
+          'shape {"type":"table","table":{"table_width":N,'
+          '"has_column_header":true,"children":[{"type":"table_row",'
+          '"table_row":{"cells":[[{"type":"text","text":{"content":"..."}}]]}}]}}. '
+          'A column_list block contains exactly two or more column children, '
+          'each with its own children array. Keep `children` arrays flat '
+          '(one level of nesting per call) and rich_text items minimal '
+          '({"type":"text","text":{"content":"..."}}).',
       parameters: {
         'type': 'object',
         'properties': {

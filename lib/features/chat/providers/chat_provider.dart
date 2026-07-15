@@ -541,7 +541,7 @@ class ChatNotifier extends Notifier<ChatState> {
         arguments =
             jsonDecode(acc.arguments.toString()) as Map<String, dynamic>;
       } catch (_) {
-        arguments = <String, dynamic>{};
+        arguments = _parseErrorArguments(acc.arguments.toString());
       }
       result.add(ToolCall(id: acc.id, name: acc.name, arguments: arguments));
     }
@@ -619,6 +619,23 @@ class _AccumulatedToolCall {
   String id = '';
   String name = '';
   final StringBuffer arguments = StringBuffer();
+}
+
+Map<String, dynamic> _parseErrorArguments(String raw) {
+  final length = raw.length;
+  const maxFragment = 200;
+  String fragment;
+  if (length <= maxFragment * 2) {
+    fragment = raw;
+  } else {
+    fragment =
+        '${raw.substring(0, maxFragment)} ... ${raw.substring(length - maxFragment)}';
+  }
+  return <String, dynamic>{
+    '_parseError': true,
+    'length': length,
+    'fragment': fragment,
+  };
 }
 
 final chatProvider = NotifierProvider<ChatNotifier, ChatState>(
