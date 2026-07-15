@@ -44,19 +44,19 @@ class ToolCallGroup extends StatelessWidget {
     final headerIcon = hasUnansweredAskUser
         ? Icons.help_outline
         : (!allDone
-            ? Icons.build_outlined
-            : (hasError ? Icons.error_outline : Icons.check_circle_outline));
+              ? Icons.build_outlined
+              : (hasError ? Icons.error_outline : Icons.check_circle_outline));
     final headerColor = hasError
         ? AppColors.error
         : (hasUnansweredAskUser
-            ? muted
-            : (allDone ? AppColors.success : muted));
+              ? muted
+              : (allDone ? AppColors.success : muted));
 
     final headerLabel = hasUnansweredAskUser
         ? 'Unanswered'
         : (!allDone
-            ? 'Running $doneCount/$total'
-            : (hasError ? 'Completed with errors' : 'Completed'));
+              ? 'Running $doneCount/$total'
+              : (hasError ? 'Completed with errors' : 'Completed'));
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -150,13 +150,13 @@ class _ToolRow extends StatelessWidget {
     final icon = _isUnansweredAskUser
         ? Icons.help_outline
         : (!_isDone
-            ? Icons.hourglass_top_outlined
-            : (_isError ? Icons.error_outline : Icons.check_circle_outline));
+              ? Icons.hourglass_top_outlined
+              : (_isError ? Icons.error_outline : Icons.check_circle_outline));
     final iconColor = _isError
         ? AppColors.error
         : (_isUnansweredAskUser
-            ? muted
-            : (_isDone ? AppColors.success : muted));
+              ? muted
+              : (_isDone ? AppColors.success : muted));
 
     final statusLabel = _isUnansweredAskUser
         ? 'unanswered'
@@ -182,7 +182,10 @@ class _ToolRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(statusLabel, style: AppFonts.labelSmall().copyWith(color: muted)),
+            Text(
+              statusLabel,
+              style: AppFonts.labelSmall().copyWith(color: muted),
+            ),
             const SizedBox(width: AppSpacing.space2),
             Icon(Icons.chevron_right, size: AppIconSize.md, color: muted),
           ],
@@ -219,7 +222,10 @@ void showToolCallDetails(BuildContext context, ToolCallEntry entry) {
           children: [
             Text(toolCall.name, style: AppFonts.headlineSmall()),
             const SizedBox(height: AppSpacing.space3),
-            Text('arguments', style: AppFonts.labelLarge().copyWith(color: muted)),
+            Text(
+              'arguments',
+              style: AppFonts.labelLarge().copyWith(color: muted),
+            ),
             const SizedBox(height: AppSpacing.space1),
             Flexible(
               child: SizedBox(

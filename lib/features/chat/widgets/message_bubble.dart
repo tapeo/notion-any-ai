@@ -13,6 +13,7 @@ import '../models/chat_role.dart';
 import '../models/tool_call.dart';
 import 'copy_button.dart';
 import 'markdown_text.dart';
+import 'token_button.dart';
 import 'tool_call_group.dart';
 
 class MessageBubble extends ConsumerWidget {
@@ -116,11 +117,23 @@ class _TextBubble extends StatelessWidget {
                       right: AppSpacing.space1,
                       top: AppSpacing.space1,
                     ),
-                    child: CopyButton(
-                      text: message.content!,
-                      alignment: isUser
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CopyButton(
+                          text: message.content!,
+                          alignment: isUser
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                        ),
+                        if (message.usage != null && !isUser) ...[
+                          const SizedBox(width: AppSpacing.space1),
+                          TokenButton(
+                            usage: message.usage!,
+                            alignment: Alignment.centerLeft,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
@@ -321,9 +334,7 @@ class _ToolCallBubble extends ConsumerWidget {
           ),
         );
       } else {
-        otherEntries.add(
-          ToolCallEntry(toolCall: call, resultContent: result),
-        );
+        otherEntries.add(ToolCallEntry(toolCall: call, resultContent: result));
       }
     }
 
@@ -390,9 +401,21 @@ class _AssistantText extends StatelessWidget {
             left: AppSpacing.space1,
             top: AppSpacing.space1,
           ),
-          child: CopyButton(
-            text: message.content ?? '',
-            alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CopyButton(
+                text: message.content ?? '',
+                alignment: Alignment.centerLeft,
+              ),
+              if (message.usage != null) ...[
+                const SizedBox(width: AppSpacing.space1),
+                TokenButton(
+                  usage: message.usage!,
+                  alignment: Alignment.centerLeft,
+                ),
+              ],
+            ],
           ),
         ),
       ],

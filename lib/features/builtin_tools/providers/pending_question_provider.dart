@@ -44,5 +44,5 @@ class PendingQuestionNotifier extends Notifier<PendingQuestionState> {
 
 final pendingQuestionProvider =
     NotifierProvider<PendingQuestionNotifier, PendingQuestionState>(
-  PendingQuestionNotifier.new,
-);
+      PendingQuestionNotifier.new,
+    );

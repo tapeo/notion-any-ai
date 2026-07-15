@@ -273,7 +273,9 @@ class _MainAppState extends ConsumerState<MainApp> {
         isDense: true,
         labelStyle: AppFonts.bodySmall().copyWith(color: secondary),
         hintStyle: AppFonts.bodySmall().copyWith(color: tertiary),
-        floatingLabelStyle: AppFonts.bodySmall().copyWith(color: AppColors.accent),
+        floatingLabelStyle: AppFonts.bodySmall().copyWith(
+          color: AppColors.accent,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.space3,
           vertical: AppSpacing.space2,

@@ -166,9 +166,7 @@ class _ClearAppDataSectionState extends ConsumerState<ClearAppDataSection> {
     final sharedPrefs = ref.read(sharedPrefsProvider);
     await sharedPrefs.remove('install_sent');
     await sharedPrefs.remove('onboarding_completed');
-    await ref
-        .read(flutterSecureStorageProvider)
-        .delete(key: 'installation_id');
+    await ref.read(flutterSecureStorageProvider).delete(key: 'installation_id');
 
     ref.invalidate(aiProviderProvider);
     ref.invalidate(voiceInputProvider);
@@ -225,10 +223,7 @@ class _ClearAppDataSectionState extends ConsumerState<ClearAppDataSection> {
           const SizedBox(height: AppSpacing.space3),
           const EnvironmentSwitcherSection(),
           const SizedBox(height: AppSpacing.space3),
-          _DangerZoneCard(
-            clearing: _clearing,
-            onClear: _handleClear,
-          ),
+          _DangerZoneCard(clearing: _clearing, onClear: _handleClear),
         ],
       ],
     );

@@ -37,8 +37,9 @@ class AiProviderNotifier extends Notifier<AiProviderState> {
     state = state.copyWith(
       endpoint: endpoint.trim(),
       model: model.trim(),
-      hasApiKey:
-          (apiKey != null && apiKey.trim().isNotEmpty) ? true : state.hasApiKey,
+      hasApiKey: (apiKey != null && apiKey.trim().isNotEmpty)
+          ? true
+          : state.hasApiKey,
       saving: false,
     );
   }

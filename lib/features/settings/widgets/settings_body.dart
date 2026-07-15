@@ -50,10 +50,10 @@ class SettingsBody extends StatelessWidget {
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary(
-                          Theme.of(context).brightness,
-                        ),
-                      ),
+                    color: AppColors.textSecondary(
+                      Theme.of(context).brightness,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.space5),
                 child,

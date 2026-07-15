@@ -53,8 +53,7 @@ class BackendEnvNotifier extends Notifier<BackendEnv> {
   }
 }
 
-final backendEnvProvider =
-    NotifierProvider<BackendEnvNotifier, BackendEnv>(
+final backendEnvProvider = NotifierProvider<BackendEnvNotifier, BackendEnv>(
   BackendEnvNotifier.new,
 );
 

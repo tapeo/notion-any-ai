@@ -22,6 +22,7 @@ import '../../system_prompt/providers/system_prompt_notifier.dart';
 import '../../system_prompt/states/system_prompt_state.dart';
 import '../models/chat_message.dart';
 import '../models/chat_role.dart';
+import '../models/token_usage.dart';
 import '../models/tool_call.dart';
 import '../services/notion_tool_bridge.dart';
 import '../states/chat_state.dart';
@@ -74,16 +75,13 @@ class ChatNotifier extends Notifier<ChatState> {
 
   String get _effectiveSystemPrompt {
     final prompt = ref.read(systemPromptProvider).prompt;
-    final base =
-        prompt.isEmpty ? SystemPromptState.defaultPrompt : prompt;
+    final base = prompt.isEmpty ? SystemPromptState.defaultPrompt : prompt;
     return base;
   }
 
   String _systemPromptWithPages(List<NotionPageRef> pages) {
     var base = _effectiveSystemPrompt;
-    final memoryContent = ref.read(
-      memoryProvider.select((s) => s.content),
-    );
+    final memoryContent = ref.read(memoryProvider.select((s) => s.content));
     if (memoryContent.trim().isNotEmpty) {
       base =
           '$base\n\n## Persistent memory\n'
@@ -323,6 +321,7 @@ class ChatNotifier extends Notifier<ChatState> {
 
       final contentBuffer = StringBuffer();
       final toolCallAccumulator = <int, _AccumulatedToolCall>{};
+      TokenUsage? capturedUsage;
 
       final completer = Completer<void>();
       _streamCompleter = completer;
@@ -355,6 +354,9 @@ class ChatNotifier extends Notifier<ChatState> {
                   acc.arguments.write(delta.argumentsDelta);
                 }
               }
+              if (chunk.usage != null) {
+                capturedUsage = chunk.usage;
+              }
             },
             onError: completer.completeError,
             onDone: completer.complete,
@@ -377,6 +379,7 @@ class ChatNotifier extends Notifier<ChatState> {
           content: contentBuffer.isEmpty ? null : contentBuffer.toString(),
           toolCalls: toolCalls,
           createdAt: assistantPlaceholder.createdAt,
+          usage: capturedUsage,
         );
         _replaceMessage(assistantId, assistantMessage);
         conversation.add(assistantMessage);
@@ -428,6 +431,7 @@ class ChatNotifier extends Notifier<ChatState> {
         role: ChatRole.assistant,
         content: reply.isEmpty ? '(no response)' : reply,
         createdAt: assistantPlaceholder.createdAt,
+        usage: capturedUsage,
       );
       _replaceMessage(assistantId, finalized);
       if (conversationId != null) {
@@ -566,7 +570,9 @@ class ChatNotifier extends Notifier<ChatState> {
   }
 
   List<String> _defaultEnabledTools(NotionConnectionState notion) {
-    final tools = notion.tools.isEmpty ? NotionToolRegistry.allTools : notion.tools;
+    final tools = notion.tools.isEmpty
+        ? NotionToolRegistry.allTools
+        : notion.tools;
     return tools
         .where((t) => getToolKind(t.name) == NotionToolKind.read)
         .map((t) => t.name)

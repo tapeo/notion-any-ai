@@ -96,7 +96,11 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 /// Frosted bar pinned at the bottom edge of the screen.
 class FrostedBottomBar extends StatelessWidget {
-  const FrostedBottomBar({super.key, required this.child, this.showBorder = true});
+  const FrostedBottomBar({
+    super.key,
+    required this.child,
+    this.showBorder = true,
+  });
 
   final Widget child;
   final bool showBorder;

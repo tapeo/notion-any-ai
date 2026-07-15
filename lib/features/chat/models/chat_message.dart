@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 import 'chat_role.dart';
+import 'token_usage.dart';
 import 'tool_call.dart';
 
 class ChatMessage extends Equatable {
@@ -15,6 +16,7 @@ class ChatMessage extends Equatable {
     this.toolCalls,
     this.toolCallId,
     this.name,
+    this.usage,
   });
 
   final String id;
@@ -24,8 +26,13 @@ class ChatMessage extends Equatable {
   final String? toolCallId;
   final String? name;
   final DateTime createdAt;
+  final TokenUsage? usage;
 
-  ChatMessage copyWith({String? content, List<ToolCall>? toolCalls}) {
+  ChatMessage copyWith({
+    String? content,
+    List<ToolCall>? toolCalls,
+    TokenUsage? usage,
+  }) {
     return ChatMessage(
       id: id,
       role: role,
@@ -34,6 +41,7 @@ class ChatMessage extends Equatable {
       toolCallId: toolCallId,
       name: name,
       createdAt: createdAt,
+      usage: usage ?? this.usage,
     );
   }
 
@@ -64,6 +72,7 @@ class ChatMessage extends Equatable {
       if (toolCallId != null) 'tool_call_id': toolCallId,
       if (name != null) 'name': name,
       'created_at': createdAt.toUtc().toIso8601String(),
+      if (usage != null) 'usage': usage!.toJson(),
     };
   }
 
@@ -78,6 +87,9 @@ class ChatMessage extends Equatable {
       toolCallId: json['tool_call_id'] as String?,
       name: json['name'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
+      usage: json['usage'] == null
+          ? null
+          : TokenUsage.fromJson(json['usage'] as Map<String, dynamic>),
     );
   }
 
@@ -90,6 +102,7 @@ class ChatMessage extends Equatable {
     toolCallId,
     name,
     createdAt,
+    usage,
   ];
 }
 

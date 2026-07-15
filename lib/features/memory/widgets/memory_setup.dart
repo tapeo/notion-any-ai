@@ -151,10 +151,7 @@ class _MemorySetupState extends ConsumerState<MemorySetup> {
                       ),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: Text(
-                      'Disable all',
-                      style: AppFonts.labelMedium(),
-                    ),
+                    child: Text('Disable all', style: AppFonts.labelMedium()),
                   ),
               ],
             ),

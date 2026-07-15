@@ -74,11 +74,13 @@ class _VoiceInputSetupState extends ConsumerState<VoiceInputSetup> {
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
     final apiKey = _apiKeyController.text.trim();
-    await ref.read(voiceInputProvider.notifier).save(
-      model: _modelController.text,
-      apiKey: apiKey.isEmpty ? null : apiKey,
-      language: _selectedLanguage,
-    );
+    await ref
+        .read(voiceInputProvider.notifier)
+        .save(
+          model: _modelController.text,
+          apiKey: apiKey.isEmpty ? null : apiKey,
+          language: _selectedLanguage,
+        );
     if (!mounted) return;
     await _showSavedDialog(context);
   }

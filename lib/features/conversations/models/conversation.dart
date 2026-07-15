@@ -11,6 +11,7 @@ class ConversationSummary extends Equatable {
     required this.updatedAt,
     required this.messageCount,
     required this.lastPreview,
+    this.totalTokens = 0,
   });
 
   final String id;
@@ -19,12 +20,14 @@ class ConversationSummary extends Equatable {
   final DateTime updatedAt;
   final int messageCount;
   final String lastPreview;
+  final int totalTokens;
 
   ConversationSummary copyWith({
     String? title,
     DateTime? updatedAt,
     int? messageCount,
     String? lastPreview,
+    int? totalTokens,
   }) {
     return ConversationSummary(
       id: id,
@@ -33,6 +36,7 @@ class ConversationSummary extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       messageCount: messageCount ?? this.messageCount,
       lastPreview: lastPreview ?? this.lastPreview,
+      totalTokens: totalTokens ?? this.totalTokens,
     );
   }
 
@@ -44,6 +48,7 @@ class ConversationSummary extends Equatable {
       'updated_at': updatedAt.toUtc().toIso8601String(),
       'message_count': messageCount,
       'last_preview': lastPreview,
+      'total_tokens': totalTokens,
     };
   }
 
@@ -55,6 +60,7 @@ class ConversationSummary extends Equatable {
       updatedAt: DateTime.parse(json['updated_at'] as String),
       messageCount: (json['message_count'] as num).toInt(),
       lastPreview: (json['last_preview'] as String?) ?? '',
+      totalTokens: (json['total_tokens'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -66,6 +72,7 @@ class ConversationSummary extends Equatable {
     updatedAt,
     messageCount,
     lastPreview,
+    totalTokens,
   ];
 }
 
@@ -86,6 +93,11 @@ class Conversation extends Equatable {
 
   ConversationSummary toSummary() {
     final lastPreview = _lastUserPreview();
+    final totalTokens = messages
+        .where(
+          (m) => m.role == ChatRole.assistant && m.usage?.totalTokens != null,
+        )
+        .fold(0, (sum, m) => sum + m.usage!.totalTokens!);
     return ConversationSummary(
       id: id,
       title: title,
@@ -93,6 +105,7 @@ class Conversation extends Equatable {
       updatedAt: updatedAt,
       messageCount: messages.length,
       lastPreview: lastPreview,
+      totalTokens: totalTokens,
     );
   }
 

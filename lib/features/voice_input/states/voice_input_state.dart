@@ -34,5 +34,11 @@ class VoiceInputState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [model, hasApiKey, saving, isTranscribing, language];
+  List<Object?> get props => [
+    model,
+    hasApiKey,
+    saving,
+    isTranscribing,
+    language,
+  ];
 }

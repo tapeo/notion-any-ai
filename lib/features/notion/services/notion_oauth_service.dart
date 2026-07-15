@@ -53,9 +53,11 @@ class NotionOAuthService {
       throw NotionOAuthError('Missing access_token in callback');
     }
     final refreshToken = params['refresh_token'] ?? '';
-    final expiresAt = int.tryParse(params['access_token_expires_at'] ?? '') ??
+    final expiresAt =
+        int.tryParse(params['access_token_expires_at'] ?? '') ??
         DateTime.now().millisecondsSinceEpoch + 3600 * 1000;
-    final connectedAt = int.tryParse(params['connected_at'] ?? '') ??
+    final connectedAt =
+        int.tryParse(params['connected_at'] ?? '') ??
         DateTime.now().millisecondsSinceEpoch;
     return NotionTokens(
       accessToken: accessToken,

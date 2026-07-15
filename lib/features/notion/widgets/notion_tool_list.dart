@@ -94,7 +94,9 @@ class NotionToolList extends ConsumerWidget {
   }
 
   List<String> _defaultWhitelist(covariant NotionConnectionState state) {
-    final tools = state.tools.isEmpty ? NotionToolRegistry.allTools : state.tools;
+    final tools = state.tools.isEmpty
+        ? NotionToolRegistry.allTools
+        : state.tools;
     return tools
         .where((t) => getToolKind(t.name) == NotionToolKind.read)
         .map((t) => t.name)

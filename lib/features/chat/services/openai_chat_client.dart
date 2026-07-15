@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/chat_message.dart';
+import '../models/token_usage.dart';
 
 class ToolCallDelta {
   const ToolCallDelta({
@@ -21,10 +22,15 @@ class ToolCallDelta {
 }
 
 class OpenAiChatChunk {
-  const OpenAiChatChunk({this.contentDelta, this.toolCallDeltas = const []});
+  const OpenAiChatChunk({
+    this.contentDelta,
+    this.toolCallDeltas = const [],
+    this.usage,
+  });
 
   final String? contentDelta;
   final List<ToolCallDelta> toolCallDeltas;
+  final TokenUsage? usage;
 }
 
 class OpenAiChatError implements Exception {
@@ -55,6 +61,7 @@ class OpenAiChatClient {
       'model': model,
       'messages': messages.map((m) => m.toOpenAiJson()).toList(),
       'stream': true,
+      'stream_options': {'include_usage': true},
     };
     if (tools.isNotEmpty) {
       body['tools'] = tools;
@@ -164,6 +171,17 @@ class OpenAiChatClient {
       return null;
     }
     final choices = json['choices'] as List?;
+    final usageRaw = json['usage'];
+    if ((choices == null || choices.isEmpty) &&
+        usageRaw is Map<String, dynamic>) {
+      final usage = TokenUsage.fromJson(usageRaw);
+      if (usage.promptTokens == null &&
+          usage.completionTokens == null &&
+          usage.totalTokens == null) {
+        return null;
+      }
+      return OpenAiChatChunk(usage: usage);
+    }
     if (choices == null || choices.isEmpty) {
       return null;
     }
@@ -192,12 +210,18 @@ class OpenAiChatClient {
       }
     }
 
-    if (content == null && toolCallDeltas.isEmpty) {
+    TokenUsage? usage;
+    if (usageRaw is Map<String, dynamic>) {
+      usage = TokenUsage.fromJson(usageRaw);
+    }
+
+    if (content == null && toolCallDeltas.isEmpty && usage == null) {
       return null;
     }
     return OpenAiChatChunk(
       contentDelta: content,
       toolCallDeltas: toolCallDeltas,
+      usage: usage,
     );
   }
 

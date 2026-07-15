@@ -137,7 +137,9 @@ class NotionConnectionNotifier extends Notifier<NotionConnectionState> {
   }
 
   List<String> _defaultWhitelist() {
-    final tools = state.tools.isEmpty ? NotionToolRegistry.allTools : state.tools;
+    final tools = state.tools.isEmpty
+        ? NotionToolRegistry.allTools
+        : state.tools;
     return tools
         .where((t) => getToolKind(t.name) == NotionToolKind.read)
         .map((t) => t.name)

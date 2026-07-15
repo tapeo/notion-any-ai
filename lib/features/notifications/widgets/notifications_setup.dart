@@ -48,10 +48,7 @@ class NotificationsSetup extends ConsumerWidget {
                     ),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: Text(
-                    'Clear all',
-                    style: AppFonts.labelMedium(),
-                  ),
+                  child: Text('Clear all', style: AppFonts.labelMedium()),
                 ),
             ],
           ),

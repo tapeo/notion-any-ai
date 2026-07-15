@@ -6,7 +6,8 @@ class NotionToolRegistry {
   static const allTools = <NotionToolMeta>[
     NotionToolMeta(
       name: 'notion_search',
-      description: 'Search for pages and databases in the connected Notion '
+      description:
+          'Search for pages and databases in the connected Notion '
           'workspace by title or content.',
       parameters: {
         'type': 'object',
@@ -18,7 +19,8 @@ class NotionToolRegistry {
           'filter': {
             'type': 'string',
             'enum': ['page', 'database', 'data_source'],
-            'description': 'Filter results to only pages, only databases, '
+            'description':
+                'Filter results to only pages, only databases, '
                 'or only data sources.',
           },
           'page_size': {
@@ -35,7 +37,8 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_fetch_page',
-      description: 'Retrieve a Notion page by ID, including its properties '
+      description:
+          'Retrieve a Notion page by ID, including its properties '
           '(title, status, etc.), parent, icon, cover, and metadata.',
       parameters: {
         'type': 'object',
@@ -50,7 +53,8 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_get_blocks',
-      description: 'Retrieve the content blocks of a Notion page or block. '
+      description:
+          'Retrieve the content blocks of a Notion page or block. '
           'Returns rendered markdown by default, or raw JSON blocks if '
           'as_markdown is set to false.',
       parameters: {
@@ -58,22 +62,26 @@ class NotionToolRegistry {
         'properties': {
           'block_id': {
             'type': 'string',
-            'description': 'The ID of the block or page whose children to '
+            'description':
+                'The ID of the block or page whose children to '
                 'retrieve.',
           },
           'as_markdown': {
             'type': 'boolean',
-            'description': 'If true (default), returns content as markdown. '
+            'description':
+                'If true (default), returns content as markdown. '
                 'If false, returns raw JSON blocks.',
           },
           'page_size': {
             'type': 'integer',
-            'description': 'Number of blocks per page (max 100, only used '
+            'description':
+                'Number of blocks per page (max 100, only used '
                 'when as_markdown is false).',
           },
           'start_cursor': {
             'type': 'string',
-            'description': 'Pagination cursor (only used when as_markdown is '
+            'description':
+                'Pagination cursor (only used when as_markdown is '
                 'false).',
           },
         },
@@ -122,7 +130,8 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_get_database',
-      description: 'Retrieve a Notion data source by ID (pass either '
+      description:
+          'Retrieve a Notion data source by ID (pass either '
           'database_id or data_source_id), including its properties schema, '
           'title, parent, and metadata.',
       parameters: {
@@ -130,7 +139,8 @@ class NotionToolRegistry {
         'properties': {
           'database_id': {
             'type': 'string',
-            'description': 'The ID of the Notion database. The single '
+            'description':
+                'The ID of the Notion database. The single '
                 'data source under it is resolved automatically.',
           },
           'data_source_id': {
@@ -143,7 +153,8 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_fetch_database',
-      description: 'Retrieve the raw Notion database object by ID, including '
+      description:
+          'Retrieve the raw Notion database object by ID, including '
           'its title, parent, data sources list, and metadata. Use this to '
           'read the database itself (not the data source schema).',
       parameters: {
@@ -159,7 +170,8 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_query_database',
-      description: 'Query a Notion database to retrieve its entries (pages) '
+      description:
+          'Query a Notion database to retrieve its entries (pages) '
           'with optional filters and sorts.',
       parameters: {
         'type': 'object',
@@ -170,7 +182,8 @@ class NotionToolRegistry {
           },
           'filter': {
             'type': 'object',
-            'description': 'Filter criteria to narrow down results. See '
+            'description':
+                'Filter criteria to narrow down results. See '
                 'Notion API filter documentation for the structure.',
           },
           'sorts': {
@@ -192,20 +205,23 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_create_page',
-      description: 'Create a new page in a Notion database or as a child of '
+      description:
+          'Create a new page in a Notion database or as a child of '
           'another page.',
       parameters: {
         'type': 'object',
         'properties': {
           'parent': {
             'type': 'object',
-            'description': 'The parent of the new page. Must contain either '
+            'description':
+                'The parent of the new page. Must contain either '
                 '{"type": "page_id", "page_id": "..."} or '
                 '{"type": "database_id", "database_id": "..."}.',
           },
           'properties': {
             'type': 'object',
-            'description': 'The page properties. Keys are property names, '
+            'description':
+                'The page properties. Keys are property names, '
                 'values depend on the property type.',
           },
           'children': {
@@ -237,7 +253,8 @@ class NotionToolRegistry {
           },
           'properties': {
             'type': 'object',
-            'description': 'The properties to update. Keys are property '
+            'description':
+                'The properties to update. Keys are property '
                 'names, values depend on the property type.',
           },
           'icon': {
@@ -264,7 +281,8 @@ class NotionToolRegistry {
         'properties': {
           'block_id': {
             'type': 'string',
-            'description': 'The ID of the page or block to append children '
+            'description':
+                'The ID of the page or block to append children '
                 'to.',
           },
           'children': {
@@ -274,7 +292,8 @@ class NotionToolRegistry {
           },
           'after': {
             'type': 'string',
-            'description': 'The ID of an existing block to insert the new '
+            'description':
+                'The ID of an existing block to insert the new '
                 'blocks after.',
           },
         },
@@ -321,7 +340,8 @@ class NotionToolRegistry {
           },
           'archived': {
             'type': 'boolean',
-            'description': 'Set to true to archive, false to unarchive. '
+            'description':
+                'Set to true to archive, false to unarchive. '
                 'Defaults to true.',
           },
         },

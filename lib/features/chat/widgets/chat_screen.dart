@@ -63,8 +63,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final brightness = Theme.of(context).brightness;
     final fadeColor = AppColors.bgSecondary(brightness);
     const fadeHeight = 48.0;
-    final topInset =
-        MediaQuery.paddingOf(context).top + kToolbarHeight;
+    final topInset = MediaQuery.paddingOf(context).top + kToolbarHeight;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: FrostedAppBar(
@@ -100,10 +99,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: ValueListenableBuilder<double>(
               valueListenable: _inputBarHeight,
               builder: (context, height, _) {
-                return MessageList(
-                  topInset: topInset,
-                  bottomInset: height,
-                );
+                return MessageList(topInset: topInset, bottomInset: height);
               },
             ),
           ),
@@ -124,10 +120,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [
-                            fadeColor,
-                            fadeColor.withValues(alpha: 0.0),
-                          ],
+                          colors: [fadeColor, fadeColor.withValues(alpha: 0.0)],
                         ),
                       ),
                     ),
@@ -164,8 +157,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         valueListenable: _maxScrollExtent,
                         builder: (context, maxExtent, _) {
                           final distance = maxExtent - pixels;
-                          final opacity =
-                              (distance / fadeHeight).clamp(0.0, 1.0);
+                          final opacity = (distance / fadeHeight).clamp(
+                            0.0,
+                            1.0,
+                          );
                           return Opacity(
                             opacity: opacity,
                             child: DecoratedBox(

@@ -63,15 +63,11 @@ class _EnvironmentSwitcherSectionState
     final theme = Theme.of(context);
     final b = theme.brightness;
     final env = ref.watch(backendEnvProvider);
-    final bg = _hovered
-        ? AppColors.hoverFillFor(b)
-        : Colors.transparent;
+    final bg = _hovered ? AppColors.hoverFillFor(b) : Colors.transparent;
 
     return Material(
       color: AppColors.surfaceCard(b),
-      shape: AppShapes.lg(
-        side: BorderSide(color: AppColors.borderSubtle(b)),
-      ),
+      shape: AppShapes.lg(side: BorderSide(color: AppColors.borderSubtle(b))),
       clipBehavior: Clip.antiAlias,
       child: MouseRegion(
         onEnter: (_) => setState(() => _hovered = true),

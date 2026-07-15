@@ -13,15 +13,16 @@ const _feedbackBackendUrl = String.fromEnvironment(
 const _installationIdKey = 'installation_id';
 
 class FeedbackService {
-  FeedbackService({
-    required this.secureStorage,
-    http.Client? httpClient,
-  }) : httpClient = httpClient ?? http.Client();
+  FeedbackService({required this.secureStorage, http.Client? httpClient})
+    : httpClient = httpClient ?? http.Client();
 
   final FlutterSecureStorage secureStorage;
   final http.Client httpClient;
 
-  Future<bool> sendFeedback({required String message, required String email}) async {
+  Future<bool> sendFeedback({
+    required String message,
+    required String email,
+  }) async {
     if (_feedbackBackendUrl.isEmpty) return false;
     try {
       final packageInfo = await PackageInfo.fromPlatform();

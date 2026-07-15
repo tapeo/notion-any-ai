@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../app/widgets/frosted_icon_button.dart';
+import '../../chat/utils/token_format.dart';
 import '../../notion/services/notion_platform.dart';
 import '../models/conversation.dart';
 
@@ -188,6 +189,8 @@ class _ConversationTileState extends State<ConversationTile> {
 
   Widget _buildContent(ThemeData theme, Brightness b) {
     final titleColor = AppColors.textPrimary(b);
+    final subtitleColor = AppColors.textTertiary(b);
+    final showTokens = widget.summary.totalTokens > 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,6 +205,22 @@ class _ConversationTileState extends State<ConversationTile> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+        if (showTokens) ...[
+          const SizedBox(height: AppSpacing.space1 - 2),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.bolt_outlined, size: 12, color: subtitleColor),
+              const SizedBox(width: AppSpacing.space1 - 2),
+              Text(
+                formatTokenCount(widget.summary.totalTokens),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: subtitleColor,
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

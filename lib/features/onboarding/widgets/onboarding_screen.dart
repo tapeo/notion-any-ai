@@ -46,20 +46,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget _buildPage(BuildContext context) {
     switch (_currentPage) {
       case 0:
-        return _ConsentPage(
-          onAgree: _nextPage,
-          onDecline: _showDeclineDialog,
-        );
+        return _ConsentPage(onAgree: _nextPage, onDecline: _showDeclineDialog);
       case 1:
-        return _ProviderSetupPage(
-          onSave: _nextPage,
-          onSkip: _nextPage,
-        );
+        return _ProviderSetupPage(onSave: _nextPage, onSkip: _nextPage);
       case 2:
-        return _NotionSetupPage(
-          onComplete: _finish,
-          onSkip: _finish,
-        );
+        return _NotionSetupPage(onComplete: _finish, onSkip: _finish);
       default:
         return const SizedBox.shrink();
     }
@@ -98,10 +89,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 }
 
 class _ProgressDots extends StatelessWidget {
-  const _ProgressDots({
-    required this.currentPage,
-    required this.totalPages,
-  });
+  const _ProgressDots({required this.currentPage, required this.totalPages});
 
   final int currentPage;
   final int totalPages;
@@ -122,16 +110,13 @@ class _ProgressDots extends StatelessWidget {
           final color = active
               ? AppColors.accent
               : done
-                  ? AppColors.accent.withValues(alpha: 0.4)
-                  : AppColors.borderDefault(brightness);
+              ? AppColors.accent.withValues(alpha: 0.4)
+              : AppColors.borderDefault(brightness);
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 3),
             width: 6,
             height: 6,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           );
         }),
       ),
@@ -231,10 +216,12 @@ class _ConsentPage extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.space2),
                 const _BulletPoint(
-                    text: 'Your messages and conversation history'),
+                  text: 'Your messages and conversation history',
+                ),
                 const _BulletPoint(
-                    text:
-                        'Notion page content (when the assistant calls Notion tools)'),
+                  text:
+                      'Notion page content (when the assistant calls Notion tools)',
+                ),
                 const _BulletPoint(text: 'Persistent memory content'),
                 const _BulletPoint(text: 'Your system prompt'),
                 const SizedBox(height: AppSpacing.space4),
@@ -283,10 +270,7 @@ class _ConsentPage extends StatelessWidget {
               child: const Text('I understand and agree'),
             ),
             const SizedBox(height: AppSpacing.space2),
-            OutlinedButton(
-              onPressed: onDecline,
-              child: const Text('Decline'),
-            ),
+            OutlinedButton(onPressed: onDecline, child: const Text('Decline')),
           ],
         ),
       ],
@@ -494,9 +478,7 @@ class _NotionSetupPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.space4),
-                if (state.connected) ...[
-                  _ConnectedCard(state: state),
-                ],
+                if (state.connected) ...[_ConnectedCard(state: state)],
               ],
             ),
           ),
@@ -521,7 +503,8 @@ class _NotionSetupPage extends ConsumerWidget {
                       )
                     : const Icon(Icons.link_outlined, size: AppIconSize.md),
                 label: Text(
-                    state.connecting ? 'Redirecting...' : 'Connect Notion'),
+                  state.connecting ? 'Redirecting...' : 'Connect Notion',
+                ),
               ),
             ],
             const SizedBox(height: AppSpacing.space2),

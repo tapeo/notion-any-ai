@@ -46,7 +46,8 @@ class NotionPageRef extends Equatable {
       title: json['title'] as String,
       icon: json['icon'] as String?,
       url: json['url'] as String?,
-      objectType: (json['object_type'] as String?) ?? (json['object'] as String?),
+      objectType:
+          (json['object_type'] as String?) ?? (json['object'] as String?),
       breadcrumb: breadcrumbRaw is List
           ? breadcrumbRaw.whereType<String>().toList()
           : const [],

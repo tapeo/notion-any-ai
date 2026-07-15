@@ -38,8 +38,9 @@ class VoiceInputNotifier extends Notifier<VoiceInputState> {
     );
     state = state.copyWith(
       model: model.trim(),
-      hasApiKey:
-          (apiKey != null && apiKey.trim().isNotEmpty) ? true : state.hasApiKey,
+      hasApiKey: (apiKey != null && apiKey.trim().isNotEmpty)
+          ? true
+          : state.hasApiKey,
       language: language,
       saving: false,
     );
