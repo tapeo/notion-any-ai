@@ -382,6 +382,20 @@ class ChatNotifier extends Notifier<ChatState> {
       _streamCompleter = null;
 
       if (_stopped) {
+        final conversationId = ref.read(
+          conversationsProvider.select((s) => s.activeId),
+        );
+        _finalizeStoppedAssistant(
+          assistantId: assistantId,
+          contentBuffer: contentBuffer,
+          reasoningBuffer: reasoningBuffer,
+          toolCallAccumulator: toolCallAccumulator,
+          createdAt: assistantPlaceholder.createdAt,
+          usage: capturedUsage,
+        );
+        if (conversationId != null) {
+          await _persist(conversationId);
+        }
         return;
       }
 
@@ -423,6 +437,10 @@ class ChatNotifier extends Notifier<ChatState> {
             result = await bridge.execute(call);
           }
           if (_stopped) {
+            _appendStoppedToolResults(toolCalls);
+            if (conversationId != null) {
+              await _persist(conversationId);
+            }
             return;
           }
           final toolMessage = ChatMessage(
@@ -612,6 +630,65 @@ class ChatNotifier extends Notifier<ChatState> {
       createdAt: DateTime.now(),
     );
     state = state.copyWith(messages: [...state.messages, message]);
+  }
+
+  void _finalizeStoppedAssistant({
+    required String assistantId,
+    required StringBuffer contentBuffer,
+    required StringBuffer reasoningBuffer,
+    required Map<int, _AccumulatedToolCall> toolCallAccumulator,
+    required DateTime createdAt,
+    TokenUsage? usage,
+  }) {
+    final toolCalls = _finalizeToolCalls(toolCallAccumulator);
+    final content = contentBuffer.toString().trim();
+    final reasoning = reasoningBuffer.toString();
+    final finalized = ChatMessage(
+      id: assistantId,
+      role: ChatRole.assistant,
+      content: content.isEmpty && toolCalls.isEmpty && reasoning.isEmpty
+          ? '(stopped)'
+          : (content.isEmpty ? null : content),
+      reasoning: reasoning.isEmpty ? null : reasoning,
+      toolCalls: toolCalls,
+      createdAt: createdAt,
+      usage: usage,
+    );
+    _replaceMessage(assistantId, finalized);
+
+    if (toolCalls.isEmpty) {
+      return;
+    }
+    _appendStoppedToolResults(toolCalls);
+  }
+
+  void _appendStoppedToolResults(List<ToolCall> toolCalls) {
+    final existingResultIds = state.messages
+        .where((m) => m.role == ChatRole.tool && m.toolCallId != null)
+        .map((m) => m.toolCallId!)
+        .toSet();
+    final stoppedToolMessages = <ChatMessage>[];
+    for (final call in toolCalls) {
+      if (existingResultIds.contains(call.id)) {
+        continue;
+      }
+      stoppedToolMessages.add(
+        ChatMessage(
+          id: _uuid.v4(),
+          role: ChatRole.tool,
+          content: 'Stopped by user.',
+          toolCallId: call.id,
+          name: call.name,
+          createdAt: DateTime.now(),
+        ),
+      );
+    }
+    if (stoppedToolMessages.isEmpty) {
+      return;
+    }
+    state = state.copyWith(
+      messages: [...state.messages, ...stoppedToolMessages],
+    );
   }
 }
 
