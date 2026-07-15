@@ -26,6 +26,7 @@ class _MessageListState extends ConsumerState<MessageList> {
   String? _lastActiveId;
   String? _lastMessageId;
   int _lastLastMessageLength = 0;
+  int _lastLastReasoningLength = 0;
   final Set<String> _seenIds = <String>{};
 
   @override
@@ -102,6 +103,7 @@ class _MessageListState extends ConsumerState<MessageList> {
     final lastMessage = messages.last;
     final lastMessageId = lastMessage.id;
     final lastMessageLength = lastMessage.content?.length ?? 0;
+    final lastReasoningLength = lastMessage.reasoning?.length ?? 0;
     final activeChanged = activeId != _lastActiveId;
 
     if (activeChanged) {
@@ -124,10 +126,12 @@ class _MessageListState extends ConsumerState<MessageList> {
 
     final lastMessageChanged =
         lastMessageId != _lastMessageId ||
-        lastMessageLength != _lastLastMessageLength;
+        lastMessageLength != _lastLastMessageLength ||
+        lastReasoningLength != _lastLastReasoningLength;
     _lastActiveId = activeId;
     _lastMessageId = lastMessageId;
     _lastLastMessageLength = lastMessageLength;
+    _lastLastReasoningLength = lastReasoningLength;
 
     if (activeChanged) {
       _autoScrollEnabled = true;
