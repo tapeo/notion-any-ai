@@ -52,7 +52,7 @@ class NotionToolRegistry {
             'description': 'Pagination cursor from a previous response.',
           },
         },
-        'required': ['query'],
+        'required': [],
       },
     ),
     NotionToolMeta(
@@ -187,9 +187,15 @@ class NotionToolRegistry {
       name: 'notion_update_page_markdown',
       description:
           'Insert or replace content in a Notion page using enhanced '
-          'markdown. Mutually exclusive with the block children API. '
-          'Supports insert (append after existing content) and replace '
-          '(overwrite all content) modes, with optional position anchors.',
+          'markdown. The body is command-based: pass a top-level `type` '
+          'discriminator and a same-named payload object. Supported '
+          'commands: '
+          'insert_content (append/prepend, legacy), replace_content '
+          '(overwrite whole page, recommended), replace_content_range '
+          '(replace a matched range, legacy), update_content '
+          '(search-and-replace operations, recommended). '
+          'Set allow_async=true to receive an async_task response for '
+          'large writes.',
       parameters: {
         'type': 'object',
         'properties': {
@@ -197,27 +203,57 @@ class NotionToolRegistry {
             'type': 'string',
             'description': 'The ID of the page to update.',
           },
-          'markdown': {
+          'type': {
             'type': 'string',
+            'enum': [
+              'insert_content',
+              'replace_content',
+              'replace_content_range',
+              'update_content'
+            ],
             'description':
-                'The enhanced markdown content. Newlines must be '
-                'encoded as \\n in the JSON string.',
+                'The command discriminator. Each value requires a '
+                'same-named payload object (see below).',
           },
-          'mode': {
-            'type': 'string',
-            'enum': ['insert', 'replace'],
+          'allow_async': {
+            'type': 'boolean',
             'description':
-                'insert appends after existing content (default). '
-                'replace overwrites all page content.',
+                'Set true to receive an async_task response instead '
+                'of waiting synchronously.',
           },
-          'position': {
+          'insert_content': {
             'type': 'object',
             'description':
-                'Optional position anchor. See Notion markdown update '
-                'docs for the position object shape.',
+                'Payload for type=insert_content. Fields: content '
+                '(string, required), after (string, ellipsis selection '
+                '"start...end", optional), position ({type:"start"|'
+                '"end"}, optional, mutually exclusive with after).',
+          },
+          'replace_content': {
+            'type': 'object',
+            'description':
+                'Payload for type=replace_content. Fields: new_str '
+                '(string, required), allow_deleting_content (boolean, '
+                'optional, defaults false).',
+          },
+          'replace_content_range': {
+            'type': 'object',
+            'description':
+                'Payload for type=replace_content_range. Fields: '
+                'content (string, required), content_range (string, '
+                'ellipsis selection, required), allow_deleting_content '
+                '(boolean, optional).',
+          },
+          'update_content': {
+            'type': 'object',
+            'description':
+                'Payload for type=update_content. Fields: '
+                'content_updates (array of {old_str, new_str, '
+                'replace_all_matches?}, required, max 100), '
+                'allow_deleting_content (boolean, optional).',
           },
         },
-        'required': ['page_id', 'markdown'],
+        'required': ['page_id', 'type'],
       },
     ),
     NotionToolMeta(
@@ -305,17 +341,21 @@ class NotionToolRegistry {
       name: 'notion_create_database',
       description:
           'Create a new Notion database (and its initial data source) '
-          'under an existing page. Provide a title, an icon, a cover, and a '
-          'properties schema mapping property names to property type objects. '
-          'The parent must be a page_id. Returns the new database object.',
+          'under an existing page or the workspace. Provide a title, an '
+          'icon, a cover, and an initial data source properties schema. '
+          'The parent must be a page_id or workspace. Returns the new '
+          'database object. The properties schema is nested under '
+          'initial_data_source by the backend automatically when you '
+          'pass the `properties` parameter.',
       parameters: {
         'type': 'object',
         'properties': {
           'parent': {
             'type': 'object',
             'description':
-                'The parent of the new database. Must be '
-                '{"type":"page_id","page_id":"..."}.',
+                'The parent of the new database. One of '
+                '{"type":"page_id","page_id":"..."} or '
+                '{"type":"workspace","workspace":true}.',
           },
           'title': {
             'type': 'array',
@@ -325,10 +365,12 @@ class NotionToolRegistry {
           'properties': {
             'type': 'object',
             'description':
-                'The database properties schema. Keys are property '
-                'names, values are property type objects, e.g. '
-                '{"Name":{"title":{}},"Status":{"select":'
-                '{"options":[{"name":"Todo","color":"gray"}]}}}.',
+                'The initial data source properties schema. Keys '
+                'are property names, values are property type objects, '
+                'e.g. {"Name":{"title":{}},"Status":{"select":'
+                '{"options":[{"name":"Todo","color":"gray"}]}}}. '
+                'Nested under initial_data_source.properties by the '
+                'backend.',
           },
           'icon': {
             'type': 'object',
@@ -343,17 +385,24 @@ class NotionToolRegistry {
             'items': {'type': 'object'},
             'description': 'The database description as rich text.',
           },
+          'is_inline': {
+            'type': 'boolean',
+            'description':
+                'Whether the database is displayed inline in the '
+                'parent page. Defaults to false.',
+          },
         },
-        'required': ['parent', 'title', 'properties'],
+        'required': ['parent'],
       },
     ),
     NotionToolMeta(
       name: 'notion_update_database',
       description:
           'Update the attributes of a Notion database: title, '
-          'description, icon, cover, and/or the properties schema. Pass only '
-          'the fields you want to change. Properties updates merge into the '
-          'existing schema.',
+          'description, icon, cover, is_inline, in_trash, and/or '
+          'is_locked. Pass only the fields you want to change. To '
+          'update the data source properties schema (columns), use '
+          'notion_update_data_source instead.',
       parameters: {
         'type': 'object',
         'properties': {
@@ -371,13 +420,6 @@ class NotionToolRegistry {
             'items': {'type': 'object'},
             'description': 'The new database description as rich text.',
           },
-          'properties': {
-            'type': 'object',
-            'description':
-                'Property schema updates. Keys are property names, '
-                'values are property type objects. Merges with the existing '
-                'schema.',
-          },
           'icon': {
             'type': 'object',
             'description': 'A new icon object.',
@@ -386,8 +428,78 @@ class NotionToolRegistry {
             'type': 'object',
             'description': 'A new cover image object.',
           },
+          'is_inline': {
+            'type': 'boolean',
+            'description':
+                'Whether the database is displayed inline in the '
+                'parent page.',
+          },
+          'in_trash': {
+            'type': 'boolean',
+            'description':
+                'Set to true to trash the database, false to '
+                'restore it.',
+          },
+          'is_locked': {
+            'type': 'boolean',
+            'description': 'Set to true to lock the database.',
+          },
         },
         'required': ['database_id'],
+      },
+    ),
+    NotionToolMeta(
+      name: 'notion_update_data_source',
+      description:
+          'Update a Notion data source: title, icon, properties schema '
+          '(columns), parent (move to another database), or trash status. '
+          'Pass either database_id (the single data source under it is '
+          'resolved automatically) or data_source_id. Properties updates '
+          'merge into the existing schema. Cannot update formula, synced, '
+          'or place properties via the API.',
+      parameters: {
+        'type': 'object',
+        'properties': {
+          'database_id': {
+            'type': 'string',
+            'description':
+                'The ID of the database. The single data source '
+                'under it is resolved automatically.',
+          },
+          'data_source_id': {
+            'type': 'string',
+            'description': 'The ID of the data source to update directly.',
+          },
+          'title': {
+            'type': 'array',
+            'items': {'type': 'object'},
+            'description': 'The new data source title as rich text.',
+          },
+          'properties': {
+            'type': 'object',
+            'description':
+                'Property schema updates. Keys are property names, '
+                'values are property type objects. Merges with the '
+                'existing schema.',
+          },
+          'icon': {
+            'type': 'object',
+            'description': 'A new icon object.',
+          },
+          'parent': {
+            'type': 'object',
+            'description':
+                'Move the data source to a different database. '
+                'Shape: {"database_id":"..."}.',
+          },
+          'in_trash': {
+            'type': 'boolean',
+            'description':
+                'Set to true to trash the data source, false to '
+                'restore it.',
+          },
+        },
+        'required': [],
       },
     ),
     NotionToolMeta(
@@ -577,6 +689,13 @@ class NotionToolRegistry {
             'type': 'object',
             'description': 'A cover image object for the page.',
           },
+          'position': {
+            'type': 'object',
+            'description':
+                'Optional position anchor for the markdown content. '
+                'See Notion markdown update docs for the position object '
+                'shape.',
+          },
         },
         'required': ['parent', 'properties'],
       },
@@ -585,9 +704,8 @@ class NotionToolRegistry {
       name: 'notion_update_page',
       description:
           'Update the properties of an existing Notion page. Pass '
-          'properties, icon, cover, archived, or in_trash as needed. '
-          'Properties keys are property names; values depend on the '
-          'property type.',
+          'properties, icon, cover, or in_trash as needed. Properties '
+          'keys are property names; values depend on the property type.',
       parameters: {
         'type': 'object',
         'properties': {
@@ -609,15 +727,11 @@ class NotionToolRegistry {
             'type': 'object',
             'description': 'A new cover image object for the page.',
           },
-          'archived': {
-            'type': 'boolean',
-            'description': 'Set to true to archive the page.',
-          },
           'in_trash': {
             'type': 'boolean',
             'description':
                 'Set to true to trash the page, false to restore '
-                'it. Separate from archived.',
+                'it.',
           },
         },
         'required': ['page_id'],
@@ -662,7 +776,10 @@ class NotionToolRegistry {
           '"table_row":{"cells":[[{"type":"text","text":{"content":"..."}}]]}}]}}. '
           'A column_list block contains exactly two or more column children, '
           'each with its own children array. Keep `children` arrays flat '
-          '(one level of nesting per call). $_richTextHint',
+          '(one level of nesting per call). Use `position` to insert at a '
+          'specific location: {"type":"start"}, {"type":"end"}, or '
+          '{"type":"after_block","after_block":{"id":"<block_id>"}}. '
+          '$_richTextHint',
       parameters: {
         'type': 'object',
         'properties': {
@@ -677,11 +794,13 @@ class NotionToolRegistry {
             'items': {'type': 'object'},
             'description': 'The block objects to append.',
           },
-          'after': {
-            'type': 'string',
+          'position': {
+            'type': 'object',
             'description':
-                'The ID of an existing block to insert the new '
-                'blocks after.',
+                'Optional insert position. One of '
+                '{"type":"start"}, {"type":"end"}, or '
+                '{"type":"after_block","after_block":{"id":"..."}}. '
+                'Omit to append at the end.',
           },
         },
         'required': ['block_id', 'children'],
@@ -727,19 +846,19 @@ class NotionToolRegistry {
     ),
     NotionToolMeta(
       name: 'notion_archive_page',
-      description: 'Archive or unarchive a Notion page.',
+      description: 'Trash or restore a Notion page.',
       parameters: {
         'type': 'object',
         'properties': {
           'page_id': {
             'type': 'string',
-            'description': 'The ID of the page to archive or unarchive.',
+            'description': 'The ID of the page to trash or restore.',
           },
-          'archived': {
+          'in_trash': {
             'type': 'boolean',
             'description':
-                'Set to true to archive, false to unarchive. '
-                'Defaults to true.',
+                'Set to true to trash the page, false to restore '
+                'it. Defaults to true.',
           },
         },
         'required': ['page_id'],
