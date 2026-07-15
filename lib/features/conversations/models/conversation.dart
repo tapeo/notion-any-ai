@@ -134,6 +134,34 @@ class Conversation extends Equatable {
     );
   }
 
+  String toMarkdown() {
+    final buffer = StringBuffer('# $title\n');
+    for (final msg in messages) {
+      switch (msg.role) {
+        case ChatRole.system:
+          continue;
+        case ChatRole.user:
+          buffer.write('\n## You\n\n');
+          buffer.write('${msg.content ?? ''}\n');
+        case ChatRole.assistant:
+          buffer.write('\n## Assistant\n\n');
+          if (msg.content != null && msg.content!.isNotEmpty) {
+            buffer.write('${msg.content}\n');
+          }
+        case ChatRole.tool:
+          final name = msg.name ?? 'tool';
+          buffer.write('\n## Tool: $name\n\n');
+          final content = msg.content ?? '';
+          buffer.write(
+            content.length > 2000
+                ? '${content.substring(0, 2000)}...\n'
+                : '$content\n',
+          );
+      }
+    }
+    return buffer.toString();
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

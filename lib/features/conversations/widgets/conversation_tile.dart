@@ -18,6 +18,7 @@ class ConversationTile extends StatefulWidget {
     required this.onRename,
     required this.onDelete,
     this.onReveal,
+    this.onCopyMarkdown,
   });
 
   final ConversationSummary summary;
@@ -26,6 +27,7 @@ class ConversationTile extends StatefulWidget {
   final VoidCallback onRename;
   final VoidCallback onDelete;
   final VoidCallback? onReveal;
+  final Future<void> Function()? onCopyMarkdown;
 
   @override
   State<ConversationTile> createState() => _ConversationTileState();
@@ -33,6 +35,18 @@ class ConversationTile extends StatefulWidget {
 
 class _ConversationTileState extends State<ConversationTile> {
   bool _hovered = false;
+  bool _copied = false;
+
+  Future<void> _handleCopyMarkdown() async {
+    if (widget.onCopyMarkdown == null) return;
+    await widget.onCopyMarkdown!();
+    if (!mounted) return;
+    setState(() => _copied = true);
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (!mounted) return;
+      setState(() => _copied = false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +103,14 @@ class _ConversationTileState extends State<ConversationTile> {
             onTap: widget.onReveal!,
             b: b,
           ),
+        if (widget.onCopyMarkdown != null)
+          _ActionIconButton(
+            icon: _copied ? Icons.check : Icons.copy_outlined,
+            tooltip: _copied ? 'Copied' : 'Copy as markdown',
+            onTap: _handleCopyMarkdown,
+            b: b,
+            color: _copied ? AppColors.success : null,
+          ),
         _ActionIconButton(
           icon: Icons.edit_outlined,
           tooltip: 'Rename',
@@ -132,6 +154,21 @@ class _ConversationTileState extends State<ConversationTile> {
                 iconSize: AppIconSize.lg,
                 iconColor: AppColors.white,
                 solidColor: AppColors.accent,
+                haptic: false,
+              ),
+            ),
+          if (widget.onCopyMarkdown != null)
+            CustomSlidableAction(
+              padding: EdgeInsets.all(AppSpacing.space1),
+              backgroundColor: bg,
+              onPressed: (_) => _handleCopyMarkdown(),
+              child: FrostedIconButton(
+                icon: _copied ? Icons.check : Icons.copy,
+                onPressed: _handleCopyMarkdown,
+                diameter: 32,
+                iconSize: AppIconSize.lg,
+                iconColor: AppColors.white,
+                solidColor: _copied ? AppColors.success : AppColors.accent,
                 haptic: false,
               ),
             ),

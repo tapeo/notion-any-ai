@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_colors.dart';
@@ -40,6 +41,13 @@ class _ConversationsDrawerState extends ConsumerState<ConversationsDrawer>
     if (file.existsSync()) {
       await revealInFileManager(file);
     }
+  }
+
+  Future<void> _copyConversationMarkdown(String id) async {
+    final storage = ref.read(conversationStorageProvider);
+    final convo = storage.loadConversation(id);
+    if (convo == null) return;
+    await Clipboard.setData(ClipboardData(text: convo.toMarkdown()));
   }
 
   @override
@@ -160,6 +168,7 @@ class _ConversationsDrawerState extends ConsumerState<ConversationsDrawer>
           onRename: () => _showRenameDialog(summary),
           onDelete: () => _showDeleteDialog(summary),
           onReveal: _isDesktop ? () => _revealConversation(summary.id) : null,
+          onCopyMarkdown: () => _copyConversationMarkdown(summary.id),
         );
       },
     );
