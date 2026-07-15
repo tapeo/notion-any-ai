@@ -145,7 +145,11 @@ class _ReasoningSectionState extends State<ReasoningSection> {
             ),
             child: Opacity(
               opacity: 0.85,
-              child: MarkdownText(data: widget.reasoning, isUser: false),
+              child: MarkdownText(
+                data: widget.reasoning,
+                isUser: false,
+                pStyle: const TextStyle(fontSize: 12),
+              ),
             ),
           ),
         ],
