@@ -697,7 +697,7 @@ class NotionToolRegistry {
                 'shape.',
           },
         },
-        'required': ['parent', 'properties'],
+        'required': ['parent'],
       },
     ),
     NotionToolMeta(
