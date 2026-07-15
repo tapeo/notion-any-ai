@@ -320,6 +320,7 @@ class ChatNotifier extends Notifier<ChatState> {
       );
 
       final contentBuffer = StringBuffer();
+      final reasoningBuffer = StringBuffer();
       final toolCallAccumulator = <int, _AccumulatedToolCall>{};
       TokenUsage? capturedUsage;
 
@@ -338,10 +339,23 @@ class ChatNotifier extends Notifier<ChatState> {
               if (_stopped) {
                 return;
               }
+              if (chunk.reasoningDelta != null &&
+                  chunk.reasoningDelta!.isNotEmpty) {
+                reasoningBuffer.write(chunk.reasoningDelta);
+                _updateStreamingMessage(
+                  assistantId,
+                  content: contentBuffer.toString(),
+                  reasoning: reasoningBuffer.toString(),
+                );
+              }
               if (chunk.contentDelta != null &&
                   chunk.contentDelta!.isNotEmpty) {
                 contentBuffer.write(chunk.contentDelta);
-                _updateStreamingMessage(assistantId, contentBuffer.toString());
+                _updateStreamingMessage(
+                  assistantId,
+                  content: contentBuffer.toString(),
+                  reasoning: reasoningBuffer.toString(),
+                );
               }
               for (final delta in chunk.toolCallDeltas) {
                 final acc = toolCallAccumulator.putIfAbsent(
@@ -377,6 +391,9 @@ class ChatNotifier extends Notifier<ChatState> {
           id: assistantId,
           role: ChatRole.assistant,
           content: contentBuffer.isEmpty ? null : contentBuffer.toString(),
+          reasoning: reasoningBuffer.isEmpty
+              ? null
+              : reasoningBuffer.toString(),
           toolCalls: toolCalls,
           createdAt: assistantPlaceholder.createdAt,
           usage: capturedUsage,
@@ -430,6 +447,7 @@ class ChatNotifier extends Notifier<ChatState> {
         id: assistantId,
         role: ChatRole.assistant,
         content: reply.isEmpty ? '(no response)' : reply,
+        reasoning: reasoningBuffer.isEmpty ? null : reasoningBuffer.toString(),
         createdAt: assistantPlaceholder.createdAt,
         usage: capturedUsage,
       );
@@ -530,11 +548,18 @@ class ChatNotifier extends Notifier<ChatState> {
     return result;
   }
 
-  void _updateStreamingMessage(String id, String content) {
+  void _updateStreamingMessage(
+    String id, {
+    String? content,
+    String? reasoning,
+  }) {
     final messages = state.messages.toList();
     for (var i = 0; i < messages.length; i++) {
       if (messages[i].id == id) {
-        messages[i] = messages[i].copyWith(content: content);
+        messages[i] = messages[i].copyWith(
+          content: content ?? messages[i].content,
+          reasoning: reasoning ?? messages[i].reasoning,
+        );
         state = state.copyWith(messages: messages);
         return;
       }

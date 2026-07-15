@@ -13,6 +13,7 @@ class ChatMessage extends Equatable {
     required this.role,
     required this.createdAt,
     this.content,
+    this.reasoning,
     this.toolCalls,
     this.toolCallId,
     this.name,
@@ -22,6 +23,7 @@ class ChatMessage extends Equatable {
   final String id;
   final ChatRole role;
   final String? content;
+  final String? reasoning;
   final List<ToolCall>? toolCalls;
   final String? toolCallId;
   final String? name;
@@ -30,6 +32,7 @@ class ChatMessage extends Equatable {
 
   ChatMessage copyWith({
     String? content,
+    String? reasoning,
     List<ToolCall>? toolCalls,
     TokenUsage? usage,
   }) {
@@ -37,6 +40,7 @@ class ChatMessage extends Equatable {
       id: id,
       role: role,
       content: content ?? this.content,
+      reasoning: reasoning ?? this.reasoning,
       toolCalls: toolCalls ?? this.toolCalls,
       toolCallId: toolCallId,
       name: name,
@@ -98,6 +102,7 @@ class ChatMessage extends Equatable {
     id,
     role,
     content,
+    reasoning,
     toolCalls,
     toolCallId,
     name,

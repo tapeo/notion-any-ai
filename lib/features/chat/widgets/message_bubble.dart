@@ -13,6 +13,7 @@ import '../models/chat_role.dart';
 import '../models/tool_call.dart';
 import 'copy_button.dart';
 import 'markdown_text.dart';
+import 'reasoning_section.dart';
 import 'token_button.dart';
 import 'tool_call_group.dart';
 
@@ -54,15 +55,27 @@ class _TextBubble extends StatelessWidget {
     final isUser = message.role == ChatRole.user;
     final alignment = isUser ? MainAxisAlignment.end : MainAxisAlignment.start;
     final hasContent = message.content != null && message.content!.isNotEmpty;
+    final hasReasoning =
+        message.reasoning != null && message.reasoning!.isNotEmpty;
+    final isStreaming = hasReasoning && !hasContent;
+
+    final reasoningWidget = hasReasoning
+        ? ReasoningSection(
+            reasoning: message.reasoning!,
+            isStreaming: isStreaming,
+          )
+        : null;
 
     final contentWidget = isUser
         ? SelectableText(
             message.content ?? '',
             style: TextStyle(color: AppColors.userBubbleText(theme.brightness)),
           )
-        : !hasContent
+        : !hasContent && !hasReasoning
         ? const _TypingIndicator()
-        : MarkdownText(data: message.content!, isUser: false);
+        : hasContent
+        ? MarkdownText(data: message.content!, isUser: false)
+        : const SizedBox.shrink();
 
     final messageWidget = isUser
         ? ConstrainedBox(
@@ -108,6 +121,7 @@ class _TextBubble extends StatelessWidget {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
+                ?reasoningWidget,
                 messageWidget,
                 if (hasContent) ...[
                   const SizedBox(height: AppSpacing.space1 - 2),
@@ -340,7 +354,17 @@ class _ToolCallBubble extends ConsumerWidget {
 
     final children = <Widget>[];
 
-    if (message.content != null && message.content!.trim().isNotEmpty) {
+    final hasReasoning =
+        message.reasoning != null && message.reasoning!.isNotEmpty;
+    final hasContent =
+        message.content != null && message.content!.trim().isNotEmpty;
+    if (hasReasoning) {
+      children.add(
+        ReasoningSection(reasoning: message.reasoning!, isStreaming: false),
+      );
+    }
+
+    if (hasContent) {
       children.add(
         Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.space1),

@@ -24,11 +24,13 @@ class ToolCallDelta {
 class OpenAiChatChunk {
   const OpenAiChatChunk({
     this.contentDelta,
+    this.reasoningDelta,
     this.toolCallDeltas = const [],
     this.usage,
   });
 
   final String? contentDelta;
+  final String? reasoningDelta;
   final List<ToolCallDelta> toolCallDeltas;
   final TokenUsage? usage;
 }
@@ -188,6 +190,9 @@ class OpenAiChatClient {
     final choice = choices[0] as Map<String, dynamic>;
     final delta = choice['delta'] as Map<String, dynamic>? ?? const {};
     final content = delta['content'] as String?;
+    final reasoning =
+        (delta['reasoning_content'] as String?) ??
+        (delta['reasoning'] as String?);
 
     final toolCallDeltas = <ToolCallDelta>[];
     final toolCallsRaw = delta['tool_calls'] as List?;
@@ -215,11 +220,15 @@ class OpenAiChatClient {
       usage = TokenUsage.fromJson(usageRaw);
     }
 
-    if (content == null && toolCallDeltas.isEmpty && usage == null) {
+    if (content == null &&
+        reasoning == null &&
+        toolCallDeltas.isEmpty &&
+        usage == null) {
       return null;
     }
     return OpenAiChatChunk(
       contentDelta: content,
+      reasoningDelta: reasoning,
       toolCallDeltas: toolCallDeltas,
       usage: usage,
     );
