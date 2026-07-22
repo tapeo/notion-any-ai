@@ -28,6 +28,7 @@ class _MessageListState extends ConsumerState<MessageList> {
   int _lastLastMessageLength = 0;
   int _lastLastReasoningLength = 0;
   final Set<String> _seenIds = <String>{};
+  bool _hadError = false;
 
   @override
   void initState() {
@@ -80,11 +81,12 @@ class _MessageListState extends ConsumerState<MessageList> {
   Widget build(BuildContext context) {
     final chat = ref.watch(chatProvider);
     final messages = chat.messages;
+    final error = chat.error;
 
     final bottomInset = widget.bottomInset;
     final topInset = widget.topInset;
 
-    if (messages.isEmpty) {
+    if (messages.isEmpty && error == null) {
       return GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapDown: (_) => FocusScope.of(context).unfocus(),
@@ -100,10 +102,11 @@ class _MessageListState extends ConsumerState<MessageList> {
     }
 
     final activeId = ref.watch(conversationsProvider.select((s) => s.activeId));
-    final lastMessage = messages.last;
-    final lastMessageId = lastMessage.id;
-    final lastMessageLength = lastMessage.content?.length ?? 0;
-    final lastReasoningLength = lastMessage.reasoning?.length ?? 0;
+    final hasError = error != null;
+    final lastMessage = messages.isNotEmpty ? messages.last : null;
+    final lastMessageId = lastMessage?.id;
+    final lastMessageLength = lastMessage?.content?.length ?? 0;
+    final lastReasoningLength = lastMessage?.reasoning?.length ?? 0;
     final activeChanged = activeId != _lastActiveId;
 
     if (activeChanged) {
@@ -128,18 +131,21 @@ class _MessageListState extends ConsumerState<MessageList> {
         lastMessageId != _lastMessageId ||
         lastMessageLength != _lastLastMessageLength ||
         lastReasoningLength != _lastLastReasoningLength;
+    final errorAppeared = hasError && !_hadError;
     _lastActiveId = activeId;
     _lastMessageId = lastMessageId;
     _lastLastMessageLength = lastMessageLength;
     _lastLastReasoningLength = lastReasoningLength;
+    _hadError = hasError;
 
     if (activeChanged) {
       _autoScrollEnabled = true;
       _jumpToBottom(instant: true);
-    } else if (lastMessageChanged) {
+    } else if (lastMessageChanged || errorAppeared) {
       _jumpToBottom();
     }
 
+    final itemCount = messages.length + (hasError ? 1 : 0);
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapDown: (_) => FocusScope.of(context).unfocus(),
@@ -150,14 +156,20 @@ class _MessageListState extends ConsumerState<MessageList> {
           top: topInset + AppSpacing.space1,
           bottom: bottomInset + AppSpacing.space6,
         ),
-        itemCount: messages.length,
+        itemCount: itemCount,
         itemBuilder: (context, index) {
+          if (index == messages.length) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.space2),
+              child: ErrorBubble(error: error!),
+            );
+          }
           final message = messages[index];
           final playEntrance =
               message.role == ChatRole.user && newIds.contains(message.id);
           return Padding(
             padding: EdgeInsets.only(
-              bottom: index == messages.length - 1
+              bottom: index == itemCount - 1
                   ? AppSpacing.space2
                   : AppSpacing.space1,
             ),

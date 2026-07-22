@@ -20,6 +20,7 @@ import '../../notion/services/notion_tool_registry.dart';
 import '../../notion/states/notion_connection_state.dart';
 import '../../system_prompt/providers/system_prompt_notifier.dart';
 import '../../system_prompt/states/system_prompt_state.dart';
+import '../models/chat_error.dart';
 import '../models/chat_message.dart';
 import '../models/chat_role.dart';
 import '../models/token_usage.dart';
@@ -27,6 +28,7 @@ import '../models/tool_call.dart';
 import '../services/notion_tool_bridge.dart';
 import '../states/chat_state.dart';
 import 'openai_chat_client_provider.dart';
+import '../services/openai_chat_client.dart';
 
 class ChatNotifier extends Notifier<ChatState> {
   ChatNotifier() : _uuid = const Uuid();
@@ -34,6 +36,7 @@ class ChatNotifier extends Notifier<ChatState> {
   final Uuid _uuid;
 
   static const int _maxIterations = 100;
+  static const Duration _streamTimeout = Duration(seconds: 90);
 
   StreamSubscription<dynamic>? _streamSub;
   Completer<void>? _streamCompleter;
@@ -179,6 +182,7 @@ class ChatNotifier extends Notifier<ChatState> {
       messages: [...existingMessages, userMessage],
       isSending: true,
       clearSelectedPages: true,
+      clearError: true,
     );
 
     await _persist(conversationId);
@@ -189,7 +193,13 @@ class ChatNotifier extends Notifier<ChatState> {
       await _runCompletionLoop(selectedPages: selectedPages);
       hadReply = true;
     } catch (err) {
-      _appendAssistant('Something went wrong: $err');
+      state = state.copyWith(
+        error: ChatError(
+          text: "Couldn't get a response. Please try again.",
+          userText: trimmed,
+          detail: err.toString(),
+        ),
+      );
     } finally {
       await _streamSub?.cancel();
       _streamSub = null;
@@ -199,6 +209,22 @@ class ChatNotifier extends Notifier<ChatState> {
     if (wasNewConversation && hadReply && !_stopped) {
       await _generateTitle(conversationId);
     }
+  }
+
+  Future<void> retryLastFailed() async {
+    if (state.isSending) {
+      return;
+    }
+    final error = state.error;
+    if (error == null) {
+      return;
+    }
+    final userText = error.userText.trim();
+    if (userText.isEmpty) {
+      return;
+    }
+    state = state.copyWith(clearError: true);
+    await sendMessage(userText);
   }
 
   void clearChat() {
@@ -377,7 +403,15 @@ class ChatNotifier extends Notifier<ChatState> {
           );
 
       try {
-        await completer.future;
+        await completer.future.timeout(_streamTimeout);
+      } on TimeoutException {
+        await _streamSub?.cancel();
+        _streamSub = null;
+        _streamCompleter = null;
+        _removeMessage(assistantId);
+        throw OpenAiChatError(
+          'The response timed out. Please check your connection and try again.',
+        );
       } catch (err) {
         _removeMessage(assistantId);
         rethrow;

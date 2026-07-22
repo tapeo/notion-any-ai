@@ -2,6 +2,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../notion/models/notion_page_ref.dart';
+import '../models/chat_error.dart';
 import '../models/chat_message.dart';
 
 class ChatState extends Equatable {
@@ -9,17 +10,21 @@ class ChatState extends Equatable {
     this.messages = const [],
     this.isSending = false,
     this.selectedPages = const [],
+    this.error,
   });
 
   final List<ChatMessage> messages;
   final bool isSending;
   final List<NotionPageRef> selectedPages;
+  final ChatError? error;
 
   ChatState copyWith({
     List<ChatMessage>? messages,
     bool? isSending,
     List<NotionPageRef>? selectedPages,
+    ChatError? error,
     bool clearSelectedPages = false,
+    bool clearError = false,
   }) {
     return ChatState(
       messages: messages ?? this.messages,
@@ -27,9 +32,10 @@ class ChatState extends Equatable {
       selectedPages: clearSelectedPages
           ? const []
           : selectedPages ?? this.selectedPages,
+      error: clearError ? null : error ?? this.error,
     );
   }
 
   @override
-  List<Object?> get props => [messages, isSending, selectedPages];
+  List<Object?> get props => [messages, isSending, selectedPages, error];
 }

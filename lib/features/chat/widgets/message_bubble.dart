@@ -8,9 +8,11 @@ import '../../../app/theme/app_spacing.dart';
 import '../../builtin_tools/models/builtin_tool_meta.dart';
 import '../../builtin_tools/providers/pending_question_provider.dart';
 import '../../builtin_tools/widgets/ask_user_card.dart';
+import '../models/chat_error.dart';
 import '../models/chat_message.dart';
 import '../models/chat_role.dart';
 import '../models/tool_call.dart';
+import '../providers/chat_provider.dart';
 import 'copy_button.dart';
 import 'markdown_text.dart';
 import 'reasoning_section.dart';
@@ -72,7 +74,22 @@ class _TextBubble extends StatelessWidget {
             style: TextStyle(color: AppColors.userBubbleText(theme.brightness)),
           )
         : !hasContent && !hasReasoning
-        ? const _TypingIndicator()
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const _TypingIndicator(),
+              const SizedBox(width: AppSpacing.space2),
+              Text(
+                'Thinking…',
+                style: TextStyle(
+                  color: AppColors.textTertiary(theme.brightness),
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          )
         : hasContent
         ? MarkdownText(data: message.content!, isUser: false)
         : const SizedBox.shrink();
@@ -223,6 +240,177 @@ class _EntranceAnimatorState extends State<_EntranceAnimator>
       child: widget.child,
     );
   }
+}
+
+// Red-tinted error bubble shown when an assistant response fails.
+class ErrorBubble extends ConsumerWidget {
+  const ErrorBubble({super.key, required this.error});
+
+  final ChatError error;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+    final isSending = ref.watch(chatProvider.select((s) => s.isSending));
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.space3,
+        vertical: AppSpacing.space1 - 2,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+              ),
+              decoration: ShapeDecoration(
+                color: brightness == Brightness.dark
+                    ? const Color(0x33E03E3E)
+                    : const Color(0x1FE03E3E),
+                shape: AppShapes.sm(
+                  side: BorderSide(
+                    color: AppColors.error.withValues(alpha: 0.4),
+                  ),
+                ),
+              ),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.space3,
+                AppSpacing.space2,
+                AppSpacing.space3,
+                AppSpacing.space2,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 18,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(width: AppSpacing.space2),
+                  Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          error.text,
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.space1),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton.icon(
+                              onPressed: isSending
+                                  ? null
+                                  : () => ref
+                                      .read(chatProvider.notifier)
+                                      .retryLastFailed(),
+                              icon: const Icon(Icons.refresh_rounded, size: 16),
+                              label: const Text('Retry'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppColors.error,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.space2,
+                                  vertical: 0,
+                                ),
+                                minimumSize: const Size(0, 32),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.space1),
+                            TextButton.icon(
+                              onPressed: error.detail == null
+                                  ? null
+                                  : () => _showErrorDetails(context, error),
+                              icon: const Icon(
+                                Icons.info_outline_rounded,
+                                size: 16,
+                              ),
+                              label: const Text('Details'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppColors.error,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.space2,
+                                  vertical: 0,
+                                ),
+                                minimumSize: const Size(0, 32),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void _showErrorDetails(BuildContext context, ChatError error) {
+  showDialog<void>(
+    context: context,
+    builder: (context) {
+      final theme = Theme.of(context);
+      return AlertDialog(
+        title: const Text('Error details'),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  error.text,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.error,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.space3),
+                Text(
+                  'Details',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: AppColors.textSecondary(theme.brightness),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.space1),
+                SelectableText(
+                  error.detail ?? 'No additional details available.',
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 13,
+                    color: AppColors.textSecondary(theme.brightness),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 // Animated three-dot typing indicator shown while the assistant placeholder is empty.
