@@ -376,7 +376,12 @@ class ChatNotifier extends Notifier<ChatState> {
             onDone: completer.complete,
           );
 
-      await completer.future;
+      try {
+        await completer.future;
+      } catch (err) {
+        _removeMessage(assistantId);
+        rethrow;
+      }
       await _streamSub?.cancel();
       _streamSub = null;
       _streamCompleter = null;
@@ -589,6 +594,17 @@ class ChatNotifier extends Notifier<ChatState> {
     for (var i = 0; i < messages.length; i++) {
       if (messages[i].id == id) {
         messages[i] = replacement;
+        state = state.copyWith(messages: messages);
+        return;
+      }
+    }
+  }
+
+  void _removeMessage(String id) {
+    final messages = state.messages.toList();
+    for (var i = 0; i < messages.length; i++) {
+      if (messages[i].id == id) {
+        messages.removeAt(i);
         state = state.copyWith(messages: messages);
         return;
       }
