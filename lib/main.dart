@@ -15,6 +15,7 @@ import 'app/theme/app_fonts.dart';
 import 'app/theme/app_shapes.dart';
 import 'app/theme/app_spacing.dart';
 import 'features/ai_provider/providers/ai_provider_notifier.dart';
+import 'features/app_review/providers/app_review_provider.dart';
 import 'features/builtin_tools/providers/builtin_tools_notifier.dart';
 import 'features/chat/widgets/chat_screen.dart';
 import 'features/conversations/providers/conversation_storage_provider.dart';
@@ -76,6 +77,11 @@ class _MainAppState extends ConsumerState<MainApp> {
         await ref.read(notificationsServiceProvider).init();
         await ref.read(notificationsServiceProvider).requestPermissions();
         await ref.read(notificationsProvider.notifier).init();
+      }();
+      () async {
+        final service = ref.read(appReviewServiceProvider);
+        await service.trackLaunch();
+        await service.maybePrompt();
       }();
     });
   }
