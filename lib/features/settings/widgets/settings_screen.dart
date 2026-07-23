@@ -16,7 +16,7 @@ import '../../notion/services/notion_platform.dart';
 import '../../notion/widgets/notion_setup.dart';
 import '../../system_prompt/widgets/system_prompt_setup.dart';
 import '../../voice_input/widgets/voice_input_setup.dart';
-import 'clear_app_data_section.dart';
+import 'hidden_developer_section.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -165,7 +165,7 @@ class SettingsScreen extends StatelessWidget {
                   const SizedBox(height: AppSpacing.space1),
                 ],
                 const SizedBox(height: AppSpacing.space4),
-                const ClearAppDataSection(),
+                const HiddenDeveloperSection(),
               ],
             ),
           ),

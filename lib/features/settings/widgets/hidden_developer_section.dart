@@ -32,15 +32,15 @@ import '../../voice_input/providers/voice_input_notifier.dart';
 import '../../voice_input/providers/voice_input_storage_provider.dart';
 import 'environment_switcher_section.dart';
 
-class ClearAppDataSection extends ConsumerStatefulWidget {
-  const ClearAppDataSection({super.key});
+class HiddenDeveloperSection extends ConsumerStatefulWidget {
+  const HiddenDeveloperSection({super.key});
 
   @override
-  ConsumerState<ClearAppDataSection> createState() =>
-      _ClearAppDataSectionState();
+  ConsumerState<HiddenDeveloperSection> createState() =>
+      _HiddenDeveloperSectionState();
 }
 
-class _ClearAppDataSectionState extends ConsumerState<ClearAppDataSection> {
+class _HiddenDeveloperSectionState extends ConsumerState<HiddenDeveloperSection> {
   static const _revealThreshold = 7;
 
   int _tapCount = 0;
