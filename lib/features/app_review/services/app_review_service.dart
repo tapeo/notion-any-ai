@@ -53,4 +53,23 @@ class AppReviewService {
       log('[app-review] failed to request review: $err');
     }
   }
+
+  Future<ReviewPromptResult> forcePrompt() async {
+    try {
+      final available = await _inAppReview.isAvailable();
+      if (!available) {
+        debugPrint('[app-review] in-app review not available');
+        return ReviewPromptResult.notAvailable;
+      }
+
+      await _inAppReview.requestReview();
+      debugPrint('[app-review] review prompt forced');
+      return ReviewPromptResult.shown;
+    } catch (err) {
+      log('[app-review] failed to force review: $err');
+      return ReviewPromptResult.error;
+    }
+  }
 }
+
+enum ReviewPromptResult { shown, notAvailable, error }

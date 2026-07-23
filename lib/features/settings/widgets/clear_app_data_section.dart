@@ -26,6 +26,8 @@ import '../../notion/services/notion_recent_pages_storage.dart';
 import '../../notion/services/notion_storage.dart';
 import '../../system_prompt/providers/system_prompt_notifier.dart';
 import '../../system_prompt/providers/system_prompt_storage_provider.dart';
+import '../../app_review/providers/app_review_provider.dart';
+import '../../app_review/services/app_review_service.dart';
 import '../../voice_input/providers/voice_input_notifier.dart';
 import '../../voice_input/providers/voice_input_storage_provider.dart';
 import 'environment_switcher_section.dart';
@@ -223,6 +225,8 @@ class _ClearAppDataSectionState extends ConsumerState<ClearAppDataSection> {
           const SizedBox(height: AppSpacing.space3),
           const EnvironmentSwitcherSection(),
           const SizedBox(height: AppSpacing.space3),
+          const _ReviewTestTile(),
+          const SizedBox(height: AppSpacing.space3),
           _DangerZoneCard(clearing: _clearing, onClear: _handleClear),
         ],
       ],
@@ -324,6 +328,135 @@ class _DangerZoneCardState extends State<_DangerZoneCard> {
                       Icons.chevron_right,
                       size: AppIconSize.lg,
                       color: AppColors.error,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReviewTestTile extends ConsumerStatefulWidget {
+  const _ReviewTestTile();
+
+  @override
+  ConsumerState<_ReviewTestTile> createState() => _ReviewTestTileState();
+}
+
+class _ReviewTestTileState extends ConsumerState<_ReviewTestTile> {
+  bool _hovered = false;
+  bool _busy = false;
+
+  Future<void> _handleTap() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+
+    final service = ref.read(appReviewServiceProvider);
+    ReviewPromptResult result;
+    try {
+      result = await service.forcePrompt();
+    } catch (err) {
+      result = ReviewPromptResult.error;
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _busy = false);
+
+    final message = switch (result) {
+      ReviewPromptResult.shown => 'In-app review prompt requested.',
+      ReviewPromptResult.notAvailable => 'In-app review not available on this device.',
+      ReviewPromptResult.error => 'In-app review failed to launch.',
+    };
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final b = theme.brightness;
+    final bg = _hovered ? AppColors.hoverFillFor(b) : Colors.transparent;
+
+    return Material(
+      color: AppColors.surfaceCard(b),
+      shape: AppShapes.lg(
+        side: BorderSide(color: AppColors.borderSubtle(b)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: Material(
+          color: bg,
+          child: InkWell(
+            onTap: _busy ? null : _handleTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space4,
+                vertical: AppSpacing.space3,
+              ),
+              child: Row(
+                children: [
+                  Material(
+                    color: AppColors.accent.withValues(alpha: 0.10),
+                    shape: AppShapes.md(),
+                    clipBehavior: Clip.antiAlias,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.space2 - 2),
+                      child: Icon(
+                        Icons.star_outlined,
+                        size: 18,
+                        color: AppColors.accent,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.space3),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Test in-app review',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Force the native review prompt to verify it works. '
+                          'OS quotas may still suppress the dialog.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textTertiary(b),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.space2),
+                  if (_busy)
+                    SizedBox(
+                      width: AppIconSize.md,
+                      height: AppIconSize.md,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.accent,
+                      ),
+                    )
+                  else
+                    Icon(
+                      Icons.chevron_right,
+                      size: AppIconSize.lg,
+                      color: AppColors.textTertiary(b),
                     ),
                 ],
               ),
