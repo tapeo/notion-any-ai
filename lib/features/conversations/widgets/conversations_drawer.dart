@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../../app/widgets/frosted_icon_button.dart';
 import '../../chat/providers/chat_provider.dart';
 import '../models/conversation.dart';
 import '../providers/conversation_storage_provider.dart';
@@ -30,6 +31,7 @@ class _ConversationsDrawerState extends ConsumerState<ConversationsDrawer>
   late final Animation<double> _fade;
 
   static const double _panelWidth = 280;
+  static const double _panelMargin = 12;
 
   bool get _isDesktop =>
       Platform.isMacOS || Platform.isLinux || Platform.isWindows;
@@ -78,8 +80,8 @@ class _ConversationsDrawerState extends ConsumerState<ConversationsDrawer>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final b = theme.brightness;
-    final panelColor = AppColors.bgSecondary(b);
-    final dividerColor = AppColors.borderSubtle(b);
+    final panelColor = AppColors.bgPrimary(b);
+    final isDark = b == Brightness.dark;
 
     final conversations = ref.watch(conversationsProvider);
 
@@ -96,24 +98,36 @@ class _ConversationsDrawerState extends ConsumerState<ConversationsDrawer>
               ),
             ),
             Positioned(
-              top: 0,
-              bottom: 0,
-              left: 0,
+              top: _panelMargin,
+              bottom: _panelMargin,
+              left: _panelMargin,
               child: FractionalTranslation(
-                translation: Offset(-1 + _slide.value, 0),
+                translation: Offset(
+                  -1 - _panelMargin + _slide.value * (1 + _panelMargin),
+                  0,
+                ),
                 child: Container(
                   width: _panelWidth,
                   decoration: BoxDecoration(
                     color: panelColor,
-                    border: Border(
-                      right: BorderSide(color: dividerColor, width: 1),
-                    ),
+                    borderRadius: BorderRadius.circular(AppRadius.xl),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isDark
+                            ? const Color(0x66000000)
+                            : const Color(0x2E0F0F0F),
+                        offset: const Offset(0, 8),
+                        blurRadius: 32,
+                      ),
+                    ],
                   ),
                   child: SafeArea(
+                    top: false,
                     right: false,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        _buildHeader(theme, b),
                         Expanded(
                           child: conversations.summaries.isEmpty
                               ? _buildEmpty(theme, b)
@@ -128,6 +142,37 @@ class _ConversationsDrawerState extends ConsumerState<ConversationsDrawer>
           ],
         );
       },
+    );
+  }
+
+  Widget _buildHeader(ThemeData theme, Brightness b) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.space4,
+        AppSpacing.space3,
+        AppSpacing.space2,
+        AppSpacing.space2,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Conversations',
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: AppColors.textPrimary(b),
+              ),
+            ),
+          ),
+          FrostedIconButton(
+            icon: Icons.add,
+            onPressed: () {
+              ref.read(chatProvider.notifier).clearChat();
+              _close();
+            },
+            tooltip: 'New chat',
+          ),
+        ],
+      ),
     );
   }
 

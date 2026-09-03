@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppFonts {
   AppFonts._();
 
-  static TextStyle display() => const TextStyle(
+  static TextStyle displaySerif() => GoogleFonts.literata(
     fontWeight: FontWeight.w600,
     letterSpacing: -0.5,
     height: 1.3,
   );
 
   static TextStyle displayLarge() =>
-      display().copyWith(fontSize: 57, letterSpacing: -1.4, height: 1.1);
+      displaySerif().copyWith(fontSize: 57, letterSpacing: -1.4, height: 1.1);
 
   static TextStyle displayMedium() =>
-      display().copyWith(fontSize: 45, letterSpacing: -1.0, height: 1.15);
+      displaySerif().copyWith(fontSize: 45, letterSpacing: -1.0, height: 1.15);
 
   static TextStyle displaySmall() =>
-      display().copyWith(fontSize: 36, letterSpacing: -0.72, height: 1.2);
+      displaySerif().copyWith(fontSize: 36, letterSpacing: -0.72, height: 1.2);
 
   static TextStyle headlineLarge() => const TextStyle(
     fontSize: 28,

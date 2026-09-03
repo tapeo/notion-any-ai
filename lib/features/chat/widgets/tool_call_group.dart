@@ -58,6 +58,12 @@ class ToolCallGroup extends StatelessWidget {
               ? 'Running $doneCount/$total'
               : (hasError ? 'Completed with errors' : 'Completed'));
 
+    final headerTint = hasError
+        ? AppColors.error.withValues(alpha: 0.08)
+        : (allDone && !hasUnansweredAskUser
+        ? AppColors.success.withValues(alpha: 0.07)
+        : Colors.transparent);
+
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.8,
@@ -70,41 +76,50 @@ class ToolCallGroup extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.space3 + 1,
-                AppSpacing.space2 + 1,
-                AppSpacing.space3 + 1,
-                AppSpacing.space2 + 1,
-              ),
-              child: Row(
-                children: [
-                  Icon(headerIcon, size: AppIconSize.md, color: headerColor),
-                  const SizedBox(width: AppSpacing.space2),
-                  Expanded(
-                    child: Text(
-                      'Tool calls',
-                      style: AppFonts.labelSmall().copyWith(color: muted),
+            DecoratedBox(
+              decoration: BoxDecoration(color: headerTint),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.space3 + 1,
+                  AppSpacing.space2 + 1,
+                  AppSpacing.space3 + 1,
+                  AppSpacing.space2 + 1,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      headerIcon,
+                      size: AppIconSize.md,
+                      color: headerColor,
                     ),
-                  ),
-                  Text(
-                    headerLabel,
-                    style: AppFonts.labelSmall().copyWith(color: headerColor),
-                  ),
-                  if (!allDone && !hasUnansweredAskUser) ...[
                     const SizedBox(width: AppSpacing.space2),
-                    SizedBox(
-                      width: AppIconSize.md,
-                      height: AppIconSize.md,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.textDisabled(brightness),
-                        ),
+                    Expanded(
+                      child: Text(
+                        'Tool calls',
+                        style: AppFonts.labelSmall().copyWith(color: muted),
                       ),
                     ),
+                    Text(
+                      headerLabel,
+                      style: AppFonts.labelSmall().copyWith(
+                        color: headerColor,
+                      ),
+                    ),
+                    if (!allDone && !hasUnansweredAskUser) ...[
+                      const SizedBox(width: AppSpacing.space2),
+                      SizedBox(
+                        width: AppIconSize.md,
+                        height: AppIconSize.md,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.textDisabled(brightness),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
             Divider(

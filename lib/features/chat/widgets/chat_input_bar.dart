@@ -16,6 +16,7 @@ import '../../voice_input/providers/voice_input_notifier.dart';
 import '../../voice_input/services/voice_recorder.dart';
 import '../../voice_input/widgets/voice_input_setup.dart';
 import '../providers/chat_provider.dart';
+import '../providers/chat_input_controller.dart';
 import 'chat_page_selector_row.dart';
 
 class ChatInputBar extends ConsumerStatefulWidget {
@@ -36,10 +37,18 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     super.initState();
     _focusNode.onKeyEvent = _onKeyEvent;
     _recorder.isRecordingNotifier.addListener(_onRecordingChanged);
+    ref
+        .read(chatInputControllerProvider)
+        .prefillSignal
+        .addListener(_onPrefillSignal);
   }
 
   @override
   void dispose() {
+    ref
+        .read(chatInputControllerProvider)
+        .prefillSignal
+        .removeListener(_onPrefillSignal);
     _recorder.isRecordingNotifier.removeListener(_onRecordingChanged);
     _controller.dispose();
     _focusNode.dispose();
@@ -49,6 +58,19 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
 
   void _onRecordingChanged() {
     setState(() {});
+  }
+
+  void _onPrefillSignal() {
+    final controller = ref.read(chatInputControllerProvider);
+    final text = controller.pendingText;
+    if (text.isEmpty) {
+      return;
+    }
+    controller.consume();
+    _controller.text = text;
+    _controller.selection = TextSelection.collapsed(offset: text.length);
+    setState(() => _canSend = true);
+    _focusNode.requestFocus();
   }
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
@@ -252,9 +274,18 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     final barColor = AppColors.bgPrimary(
       isDark ? Brightness.dark : Brightness.light,
     );
-    final borderColor = AppColors.borderDefault(
+    final borderColor = AppColors.borderSubtle(
       isDark ? Brightness.dark : Brightness.light,
     );
+    final shadows = isDark
+        ? [
+            const BoxShadow(
+              color: Color(0x40000000),
+              offset: Offset(0, 4),
+              blurRadius: 16,
+            ),
+          ]
+        : AppShadows.md;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -267,68 +298,74 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Material(
-            color: barColor,
-            shape: AppShapes.superellipse(
-              AppRadius.xxl,
-              side: BorderSide(color: borderColor),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.xxl + 6),
+              boxShadow: shadows,
             ),
-            clipBehavior: Clip.antiAlias,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.space3,
-                vertical: AppSpacing.space2,
+            child: Material(
+              color: barColor,
+              shape: AppShapes.superellipse(
+                AppRadius.xxl + 6,
+                side: BorderSide(color: borderColor),
               ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      minLines: 1,
-                      maxLines: 6,
-                      onChanged: _onChanged,
-                      style: theme.textTheme.bodyMedium,
-                      textInputAction: TextInputAction.newline,
-                      decoration: InputDecoration(
-                        hintText: 'Type here...',
-                        hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textTertiary(theme.brightness),
+              clipBehavior: Clip.antiAlias,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.space3,
+                  vertical: AppSpacing.space2,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                        minLines: 1,
+                        maxLines: 6,
+                        onChanged: _onChanged,
+                        style: theme.textTheme.bodyMedium,
+                        textInputAction: TextInputAction.newline,
+                        decoration: InputDecoration(
+                          hintText: 'Type here...',
+                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textTertiary(theme.brightness),
+                          ),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.space1,
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
                         ),
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: AppSpacing.space1,
-                        ),
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        focusedErrorBorder: InputBorder.none,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: AppSpacing.space2),
-                  _MicButton(
-                    isRecording: _recorder.isRecording,
-                    isTranscribing: voiceState.isTranscribing,
-                    enabled: canRecord,
-                    onPress: _startRecording,
-                    onRelease: _stopRecordingAndTranscribe,
-                    onCancel: _cancelRecording,
-                    onDisabledTap: _showNotConfiguredDialog,
-                  ),
-                  const SizedBox(width: AppSpacing.space2),
-                  if (isSending)
-                    _StopButton(
-                      onPressed: () {
-                        ref.read(chatProvider.notifier).stopStreaming();
-                      },
-                    )
-                  else
-                    _SendButton(enabled: _canSend, onPressed: _send),
-                ],
+                    const SizedBox(width: AppSpacing.space2),
+                    _MicButton(
+                      isRecording: _recorder.isRecording,
+                      isTranscribing: voiceState.isTranscribing,
+                      enabled: canRecord,
+                      onPress: _startRecording,
+                      onRelease: _stopRecordingAndTranscribe,
+                      onCancel: _cancelRecording,
+                      onDisabledTap: _showNotConfiguredDialog,
+                    ),
+                    const SizedBox(width: AppSpacing.space2),
+                    if (isSending)
+                      _StopButton(
+                        onPressed: () {
+                          ref.read(chatProvider.notifier).stopStreaming();
+                        },
+                      )
+                    else
+                      _SendButton(enabled: _canSend, onPressed: _send),
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,11 +1,15 @@
-// Scrollable list of messages with auto-scroll to bottom on changes.
+// Scrollable message list, top-anchored. Content growing at the end of the
+// list (streaming replies, tool results) never moves the reading position.
+// The list follows the newest message only while pinned to the bottom.
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../conversations/providers/conversations_notifier.dart';
 import '../models/chat_role.dart';
 import '../providers/chat_provider.dart';
+import '../providers/chat_input_controller.dart';
 import 'empty_chat_state.dart';
 import 'message_bubble.dart';
 
@@ -22,59 +26,80 @@ class MessageList extends ConsumerStatefulWidget {
 class _MessageListState extends ConsumerState<MessageList> {
   final ScrollController _controller = ScrollController();
   static const double _bottomThreshold = 80.0;
-  bool _autoScrollEnabled = true;
-  String? _lastActiveId;
-  String? _lastMessageId;
-  int _lastLastMessageLength = 0;
-  int _lastLastReasoningLength = 0;
-  final Set<String> _seenIds = <String>{};
-  bool _hadError = false;
+  static const int _settleFrameBudget = 12;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(_handleScroll);
-  }
+  // The list follows the newest message while pinned. Unpins on the first
+  // user scroll away from the bottom; re-pins when the user scrolls back,
+  // sends a message, or opens a conversation.
+  bool _pinned = true;
+  int _settleFramesLeft = 0;
+  double _lastSettleExtent = -1;
+  String? _lastActiveId;
+  final Set<String> _seenIds = <String>{};
 
   @override
   void dispose() {
-    _controller.removeListener(_handleScroll);
     _controller.dispose();
     super.dispose();
   }
 
-  void _handleScroll() {
+  bool get _isAtBottom {
     if (!_controller.hasClients) {
+      return false;
+    }
+    final position = _controller.position;
+    return position.pixels >= position.maxScrollExtent - _bottomThreshold;
+  }
+
+  void _schedulePinSync() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _pinSyncAfterLayout());
+  }
+
+  // A lazy list only estimates maxScrollExtent until its items are laid out,
+  // so a freshly opened conversation re-pins each frame until the extent is
+  // stable or the settle budget runs out.
+  void _pinSyncAfterLayout() {
+    if (!mounted || !_controller.hasClients) {
       return;
     }
     final position = _controller.position;
-    final isAtBottom =
-        position.pixels >= position.maxScrollExtent - _bottomThreshold;
-    if (isAtBottom != _autoScrollEnabled) {
-      setState(() {
-        _autoScrollEnabled = isAtBottom;
-      });
+    if (position.userScrollDirection != ScrollDirection.idle) {
+      return;
+    }
+    if (_pinned) {
+      _controller.jumpTo(position.maxScrollExtent);
+    }
+    if (_settleFramesLeft > 0) {
+      final extent = position.maxScrollExtent;
+      if (extent == _lastSettleExtent) {
+        _settleFramesLeft = 0;
+      } else {
+        _lastSettleExtent = extent;
+        _settleFramesLeft--;
+        _schedulePinSync();
+      }
     }
   }
 
-  void _jumpToBottom({bool instant = false}) {
-    if (!_autoScrollEnabled || !_controller.hasClients) {
-      return;
+  bool _handleUserScroll(UserScrollNotification notification) {
+    if (notification.direction == ScrollDirection.reverse) {
+      _settleFramesLeft = 0;
+      if (_pinned) {
+        setState(() {
+          _pinned = false;
+        });
+      }
+      return false;
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_controller.hasClients) {
-        return;
+    if (notification.direction == ScrollDirection.idle) {
+      final atBottom = _isAtBottom;
+      if (atBottom != _pinned) {
+        setState(() {
+          _pinned = atBottom;
+        });
       }
-      if (instant) {
-        _controller.jumpTo(_controller.position.maxScrollExtent);
-        return;
-      }
-      _controller.animateTo(
-        _controller.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    });
+    }
+    return false;
   }
 
   @override
@@ -94,19 +119,25 @@ class _MessageListState extends ConsumerState<MessageList> {
         child: Column(
           children: [
             SizedBox(height: topInset + AppSpacing.space4),
-            Expanded(child: const EmptyChatState()),
+            Expanded(
+              child: EmptyChatState(
+                onSuggestion: (prompt) => ref
+                    .read(chatInputControllerProvider)
+                    .prefill(prompt),
+              ),
+            ),
             SizedBox(height: bottomInset + AppSpacing.space6),
           ],
         ),
       );
     }
 
+    // Subscribe to view insets so keyboard changes rebuild the list and the
+    // pinned sync keeps the newest message visible above the keyboard.
+    MediaQuery.viewInsetsOf(context);
+
     final activeId = ref.watch(conversationsProvider.select((s) => s.activeId));
     final hasError = error != null;
-    final lastMessage = messages.isNotEmpty ? messages.last : null;
-    final lastMessageId = lastMessage?.id;
-    final lastMessageLength = lastMessage?.content?.length ?? 0;
-    final lastReasoningLength = lastMessage?.reasoning?.length ?? 0;
     final activeChanged = activeId != _lastActiveId;
 
     if (activeChanged) {
@@ -127,59 +158,58 @@ class _MessageListState extends ConsumerState<MessageList> {
       }
     }
 
-    final lastMessageChanged =
-        lastMessageId != _lastMessageId ||
-        lastMessageLength != _lastLastMessageLength ||
-        lastReasoningLength != _lastLastReasoningLength;
-    final errorAppeared = hasError && !_hadError;
-    _lastActiveId = activeId;
-    _lastMessageId = lastMessageId;
-    _lastLastMessageLength = lastMessageLength;
-    _lastLastReasoningLength = lastReasoningLength;
-    _hadError = hasError;
+    final lastMessage = messages.isNotEmpty ? messages.last : null;
+    final userSentNewMessage =
+        lastMessage != null &&
+        lastMessage.role == ChatRole.user &&
+        newIds.contains(lastMessage.id);
 
-    if (activeChanged) {
-      _autoScrollEnabled = true;
-      _jumpToBottom(instant: true);
-    } else if (lastMessageChanged || errorAppeared) {
-      _jumpToBottom();
+    if (activeChanged || userSentNewMessage) {
+      _lastActiveId = activeId;
+      _pinned = true;
     }
+    if (activeChanged) {
+      _lastSettleExtent = -1;
+      _settleFramesLeft = _settleFrameBudget;
+    }
+    _schedulePinSync();
 
     final itemCount = messages.length + (hasError ? 1 : 0);
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapDown: (_) => FocusScope.of(context).unfocus(),
       onPanDown: (_) => FocusScope.of(context).unfocus(),
-      child: ListView.builder(
-        controller: _controller,
-        padding: EdgeInsets.only(
-          top: topInset + AppSpacing.space1,
-          bottom: bottomInset + AppSpacing.space6,
-        ),
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          if (index == messages.length) {
+      child: NotificationListener<UserScrollNotification>(
+        onNotification: _handleUserScroll,
+        child: ListView.builder(
+          controller: _controller,
+          padding: EdgeInsets.only(
+            top: topInset + AppSpacing.space1,
+            bottom: bottomInset + AppSpacing.space6,
+          ),
+          itemCount: itemCount,
+          itemBuilder: (context, index) {
+            if (index == messages.length) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.space2),
+                child: ErrorBubble(error: error!),
+              );
+            }
+            final message = messages[index];
+            final playEntrance =
+                message.role == ChatRole.user && newIds.contains(message.id);
             return Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.space2),
-              child: ErrorBubble(error: error!),
+              padding: EdgeInsets.only(
+                bottom: index == 0 ? AppSpacing.space2 : AppSpacing.space1,
+              ),
+              child: MessageBubble(
+                message: message,
+                allMessages: messages,
+                playEntrance: playEntrance,
+              ),
             );
-          }
-          final message = messages[index];
-          final playEntrance =
-              message.role == ChatRole.user && newIds.contains(message.id);
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: index == itemCount - 1
-                  ? AppSpacing.space2
-                  : AppSpacing.space1,
-            ),
-            child: MessageBubble(
-              message: message,
-              allMessages: messages,
-              playEntrance: playEntrance,
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }

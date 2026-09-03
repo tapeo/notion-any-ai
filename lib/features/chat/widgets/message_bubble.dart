@@ -33,15 +33,27 @@ class MessageBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final animate =
+        playEntrance ||
+        message.role == ChatRole.assistant ||
+        message.role == ChatRole.tool;
     if (message.role == ChatRole.tool) {
-      return _ToolResultBubble(message: message, allMessages: allMessages);
+      return _ToolResultBubble(
+        message: message,
+        allMessages: allMessages,
+        playEntrance: animate,
+      );
     }
     if (message.role == ChatRole.assistant &&
         message.toolCalls != null &&
         message.toolCalls!.isNotEmpty) {
-      return _ToolCallBubble(message: message, allMessages: allMessages);
+      return _ToolCallBubble(
+        message: message,
+        allMessages: allMessages,
+        playEntrance: animate,
+      );
     }
-    return _TextBubble(message: message, playEntrance: playEntrance);
+    return _TextBubble(message: message, playEntrance: animate);
   }
 }
 
@@ -99,18 +111,24 @@ class _TextBubble extends StatelessWidget {
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.8,
             ),
-            child: Material(
-              color: AppColors.userBubble(theme.brightness),
-              shape: AppShapes.sm(),
-              clipBehavior: Clip.antiAlias,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.space3 + 1,
-                  AppSpacing.space2 + 1,
-                  AppSpacing.space3 + 1,
-                  AppSpacing.space2 + 1,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                boxShadow: AppShadows.xs,
+                borderRadius: BorderRadius.circular(AppRadius.xxl + 4),
+              ),
+              child: Material(
+                color: AppColors.userBubbleAccent(theme.brightness),
+                shape: AppShapes.sm(),
+                clipBehavior: Clip.antiAlias,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.space3 + 1,
+                    AppSpacing.space2 + 1,
+                    AppSpacing.space3 + 1,
+                    AppSpacing.space2 + 1,
+                  ),
+                  child: contentWidget,
                 ),
-                child: contentWidget,
               ),
             ),
           )
@@ -178,15 +196,24 @@ class _TextBubble extends StatelessWidget {
     if (isUser) {
       return _EntranceAnimator(playEntrance: playEntrance, child: child);
     }
-    return child;
+    return _EntranceAnimator(
+      playEntrance: playEntrance,
+      alignment: Alignment.bottomLeft,
+      child: child,
+    );
   }
 }
 
 class _EntranceAnimator extends StatefulWidget {
-  const _EntranceAnimator({required this.playEntrance, required this.child});
+  const _EntranceAnimator({
+    required this.playEntrance,
+    required this.child,
+    this.alignment = Alignment.bottomRight,
+  });
 
   final bool playEntrance;
   final Widget child;
+  final Alignment alignment;
 
   @override
   State<_EntranceAnimator> createState() => _EntranceAnimatorState();
@@ -232,7 +259,7 @@ class _EntranceAnimatorState extends State<_EntranceAnimator>
           opacity: _opacity.value,
           child: Transform.scale(
             scale: _scale.value,
-            alignment: Alignment.bottomRight,
+            alignment: widget.alignment,
             child: child,
           ),
         );
@@ -499,10 +526,15 @@ class _Dot extends StatelessWidget {
 }
 
 class _ToolCallBubble extends ConsumerWidget {
-  const _ToolCallBubble({required this.message, required this.allMessages});
+  const _ToolCallBubble({
+    required this.message,
+    required this.allMessages,
+    this.playEntrance = false,
+  });
 
   final ChatMessage message;
   final List<ChatMessage> allMessages;
+  final bool playEntrance;
 
   String? _resultFor(String toolCallId) {
     for (final msg in allMessages) {
@@ -567,7 +599,7 @@ class _ToolCallBubble extends ConsumerWidget {
 
     children.addAll(askUserEntries);
 
-    return Padding(
+    final body = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.space3,
         vertical: AppSpacing.space1 - 2,
@@ -586,6 +618,8 @@ class _ToolCallBubble extends ConsumerWidget {
         ],
       ),
     );
+
+    return _EntranceAnimator(playEntrance: playEntrance, child: body);
   }
 }
 
@@ -636,10 +670,15 @@ class _AssistantText extends StatelessWidget {
 }
 
 class _ToolResultBubble extends StatelessWidget {
-  const _ToolResultBubble({required this.message, required this.allMessages});
+  const _ToolResultBubble({
+    required this.message,
+    required this.allMessages,
+    this.playEntrance = false,
+  });
 
   final ChatMessage message;
   final List<ChatMessage> allMessages;
+  final bool playEntrance;
 
   bool get _hasMatchingCall {
     final id = message.toolCallId;
@@ -664,30 +703,34 @@ class _ToolResultBubble extends StatelessWidget {
     if (_hasMatchingCall) {
       return const SizedBox.shrink();
     }
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.space3,
-        vertical: AppSpacing.space1 - 2,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Flexible(
-            child: ToolCallGroup(
-              entries: [
-                ToolCallEntry(
-                  toolCall: ToolCall(
-                    id: message.toolCallId ?? message.id,
-                    name: message.name ?? 'tool',
-                    arguments: const {},
+    return _EntranceAnimator(
+      playEntrance: playEntrance,
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.space3,
+          vertical: AppSpacing.space1 - 2,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              child: ToolCallGroup(
+                entries: [
+                  ToolCallEntry(
+                    toolCall: ToolCall(
+                      id: message.toolCallId ?? message.id,
+                      name: message.name ?? 'tool',
+                      arguments: const {},
+                    ),
+                    resultContent: message.content,
                   ),
-                  resultContent: message.content,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

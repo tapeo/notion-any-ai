@@ -5,6 +5,7 @@ class AppColors {
 
   static const Color ink = Color(0xFF37352F);
   static const Color cream = Color(0xFFF7F6F3);
+  static const Color warmWhite = Color(0xFFFBFAF8);
   static const Color graySurface = Color(0xFFEBEAE8);
 
   static const Color accent = Color(0xFF2383E2);
@@ -32,13 +33,13 @@ class AppColors {
       b == Brightness.dark ? const Color(0x66FFFFFF) : const Color(0x6637352F);
 
   static Color bgPrimary(Brightness b) =>
-      b == Brightness.dark ? const Color(0xFF191919) : white;
+      b == Brightness.dark ? const Color(0xFF141414) : white;
   static Color bgSecondary(Brightness b) =>
-      b == Brightness.dark ? const Color(0xFF202020) : white;
+      b == Brightness.dark ? const Color(0xFF1B1B1A) : warmWhite;
   static Color bgTertiary(Brightness b) =>
-      b == Brightness.dark ? const Color(0xFF2A2A2A) : cream;
+      b == Brightness.dark ? const Color(0xFF242423) : cream;
   static Color surfaceCard(Brightness b) =>
-      b == Brightness.dark ? const Color(0xFF191919) : cream;
+      b == Brightness.dark ? const Color(0xFF1B1B1A) : warmWhite;
 
   static Color borderDefault(Brightness b) =>
       b == Brightness.dark ? const Color(0x21FFFFFF) : const Color(0x2937352F);
@@ -65,8 +66,12 @@ class AppColors {
   static Color userBubbleText(Brightness b) =>
       b == Brightness.dark ? white : ink;
 
+  static Color userBubbleAccent(Brightness b) =>
+      b == Brightness.dark ? const Color(0xFF22303E) : const Color(0xFFE3EEFA);
+  static Color barFill(Brightness b) => bgSecondary(b).withValues(alpha: 0.92);
+
   static Color assistantBubble(Brightness b) =>
-      b == Brightness.dark ? const Color(0xFF2A2A2A) : graySurface;
+      b == Brightness.dark ? const Color(0xFF242423) : warmWhite;
   static Color assistantBubbleText(Brightness b) => textPrimary(b);
 }
 

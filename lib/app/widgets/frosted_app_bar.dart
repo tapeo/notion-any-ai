@@ -1,4 +1,4 @@
-// Frosted app bar and bottom bar.
+// Frosted-style app bar and bottom bar (translucent fill, no blur).
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -7,14 +7,14 @@ import '../theme/app_fonts.dart';
 class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
   const FrostedAppBar({
     super.key,
-    required this.title,
+    this.title,
     this.actions = const [],
     this.leading,
     this.bottom,
     this.showBorder = true,
   });
 
-  final String title;
+  final String? title;
   final List<Widget> actions;
   final Widget? leading;
   final PreferredSizeWidget? bottom;
@@ -30,7 +30,7 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final barColor = AppColors.bgSecondary(
+    final barColor = AppColors.barFill(
       isDark ? Brightness.dark : Brightness.light,
     );
     final dividerColor = AppColors.borderSubtle(
@@ -40,6 +40,7 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: barColor,
+        boxShadow: isDark ? null : AppShadows.xs,
         border: showBorder
             ? Border(bottom: BorderSide(width: 0.5, color: dividerColor))
             : null,
@@ -60,12 +61,14 @@ class FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
                 centerMiddle: false,
                 middleSpacing: 0,
-                middle: Text(
-                  title,
-                  style: AppFonts.titleMedium().copyWith(
-                    color: theme.appBarTheme.foregroundColor,
-                  ),
-                ),
+                middle: title == null
+                    ? null
+                    : Text(
+                        title!,
+                        style: AppFonts.titleMedium().copyWith(
+                          color: theme.appBarTheme.foregroundColor,
+                        ),
+                      ),
                 trailing: actions.isEmpty
                     ? null
                     : Row(
@@ -109,7 +112,7 @@ class FrostedBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final barColor = AppColors.bgSecondary(
+    final barColor = AppColors.barFill(
       isDark ? Brightness.dark : Brightness.light,
     );
     final dividerColor = AppColors.borderSubtle(
@@ -119,6 +122,15 @@ class FrostedBottomBar extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: barColor,
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? const Color(0x40000000)
+                : const Color(0x0D0F0F0F),
+            offset: const Offset(0, -2),
+            blurRadius: 10,
+          ),
+        ],
         border: showBorder
             ? Border(top: BorderSide(width: 0.5, color: dividerColor))
             : null,

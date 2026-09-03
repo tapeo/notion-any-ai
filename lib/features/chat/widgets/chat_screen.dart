@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../app/theme/app_colors.dart';
 import '../../../app/widgets/frosted_app_bar.dart';
 import '../../../app/widgets/frosted_icon_button.dart';
 import '../../../app/widgets/measure_size.dart';
 import '../../conversations/widgets/conversations_drawer.dart';
+import '../../notion/services/notion_platform.dart';
 import '../../settings/widgets/settings_screen.dart';
 import '../providers/chat_provider.dart';
 import 'chat_input_bar.dart';
@@ -21,15 +21,11 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final ValueNotifier<double> _inputBarHeight = ValueNotifier<double>(0.0);
-  final ValueNotifier<double> _scrollPixels = ValueNotifier<double>(0.0);
-  final ValueNotifier<double> _maxScrollExtent = ValueNotifier<double>(0.0);
   bool _drawerOpen = false;
 
   @override
   void dispose() {
     _inputBarHeight.dispose();
-    _scrollPixels.dispose();
-    _maxScrollExtent.dispose();
     super.dispose();
   }
 
@@ -60,14 +56,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final hasMessages = ref.watch(
       chatProvider.select((s) => s.messages.isNotEmpty),
     );
-    final brightness = Theme.of(context).brightness;
-    final fadeColor = AppColors.bgSecondary(brightness);
-    const fadeHeight = 48.0;
     final topInset = MediaQuery.paddingOf(context).top + kToolbarHeight;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: FrostedAppBar(
-        title: 'Any AI for Notion',
+        title: isMobilePlatform ? 'Any AI for Notion' : null,
         showBorder: false,
         leading: FrostedIconButton(
           onPressed: _toggleDrawer,
@@ -89,45 +82,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
       body: Stack(
         children: [
-          NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              final metrics = notification.metrics;
-              _scrollPixels.value = metrics.pixels;
-              _maxScrollExtent.value = metrics.maxScrollExtent;
-              return false;
+          ValueListenableBuilder<double>(
+            valueListenable: _inputBarHeight,
+            builder: (context, height, _) {
+              return MessageList(topInset: topInset, bottomInset: height);
             },
-            child: ValueListenableBuilder<double>(
-              valueListenable: _inputBarHeight,
-              builder: (context, height, _) {
-                return MessageList(topInset: topInset, bottomInset: height);
-              },
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: topInset,
-            height: fadeHeight,
-            child: IgnorePointer(
-              child: ValueListenableBuilder<double>(
-                valueListenable: _scrollPixels,
-                builder: (context, pixels, _) {
-                  final opacity = (pixels / fadeHeight).clamp(0.0, 1.0);
-                  return Opacity(
-                    opacity: opacity,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [fadeColor, fadeColor.withValues(alpha: 0.0)],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
           ),
           Positioned(
             left: 0,
@@ -141,51 +100,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
             ),
           ),
-          ValueListenableBuilder<double>(
-            valueListenable: _inputBarHeight,
-            builder: (context, height, _) {
-              return Positioned(
-                left: 0,
-                right: 0,
-                bottom: height,
-                height: fadeHeight,
-                child: IgnorePointer(
-                  child: ValueListenableBuilder<double>(
-                    valueListenable: _scrollPixels,
-                    builder: (context, pixels, _) {
-                      return ValueListenableBuilder<double>(
-                        valueListenable: _maxScrollExtent,
-                        builder: (context, maxExtent, _) {
-                          final distance = maxExtent - pixels;
-                          final opacity = (distance / fadeHeight).clamp(
-                            0.0,
-                            1.0,
-                          );
-                          return Opacity(
-                            opacity: opacity,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    fadeColor.withValues(alpha: 0.0),
-                                    fadeColor,
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
           if (_drawerOpen)
-            Positioned.fill(child: ConversationsDrawer(onClose: _closeDrawer)),
+            Positioned(
+              top: topInset,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: ConversationsDrawer(onClose: _closeDrawer),
+            ),
         ],
       ),
     );
